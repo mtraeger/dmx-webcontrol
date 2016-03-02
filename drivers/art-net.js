@@ -2,7 +2,7 @@
 
 var options = {
     host: '192.168.1.10',
-    refresh: '8000'
+    refresh: '4000'
 }
 var artnet = require('artnet')(options);
 
