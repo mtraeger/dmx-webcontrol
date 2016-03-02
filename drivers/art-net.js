@@ -44,7 +44,9 @@ ArtNet.prototype.update = function (u) {
 ArtNet.prototype.updateAll = function (v) {
     for (var i = 0; i < 512; i++) {
         this.universe[i] = v
-        artnet.set(i,v)
+        var setC = parseInt(i) + 1
+        artnet.set(setC,v)
+        //TODO correct?
     }
 }
 
