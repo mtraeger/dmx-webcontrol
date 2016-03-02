@@ -53,8 +53,15 @@ var anim = new A()
 	.add({1: 0}, 2000)
 	.delay(1000)
 	.add({1: 255, 3: 200}, 2200)
+	.delay(3000) //following: easing examples
+	.add({1: 0, 2:0, 3:0}, 2000, 'outBounce')
+	.add({1: 255, 2:255, 3:255}, 3000, 'inOutCubic')
+	.delay(1000)
+	.add({2:0, 3:150}, 3000, 'inOutSine')
 
-//anim.run(universe, done)
+
+
+anim.run(universe, done)
 //warp(universe, 2, 10, 220, 360)
 //green_water(universe, [2], 4000)
 
@@ -91,7 +98,7 @@ var x = new A()
 var y = new A()
 	.add({1: 255}, 10000)
 
-x.run(universe, done)
+//x.run(universe, done)
 //y.run(universe, done)
 
 return

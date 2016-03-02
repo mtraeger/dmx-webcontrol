@@ -7,11 +7,10 @@ function Anim() {
 	this.fx_stack = []
 }
 
-Anim.prototype.add = function(to, duration, options) {
-	var options  = options  || {}
+Anim.prototype.add = function(to, duration, easing) {
 	var duration = duration || resolution
-	options['easing'] = options['easing'] || 'linear'
-	this.fx_stack.push({'to': to, 'duration': duration, 'options': options})
+	var easing = easing || 'linear'
+	this.fx_stack.push({'to': to, 'duration': duration, 'easing': easing})
 	return this
 }
 
@@ -41,7 +40,7 @@ Anim.prototype.run = function(universe, onFinish) {
 	var ani_step = function() {
 		var new_vals = {}
 		for(var k in config) {
-			new_vals[k] = Math.round(config[k].start + ease['linear'](t, 0, 1, d) * (config[k].end - config[k].start))
+			new_vals[k] = Math.round(config[k].start + ease[a.easing](t, 0, 1, d) * (config[k].end - config[k].start))
 		}
 		t = t + resolution
 		universe.update(new_vals)
