@@ -108,10 +108,10 @@ Create a new DMX Animation instance. This can be chained similar to jQuery.
 
 - <code>to</code> - Object, keys are channel numbers, values the values to set that channel to
 - <code>duration</code> - Number, duration in ms
-- <code>options</code> - Object
+- <code>easing</code> - String
 
 Add an animation Step.
-The options Object takes an <code>easing</code> key which allows to set a easing function from the following list:
+The <code>easing</code> String has a value which allows to set a easing function from the following list:
 
 - linear (default)
 - inQuad
