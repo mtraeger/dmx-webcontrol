@@ -2,7 +2,7 @@
 
 var options = {
     host: '192.168.1.10',
-    refresh: 20000
+    refresh: '8000'
 }
 var artnet = require('artnet')(options);
 
@@ -34,7 +34,9 @@ ArtNet.prototype.close = function (cb) {
 ArtNet.prototype.update = function (u) {
     for (var c in u) {
         this.universe[c] = u[c]
-        artnet.set(c,u[c])
+        var setC = parseInt(c) + 1
+        artnet.set(setC,u[c])
+        //console.log("updateSingle c=" + c + " u[c]="+u[c]+" setC="+setC)
     }
     console.log(this.universe)
 }
