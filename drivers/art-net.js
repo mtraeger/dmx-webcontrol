@@ -36,7 +36,7 @@ ArtNet.prototype.update = function (u) {
         this.universe[c] = u[c]
         var setC = parseInt(c) + 1
         artnet.set(setC,u[c])
-        console.log("updateSingle c=" + c + " u[c]="+u[c]+" setC="+setC)
+        //console.log("updateSingle c=" + c + " u[c]="+u[c]+" setC="+setC)
     }
     console.log(this.universe)
 }
@@ -46,7 +46,7 @@ ArtNet.prototype.updateAll = function (v) {
         this.universe[i] = v
         var setC = parseInt(i) + 1
         artnet.set(setC,v)
-        console.log("FAIL")
+        //console.log("FAIL")
         //TODO correct?
     }
 }

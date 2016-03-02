@@ -5,7 +5,7 @@ var A = DMX.Animation;
 
 var dmx = new DMX();
 // var universe = dmx.addUniverse('demo', 'enttec-open-usb-dmx', 0)
-var universe = dmx.addUniverse('demo', 'null')
+var universe = dmx.addUniverse('demo', 'art-net')
 
 var on = false;
 setInterval(function(){
