@@ -5,6 +5,25 @@ module.exports = {
 	'showtec-multidim2': {
 		channels: ['1', '2', '3', '4']
 	},
+	'stairville-led-flat': {
+		channels: ['dimmer', 'red', 'green', 'blue', 'strobe', 'ctrl', 'group', 'delay'],
+		ranges: {
+			'ctrl': {
+				'type': 'option',
+				'options': [
+					{'value': 0,   'label': 'RGB Control'},
+					{'value': 30,  'label': '7 color fade'},
+					{'value': 60,  'label': '3 color fade'},
+					{'value': 80,  'label': '7 color change'},
+					{'value': 110, 'label': '3 color change'},
+					{'value': 190, 'label': 'fade red'},
+					{'value': 210, 'label': 'fade green'},
+					{'value': 230, 'label': 'fade blue'},
+					{'value': 252, 'label': 'Sound activity'}
+				]
+			}
+		}
+	},
 	'eurolite-led-bar': {
 		channels: ['ctrl', 'dimmer', 'strobe', 'red0', 'green0', 'blue0', 'red1', 'green1', 'blue1', 'red2', 'green2', 'blue2'],
 		ranges: {
