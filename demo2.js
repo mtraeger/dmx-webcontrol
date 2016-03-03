@@ -85,7 +85,7 @@ var doubleAnim = new A().add({0: 255, 8:255}) //initialize dimmer channel
 	.delay(1000)
 	.addMultipleDevs({1: 0}, 2000, [9])
 	.delay(1000)
-	.addMultipleDevs({1: 255, 3: 200}, 2200, [1,9])
+	.addMultipleDevs({1: 255, 3: 200}, 2200, [1])
 	.delay(3000) //following: easing examples
 	.addMultipleDevs({1: 0, 2:0, 3:0}, 2000, [1,9], 'outBounce')
 	.addMultipleDevs({1: 255, 2:255, 3:255}, 3000, [1,9], 'inOutCubic')
@@ -96,9 +96,9 @@ var doubleAnim = new A().add({0: 255, 8:255}) //initialize dimmer channel
 	.delay(500)
 	.addMultipleDevs({1:180}, 3000, [1,9], 'outElastic') //ease elastic not to full value! it overfills the goal! e.g. max 180
 	.delay(1000)
-	.addMultipleDevs({1:70}, 3000, [1,9], 'inOutBack')
+	.addMultipleDevs({1:70}, 3000, [1], 'inOutBack')
 	.delay(1000)
-	.addMultipleDevs({1:255}, 3000, [1,9], 'inElastic')
+	.addMultipleDevs({1:255}, 3000, [9], 'inElastic')
 	.addMultipleDevs({1:0}, 5000, [1,9], 'outQuart')
 
 //uncomment a (single) line for an example
