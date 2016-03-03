@@ -11,6 +11,7 @@ var universe = dmx.addUniverse('demo', 'art-net')
 //universe.update({1: 255, 2:90, 3: 120, 4: 230})
 
 universe.update({0:255}) //TODO setting chanel 1 (dimmer of flat-par) to 255 in beginning
+universe.update({8:255})
 
 //attention: chanels starting at 0 !!!
 
@@ -106,7 +107,7 @@ var doubleAnim = new A().add({0: 255, 8:255}) //initialize dimmer channel
 doubleAnim.run(universe, done)
 //warp(universe, 1, 10, 220, 360)
 //green_water(universe, [1], 4000)
-
+//green_water(universe, [1,9], 4000)
 
 
 var x = new A()
