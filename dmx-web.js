@@ -56,6 +56,20 @@ function DMXWeb() {
 	  res.sendfile(__dirname + '/index.html')
 	})
 
+	//css and js offline
+	app.get('/css/bootstrap-combined.min.css', function(req, res) {
+		res.sendfile(__dirname + '/css/bootstrap-combined.min.css')
+	})
+	app.get('/js/jquery.min.js', function(req, res) {
+		res.sendfile(__dirname + '/js/jquery.min.js')
+	})
+	app.get('/js/jquery-ui.min.js', function(req, res) {
+		res.sendfile(__dirname + '/js/jquery-ui.min.js')
+	})
+	app.get('/js/bootstrap.min.js', function(req, res) {
+		res.sendfile(__dirname + '/js/bootstrap.min.js')
+	})
+
 	app.post('/animation/:universe', function(req, res) {
 		try {
 			var universe = dmx.universes[req.params.universe]
