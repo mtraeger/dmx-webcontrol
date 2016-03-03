@@ -29,8 +29,9 @@ ArtNet.prototype.stop = function () {
 ArtNet.prototype.close = function (cb) {
     cb = cb || function () {
         };
-    artnet.close()
-    console.log("######### closing art-net ##########")
+    this.stop();
+    artnet.close();
+    console.log("######### closing art-net ##########");
     cb();
 }
 
