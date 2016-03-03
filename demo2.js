@@ -100,6 +100,7 @@ var doubleAnim = new A().add({0: 255, 8:255}) //initialize dimmer channel
 	.addMultipleDevs({1:70}, 3000, [1], 'inOutBack')
 	.delay(1000)
 	.addMultipleDevs({1:255}, 3000, [9], 'inElastic')
+	.delay(2000)
 	.addMultipleDevs({1:0}, 5000, [1,9], 'outQuart')
 
 //uncomment a (single) line for an example
