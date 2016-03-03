@@ -1,6 +1,6 @@
 {
 		"name":		   "node-dmx",
-		"version":	   "0.0.1",
+		"version":	   "1.0.1",
 		"author":	   "Sebastian Wiedenroth <wiedi@frubar.net>",
 		"description": "DMX library and webservice",
 		"url":		   "https://github.com/wiedi/node-dmx",

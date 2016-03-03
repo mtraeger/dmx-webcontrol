@@ -11,7 +11,7 @@ var A        = DMX.Animation
 
 program
 	.version("0.0.1")
-	.option('-c, --config <file>', 'Read config from file [/etc/dmx-web.json]', '/etc/dmx-web.json')
+	.option('-c, --config <file>', 'Read config from file [./dmx-web.conf]', './dmx-web.conf')
 	.parse(process.argv)
 
 
