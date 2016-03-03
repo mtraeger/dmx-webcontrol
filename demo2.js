@@ -68,6 +68,9 @@ var anim = new A()
 	.add({1:180}, 3000, 'outElastic') //ease elastic not to full value! it overfills the goal! e.g. max 180
 	.delay(1000)
 	.add({1:70}, 3000, 'inOutBack')
+	.delay(1000)
+	.add({1:255}, 3000, 'inElastic')
+	.add({1:0}, 5000, 'outQuart')
 
 
 //uncomment a (single) line for an example
