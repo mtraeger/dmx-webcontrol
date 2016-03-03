@@ -14,6 +14,21 @@ Anim.prototype.add = function(to, duration, easing) {
 	return this
 }
 
+//add relative chanels for multiple devices e.g. .addMultipleDevs({1: 255, 2:200}, 2000, [1,9]) -> channels 1,2,9,10 updated
+Anim.prototype.addMultipleDevs = function (to, duration, startingchanels, easing) {
+	var tonew = {}; //new to field value
+	for (var i in startingchanels) {
+		for (var k in to) {
+			var newchannel = parseInt(k) + startingchanels[i] - 1; //new channel to manipulate
+			tonew[newchannel] = to[k]; //assign value to new channel
+			//console.log(k + " " + to[k] + " " + startingchanels[i] + " " + newchannel)
+			//console.log(tonew)
+		}
+	}
+	this.add(tonew, duration, easing)
+	return this
+}
+
 Anim.prototype.delay = function(duration) {
 	return this.add({}, duration)
 }
