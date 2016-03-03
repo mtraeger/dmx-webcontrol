@@ -13,6 +13,10 @@ var universe = dmx.addUniverse('demo', 'art-net')
 universe.update({0:255}) //TODO setting chanel 1 (dimmer of flat-par) to 255 in beginning
 //TODO attention: chanels starting at 0 !!!
 
+// ###################################################################################
+// ## All examples for a single LED par on chanel 1 with dim,r,g,b (4 channel mode) ##
+// ###################################################################################
+
 function done() {console.log('DONE')}
 
 function green_water(universe, channels, duration) {
@@ -57,13 +61,19 @@ var anim = new A()
 	.add({1: 0, 2:0, 3:0}, 2000, 'outBounce')
 	.add({1: 255, 2:255, 3:255}, 3000, 'inOutCubic')
 	.delay(1000)
-	.add({2:0, 3:150}, 3000, 'inOutSine')
+	.add({2:0, 3:150}, 3000, 'inOutQuint')
+	.delay(5000)
+	.add({1: 0, 2:0, 3:0}, 2000, 'outCirc')
+	.delay(500)
+	.add({1:180}, 3000, 'outElastic') //ease elastic not to full value! it overfills the goal! e.g. max 180
+	.delay(1000)
+	.add({1:70}, 3000, 'inOutBack')
 
 
-
+//uncomment a (single) line for an example
 anim.run(universe, done)
-//warp(universe, 2, 10, 220, 360)
-//green_water(universe, [2], 4000)
+//warp(universe, 1, 10, 220, 360)
+//green_water(universe, [1], 4000)
 
 
 
@@ -98,6 +108,7 @@ var x = new A()
 var y = new A()
 	.add({1: 255}, 10000)
 
+//uncomment for more example runs
 //x.run(universe, done)
 //y.run(universe, done)
 

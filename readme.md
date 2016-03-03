@@ -112,6 +112,7 @@ Create a new DMX Animation instance. This can be chained similar to jQuery.
 
 Add an animation Step.
 The <code>easing</code> String has a value which allows to set a easing function from the following list:
+Cheatsheet: http://easings.net (be careful: use the writing from this list)
 
 - linear (default)
 - inQuad
