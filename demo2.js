@@ -78,7 +78,7 @@ var anim = new A()
 
 //animation with two devices
 var doubleAnim = new A().add({0: 255, 8:255}) //initialize dimmer channel
-	.addMultipleDevs({1: 255, 2:200}, 2000, [1,9])
+	.addMultipleDevs({1: 255, 2:200}, 2000, [1,9]) //use devices on chanel 1 and 9 (here IDs 0 and 8) (see init line above)
 	.add({1: 0}, 2000)
 	//.delay(3000)
 	//.add({1: 255, 2: 110, 3: 10}, 1200)
