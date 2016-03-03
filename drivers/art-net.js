@@ -19,7 +19,7 @@ ArtNet.prototype.start = function () {
     var self = this
     self.timeout = setInterval(function () {
         console.log(self.universe)
-    }, 1000)
+    }, 2000)
 }
 
 ArtNet.prototype.stop = function () {
@@ -27,8 +27,11 @@ ArtNet.prototype.stop = function () {
 }
 
 ArtNet.prototype.close = function (cb) {
+    cb = cb || function () {
+        };
     artnet.close()
-    cb(null)
+    console.log("######### closing art-net ##########")
+    cb();
 }
 
 ArtNet.prototype.update = function (u) {
@@ -38,7 +41,7 @@ ArtNet.prototype.update = function (u) {
         artnet.set(setC,this.universe[c])
         //console.log("updateSingle c=" + c + " u[c]="+u[c]+" setC="+setC)
     }
-    console.log(this.universe)
+    //console.log(this.universe)
 }
 
 ArtNet.prototype.updateAll = function (v) {
