@@ -97,9 +97,6 @@ function DMXWeb() {
 		}
 	})
 
-	var fading = 0;
-	var fadingease = 'linear';
-
 	io.sockets.on('connection', function(socket) {
 		socket.emit('init', {'devices': DMX.devices, 'setup': config})
 
@@ -131,6 +128,9 @@ function DMXWeb() {
 				//TODO update fading time on change for animations (only if anim.fadingtime = oldfadingtime)
 			}
 		});
+
+		var fading = 0;
+		var fadingease = 'linear';
 
 		socket.on('fading', function(duration, ease) {
 			fading = duration*100 || 0;
