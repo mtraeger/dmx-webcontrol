@@ -85,7 +85,7 @@ function DMXWeb() {
 				animation.add(
 					req.body[step].to,
 					req.body[step].duration || 0,
-					req.body[step].options  || {}
+					req.body[step].options  || {} //TODO update or bring back original options in anim.js add()
 				)
 			}
 			animation.add(old, 0)
@@ -112,13 +112,18 @@ function DMXWeb() {
 
 		socket.on('update', function(universe, update) {
 			if (fading == 0) {
+				//noFading: normal update
 				dmx.update(universe, update);
 			} else {
 				var fade = new A();
 				fade.add(update,fading, fadingease);
 				fade.run(dmx.universes[universe], function() {
-					socket.emit('update', universe, update); //TODO this is dirty
+					//onFinish
+					//socket.emit('update', universe, update); //TODO this is dirty
 					//TODO real values all the time
+				}, function(newvals) {
+					//onUpdate
+					socket.emit('update', universe, newvals)
 				});
 				//TODO update fading time on change for animations (only if anim.fadingtime = oldfadingtime)
 			}

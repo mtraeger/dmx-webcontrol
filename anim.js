@@ -9,6 +9,9 @@ function Anim() {
 	this.fx_stack = []
 }
 
+/**
+ * Abort all animations (while 500ms in update)
+ */
 Anim.abortAnimations = function(){
 	console.log("Aborting all animations");
 	Anim.abort = true;
@@ -17,6 +20,14 @@ Anim.abortAnimations = function(){
 	}, 500);
 }
 
+/**
+ * add animations step
+ *
+ * @param to channels to update e.g. {1: 255, 2:200} starting at 0!
+ * @param duration of step e.g. 2000 for 2 sec
+ * @param easing function e.g. linear (default) or inOutCubic or outBounce from easings.js
+ * @returns {Anim}
+ */
 Anim.prototype.add = function(to, duration, easing) {
 	var duration = duration || resolution
 	var easing = easing || 'linear'
@@ -24,7 +35,19 @@ Anim.prototype.add = function(to, duration, easing) {
 	return this
 }
 
-//add relative chanels for multiple devices e.g. .addMultipleDevs({1: 255, 2:200}, 2000, [1,9]) -> channels 1,2,9,10 updated
+//TODO bring back original options param?
+
+/**
+ * add relative chanels for multiple devices
+ * e.g. .addMultipleDevs({1: 255, 2:200}, 2000, [1,9]) -> channels 1,2,9,10 updated
+ *
+ * @param to channels to update e.g. {1: 255, 2:200} starting at 0!
+ * @param duration of step e.g. 2000 for 2 sec
+ * @param startingchanels array with initial channels for starting e.g. [1,9]
+ *            second value -1 is added to channels in to and also executed
+ * @param easing function e.g. linear (default) or inOutCubic or outBounce from easings.js
+ * @returns {Anim}
+ */
 Anim.prototype.addMultipleDevs = function (to, duration, startingchanels, easing) {
 	var tonew = {}; //new to field value
 	for (var i in startingchanels) {
@@ -43,7 +66,13 @@ Anim.prototype.delay = function(duration) {
 	return this.add({}, duration)
 }
 
-Anim.prototype.run = function(universe, onFinish) {
+/** starts animation
+ *
+ * @param universe
+ * @param onFinish callbac called nearly on end (if want garuanteed on end, call .delay(msec) before )
+ * @param onUpdate callback called on every value update, argument are the new values
+ */
+Anim.prototype.run = function(universe, onFinish, onUpdate) {
 	var config = {}
 	var t = 0
 	var d = 0
@@ -75,6 +104,9 @@ Anim.prototype.run = function(universe, onFinish) {
 		}
 		t = t + resolution
 		universe.update(new_vals)
+
+		if(onUpdate) onUpdate(new_vals);
+
 		if(t > d) {
 			if(fx_stack.length > 0) {
 				ani_setup()
