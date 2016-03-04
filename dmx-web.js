@@ -97,6 +97,9 @@ function DMXWeb() {
 		}
 	})
 
+	var fading = 0;
+	var fadingease = 'linear';
+
 	io.sockets.on('connection', function(socket) {
 		socket.emit('init', {'devices': DMX.devices, 'setup': config})
 
@@ -129,12 +132,11 @@ function DMXWeb() {
 			}
 		});
 
-		var fading = 0;
-		var fadingease = 'linear';
 		socket.on('fading', function(duration, ease) {
 			fading = duration*100 || 0;
 			fadingease = ease || 'linear';
 			//console.log(fading);
+			socket.emit('fade', duration, fadingease);
 		});
 
 		socket.on('blackout', function(universe) {

@@ -94,7 +94,7 @@
             $(html2).hide().appendTo('#scripts').fadeIn();
             var fader = $('<input id="fade" type="range" orient="vertical" min="0" value="0" max="100">');
             fader.hide().appendTo('#fadecontainer').fadeIn();
-            fader.click(function (e) {
+            fader.on("change", function (e) {
                 socket.emit('fading', e.target.value);
             })
 
@@ -137,7 +137,10 @@
             for (var k in update) {
                 $('#' + get_html_id(universe, k)).attr('value', update[k]);
             }
-
+        });
+        socket.on('fade', function (duration, ease) {
+            $('#fade').attr('value', duration);
+            //TODO update ease effect
         });
     </script>
 </head>

@@ -17,7 +17,7 @@ Anim.abortAnimations = function(){
 	Anim.abort = true;
 	setTimeout(function() {
 		Anim.abort = false;
-	}, 500);
+	}, 200);
 }
 
 /**
