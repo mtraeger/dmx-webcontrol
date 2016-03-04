@@ -125,8 +125,9 @@ function DMXWeb() {
 					socket.emit('update', universe, newvals)
 					//TODO live values?
 				});
-				//TODO update fading time on change for animations (only if anim.fadingtime = oldfadingtime)
+				//TODO update fading time on change of fading tame for animations (only if anim.fadingtime = oldfadingtime)
 				//TODO datastructure for animations for every chanel with A
+				//TODO -> abort old animation on slider update and start new one (with relative values?)
 			}
 		});
 
