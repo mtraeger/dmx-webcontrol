@@ -111,8 +111,22 @@ function DMXWeb() {
 		})
 
 		socket.on('update', function(universe, update) {
-			dmx.update(universe, update)
-		})
+			if (fading == 0) {
+				dmx.update(universe, update);
+			} else {
+				var fade = new A();
+				fade.add(update,fading, fadingease);
+				fade.run(dmx.universes[universe]);
+			}
+		});
+
+		var fading = 0;
+		var fadingease = 'linear';
+		socket.on('fading', function(duration, ease) {
+			fading = duration*100 || 0;
+			fadingease = ease || 'linear';
+			//console.log(fading);
+		});
 
 		dmx.on('update', function(universe, update) {
 		    socket.emit('update', universe, update)
