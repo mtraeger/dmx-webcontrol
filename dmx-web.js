@@ -118,7 +118,9 @@ function DMXWeb() {
 				fade.add(update,fading, fadingease);
 				fade.run(dmx.universes[universe], function() {
 					socket.emit('update', universe, update); //TODO this is dirty
+					//TODO real values all the time
 				});
+				//TODO update fading time on change for animations (only if anim.fadingtime = oldfadingtime)
 			}
 		});
 
