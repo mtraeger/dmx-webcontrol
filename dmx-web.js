@@ -116,7 +116,9 @@ function DMXWeb() {
 			} else {
 				var fade = new A();
 				fade.add(update,fading, fadingease);
-				fade.run(dmx.universes[universe]);
+				fade.run(dmx.universes[universe], function() {
+					socket.emit('update', universe, update); //TODO this is dirty
+				});
 			}
 		});
 
