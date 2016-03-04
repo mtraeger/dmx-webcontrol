@@ -82,11 +82,7 @@
             blackout.hide().appendTo('#presets').fadeIn();
             blackout.click(function () {
                 for (var universe in setup.universes) {
-                    var u = {};
-                    for (var i = 0; i < 255; i++) {
-                        u[i] = 0;
-                    }
-                    socket.emit('update', universe, u);
+                    socket.emit('blackout', universe);
                 }
             });
 

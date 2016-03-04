@@ -130,6 +130,15 @@ function DMXWeb() {
 			//console.log(fading);
 		});
 
+		socket.on('blackout', function(universe) {
+			A.abortAnimations();
+			var u = {};
+			for (var i = 0; i < 255; i++) {
+				u[i] = 0;
+			}
+			dmx.update(universe, u);
+		});
+
 		dmx.on('update', function(universe, update) {
 		    socket.emit('update', universe, update)
 		})

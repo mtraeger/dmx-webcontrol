@@ -3,8 +3,18 @@
 var ease = require('./easing.js').ease
 var resolution = 25
 
+Anim.abort = false;
+
 function Anim() {
 	this.fx_stack = []
+}
+
+Anim.abortAnimations = function(){
+	console.log("Aborting all animations");
+	Anim.abort = true;
+	setTimeout(function() {
+		Anim.abort = false;
+	}, 500);
 }
 
 Anim.prototype.add = function(to, duration, easing) {
@@ -53,6 +63,12 @@ Anim.prototype.run = function(universe, onFinish) {
 		}
 	}
 	var ani_step = function() {
+		if(Anim.abort){
+			clearInterval(iid);
+			//if(onFinish) onFinish(); //TODO required?
+			return;
+		}
+
 		var new_vals = {}
 		for(var k in config) {
 			new_vals[k] = Math.round(config[k].start + ease[a.easing](t, 0, 1, d) * (config[k].end - config[k].start))
