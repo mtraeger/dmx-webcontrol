@@ -114,18 +114,19 @@ function DMXWeb() {
 			if (fading == 0) {
 				//noFading: normal update
 				dmx.update(universe, update);
+				//TODO live values -> on input? send absolute value on move? -> direct feedback -> addinional variable moving=true/False -> when true update drirect? problem: long time animation
 			} else {
 				var fade = new A();
 				fade.add(update,fading, fadingease);
 				fade.run(dmx.universes[universe], function() {
 					//onFinish
-					//socket.emit('update', universe, update); //TODO this is dirty
-					//TODO real values all the time
 				}, function(newvals) {
 					//onUpdate
 					socket.emit('update', universe, newvals)
+					//TODO live values?
 				});
 				//TODO update fading time on change for animations (only if anim.fadingtime = oldfadingtime)
+				//TODO datastructure for animations for every chanel with A
 			}
 		});
 
