@@ -128,6 +128,8 @@ function DMXWeb() {
 				//TODO update fading time on change of fading tame for animations (only if anim.fadingtime = oldfadingtime)
 				//TODO datastructure for animations for every chanel with A
 				//TODO -> abort old animation on slider update and start new one (with relative values?)
+
+				//TODO lightshow: list of presets and slider for switching-speed (select presets from list?)
 			}
 		});
 
