@@ -34,7 +34,7 @@ input[type=range].displayslider{
 #fade{
     -webkit-appearance: slider-horizontal;
     height: 60px;
-    width: 200px;
+    width: 300px;
     margin-bottom: 0em;
 }
 

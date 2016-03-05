@@ -123,7 +123,7 @@ function DMXWeb() {
 					u[i] = dmx.universes[universe].get(i)
 				}
 				socket.emit('update', universe, u)
-				socket.emit('fade', fading/100, fadingease);
+				socket.emit('fade', fading, fadingease);
 				socket.emit('blackout', blackout);
 			}
 		})
@@ -132,18 +132,24 @@ function DMXWeb() {
 			//console.log("Clicked: " + clicked);
 			if (fading == 0) {
 				//noFading: normal update
+				for (var channel in update) { //abort fading and continue with normal movement
+					if (fadingDelayer[universe][channel] instanceof Fader && !fadingDelayer[universe][channel].finished) {
+						fadingDelayer[universe][channel].abort();
+					}
+				}
+
 				dmx.update(universe, update);
 			} else {
 				for (var channel in update) { //single animation for each channel
 
 					var fadingGoal = update[channel];
 
-					if (fadingDelayer[universe][channel] instanceof Fader && !fadingDelayer[universe][channel].finished) { //TODO set undefined afterwards
+					if (fadingDelayer[universe][channel] instanceof Fader && !fadingDelayer[universe][channel].finished) {
 						fadingDelayer[universe][channel].updateValue(fadingGoal); //TODO also update speed? separate method call? -> static
 
 					} else {
 						fadingDelayer[universe][channel] = new Fader(dmx.universes[universe], channel);
-						fadingDelayer[universe][channel].run(fadingGoal, fading / 100,
+						fadingDelayer[universe][channel].run(fadingGoal, fading,
 							function (finalvals) {
 								//onFinish
 								io.sockets.emit('update', universe, finalvals);
@@ -166,7 +172,7 @@ function DMXWeb() {
 			//		}
 			//		animations[universe][channel] = new A();
 			//		animations[universe][channel]
-			//			.add(singleUpdate, fading, fadingease)
+			//			.add(singleUpdate, fading*10, fadingease)
 			//			.run(dmx.universes[universe], function (finalvals) {
 			//				//onFinish
 			//				io.sockets.emit('update', universe, finalvals); //TODO dirty?
@@ -183,8 +189,8 @@ function DMXWeb() {
 			//}
 		});
 
-		socket.on('fading', function(duration, ease) {
-			fading = duration*100 || 0;
+		socket.on('fading', function(duration, ease) { //TODO logarithmic or similar? more detail on lower values
+			fading = duration || 0;
 			fadingease = ease || 'linear';
 			//console.log(fading);
 			io.sockets.emit('fade', duration, fadingease); //TODO dirty?

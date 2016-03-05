@@ -7,6 +7,7 @@ function Fader(universe, channel) {
 	this.channel = channel;
 	this.fadingGoal = 0;
 	this.finished = false;
+	this.aborted = false;
 }
 
 Fader.speed = 1;
@@ -14,6 +15,14 @@ Fader.speed = 1;
 Fader.prototype.updateSpeed = function(newspeed) {
 	Fader.speed = newspeed;
 };
+
+/**
+ * Abort this single animation
+ */
+Fader.prototype.abort = function () {
+	//console.log("Aborting single animation");
+	this.aborted = true;
+}
 
 Fader.prototype.updateValue = function(fadingGoal) {
 	this.fadingGoal = fadingGoal;
@@ -27,7 +36,7 @@ Fader.prototype.run = function(fadingGoal, speed, onFinish, onUpdate) {
 	var singleStep = function () {
 		var currentValue = self.universe.get(self.channel);
 
-		if (currentValue == self.fadingGoal) {//finished
+		if (currentValue == self.fadingGoal || self.aborted) {//finished
 			clearInterval(iid);
 			self.finished = true;
 
@@ -49,7 +58,9 @@ Fader.prototype.run = function(fadingGoal, speed, onFinish, onUpdate) {
 		}
 	};
 
-	var iid = setInterval(singleStep, Fader.speed); //TODO speed from local var?
+	//TODO no special transformation or to choose?
+	var iid = setInterval(singleStep, 1+Math.pow(Fader.speed,2)/200); //TODO speed from local var?
+	//console.log(1+Math.pow(Fader.speed,2)/200)
 };
 
 module.exports = Fader
