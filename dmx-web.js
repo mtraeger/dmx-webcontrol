@@ -72,6 +72,9 @@ function DMXWeb() {
 	app.get('/css/slider.css', function(req, res) {
 		res.sendfile(__dirname + '/css/slider.css')
 	})
+	app.get('/css/style.css', function(req, res) {
+		res.sendfile(__dirname + '/css/style.css')
+	})
 
 	app.post('/animation/:universe', function(req, res) {
 		try {
