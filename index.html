@@ -58,7 +58,7 @@
             $(html2).hide().appendTo('#sliders').fadeIn();
             var fader = $('<input id="fade" type="range" orient="horizontal" min="0" value="0" max="300">');
             fader.hide().appendTo('#fadecontainer').fadeIn();
-            fader.on("change", function (e) {
+            fader.on("input", function (e) {
                 socket.emit('fading', e.target.value);
             });
 

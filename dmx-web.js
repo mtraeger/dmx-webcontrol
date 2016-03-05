@@ -189,11 +189,18 @@ function DMXWeb() {
 			//}
 		});
 
-		socket.on('fading', function(duration, ease) { //TODO logarithmic or similar? more detail on lower values
+		socket.on('fading', function(duration, ease) {
 			fading = duration || 0;
 			fadingease = ease || 'linear';
 			//console.log(fading);
-			io.sockets.emit('fade', duration, fadingease); //TODO dirty?
+			io.sockets.emit('fade', duration, fadingease);
+			for (var universe in fadingDelayer) {
+				for (var channel in fadingDelayer[universe]) {
+					if (fadingDelayer[universe][channel] instanceof Fader && !fadingDelayer[universe][channel].finished) {
+						fadingDelayer[universe][channel].updateSpeed(duration);
+					}
+				}
+			}
 		});
 
 		socket.on('blackout', function(universe) {
