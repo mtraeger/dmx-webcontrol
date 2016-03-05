@@ -131,17 +131,19 @@ function DMXWeb() {
 				//ignore realtime events
 			}else {
 				for (var channel in update) { //single animation for each channel
-					channel = parseInt(channel);
+
+					var singleUpdate = {}; //creating new object with one single channel target value
+					singleUpdate[channel] = update[channel];
+
 					if(animations[universe][channel] instanceof A){
 						animations[universe][channel].abort(); //abort old still running animation on same channel
 					}
-					//TODO fix not aborting bug when starting preset and then adjust slider
 					animations[universe][channel] = new A();
 					animations[universe][channel]
-						.add(update, fading, fadingease)
-						.run(dmx.universes[universe], function () {
+						.add(singleUpdate, fading, fadingease)
+						.run(dmx.universes[universe], function (finalvals) {
 							//onFinish
-							io.sockets.emit('update', universe, update); //TODO dirty?
+							io.sockets.emit('update', universe, finalvals); //TODO dirty?
 						}, function (newvals) {
 							//onUpdate
 							io.sockets.emit('displayslider', universe, newvals)

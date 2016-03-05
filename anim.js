@@ -79,6 +79,7 @@ Anim.prototype.delay = function(duration) {
  *
  * @param universe
  * @param onFinish callbac called nearly on end (if want garuanteed on end, call .delay(msec) before )
+ *                    with argument final-value (not called if aborted)
  * @param onUpdate callback called on every value update, argument are the new values
  */
 Anim.prototype.run = function(universe, onFinish, onUpdate) {
@@ -122,7 +123,7 @@ Anim.prototype.run = function(universe, onFinish, onUpdate) {
 				ani_setup()
 			} else {
 				clearInterval(iid)
-				if(onFinish) onFinish()
+				if(onFinish) onFinish(a.to);
 			}
 		}
 	}
