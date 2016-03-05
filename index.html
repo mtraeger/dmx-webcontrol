@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <link href="./css/bootstrap-combined.min.css" rel="stylesheet">
+    <link href="./css/slider.css" rel="stylesheet">
     <style>
         body {
             background: #222;
@@ -29,6 +30,15 @@
             color: #fff;
             position: absolute;
             margin-bottom: 2em;
+        }
+
+        input[type=range].displayslider{
+            width: 10px;
+            background-color: transparent;
+            margin-right: 1em;
+            margin-left: -0.9em;
+            opacity: 0.3;
+            pointer-events:none;
         }
 
         .device {
@@ -102,7 +112,7 @@
             //TODO start custom scripts
 
 
-            //TODO buttons for config channel
+            //TODO buttons for config channel or input[type=range] datalist
             /* sliders */
             for (var universe in setup.universes) {
                 var html = "<div><h1>" + universe + "</h1>";
@@ -115,6 +125,7 @@
                         html += '<div class="channel">'
                         html += '<label for="' + html_id + '">' + devices[dev.type].channels[channel] + '</label>';
                         html += '<input  id="' + html_id + '" type="range" orient="vertical" min="0" value="0" max="255">'
+                        html += '<input  id="' + html_id + '_display" class="displayslider" disabled type="range" orient="vertical" min="0" value="0" max="255">'
                         html += '</div>'
                     }
                     html += '</div>'
@@ -136,6 +147,12 @@
         socket.on('update', function (universe, update) {
             for (var k in update) {
                 $('#' + get_html_id(universe, k)).attr('value', update[k]);
+                $('#' + get_html_id(universe, k)+'_display').attr('value', update[k]);
+            }
+        });
+        socket.on('displayslider', function (universe, update) {
+            for (var k in update) {
+                $('#' + get_html_id(universe, k)+'_display').attr('value', update[k]);
             }
         });
         socket.on('fade', function (duration, ease) {

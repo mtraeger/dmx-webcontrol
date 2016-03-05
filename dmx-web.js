@@ -69,6 +69,9 @@ function DMXWeb() {
 	app.get('/js/bootstrap.min.js', function(req, res) {
 		res.sendfile(__dirname + '/js/bootstrap.min.js')
 	})
+	app.get('/css/slider.css', function(req, res) {
+		res.sendfile(__dirname + '/css/slider.css')
+	})
 
 	app.post('/animation/:universe', function(req, res) {
 		try {
@@ -120,10 +123,10 @@ function DMXWeb() {
 				fade.add(update,fading, fadingease);
 				fade.run(dmx.universes[universe], function() {
 					//onFinish
+					io.sockets.emit('update', universe, update); //TODO dirty?
 				}, function(newvals) {
 					//onUpdate
-					socket.emit('update', universe, newvals)
-					//TODO live values?
+					socket.emit('displayslider', universe, newvals)
 				});
 				//TODO update fading time on change of fading tame for animations (only if anim.fadingtime = oldfadingtime)
 				//TODO datastructure for animations for every chanel with A
