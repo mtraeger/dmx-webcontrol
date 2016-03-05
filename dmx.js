@@ -38,4 +38,9 @@ DMX.prototype.updateAll = function(universe, value) {
   this.emit('updateAll', universe, value)
 }
 
+DMX.prototype.toggleBlackout = function(universe) {
+	var blackout = this.universes[universe].toggleBlackout();
+	this.emit('blackout', blackout);
+}
+
 module.exports = DMX

@@ -12,6 +12,7 @@ function ArtNet(device_id, cb) {
         }
     this.universe = new Buffer(512)
     this.universe.fill(0)
+    this.blackout = false;
     self.start()
 }
 
@@ -39,21 +40,38 @@ ArtNet.prototype.update = function (u) {
     for (var c in u) {
         this.universe[c] = u[c]
         var setC = parseInt(c) + 1
-        artnet.set(setC,this.universe[c])
+        if (this.blackout == false) {
+            artnet.set(setC, this.universe[c])
+        }
         //console.log("updateSingle c=" + c + " u[c]="+u[c]+" setC="+setC)
     }
     //console.log(this.universe)
 }
 
-ArtNet.prototype.updateAll = function (v) {
+ArtNet.prototype.updateAll = function (v, overrideBlackout) {
     for (var i = 0; i < 512; i++) {
-        this.universe[i] = v
+        if (v != null) {
+            this.universe[i] = v;
+        }
         var setC = parseInt(i) + 1
-        artnet.set(setC,v) //TODO maybe also this.universe[i] instead of v ?
-        //console.log("FAIL")
-        //TODO correct?
+        if (this.blackout == false || overrideBlackout == true) {
+            artnet.set(setC, this.universe[i])
+        }
     }
 }
+
+ArtNet.prototype.toggleBlackout = function () {
+    if (this.blackout == false) {
+        this.blackout = true;
+        for (var i = 1; i <= 512; i++) {
+            artnet.set(i, 0);//set all channels to 0
+        }
+    } else {
+        this.updateAll(null, true);
+        this.blackout = false;
+    }
+    return this.blackout.valueOf();
+};
 
 ArtNet.prototype.get = function (c) {
     return this.universe[c]

@@ -14,6 +14,7 @@ function EnttecUSBDMXPRO(device_id, cb) {
 	cb = cb || function() {}
 	this.universe = new Buffer(512)
 	this.universe.fill(0)
+	this.blackout = false;
 	
 	this.dev = new FTDI.FtdiDevice(device_id)
 	this.dev.open({
@@ -28,8 +29,14 @@ function EnttecUSBDMXPRO(device_id, cb) {
 		}
 	})
 }
+/**
+ *
+ * @param customuniverse must not be set, can be used to send 0 out of order for blackout
+ */
+EnttecUSBDMXPRO.prototype.send_universe = function(customuniverse) {
 
-EnttecUSBDMXPRO.prototype.send_universe = function() {
+	var sendUniverse = customuniverse || this.universe; //TODO not tested
+
 	var hdr = Buffer([
 		ENTTEC_PRO_START_OF_MSG,
 		ENTTEC_PRO_SEND_DMX_RQ,
@@ -40,7 +47,7 @@ EnttecUSBDMXPRO.prototype.send_universe = function() {
 
 	var msg = Buffer.concat([
 		hdr,
-		this.universe,
+		sendUniverse,
 		Buffer([ENTTEC_PRO_END_OF_MSG])
 	])
 	this.dev.write(msg)
@@ -57,14 +64,32 @@ EnttecUSBDMXPRO.prototype.update = function(u) {
 	for(var c in u) {
 		this.universe[c] = u[c]
 	}
-	this.send_universe()
+	if (this.blackout == false) { //send "data" only if no blackout
+		this.send_universe()
+	}
 }
 
 EnttecUSBDMXPRO.prototype.updateAll = function(v){
 	for(var i = 0; i < 512; i++) {
 		this.universe[i] = v
 	}
+	if (this.blackout == false) { //send "data" only if no blackout
+		this.send_universe(); //TODO added by me, missed before?
+	}
 }
+
+EnttecUSBDMXPRO.prototype.toggleBlackout = function () { //TODO not tested
+	if (this.blackout == false) {
+		this.blackout = true;
+		var nulluniverse = new Buffer(512)
+		nulluniverse.fill(0)
+		this.send_universe(nulluniverse); //send 0 to all channels
+	} else {
+		this.send_universe(); //send this,universe data complete again
+		this.blackout = false;
+	}
+	return this.blackout.valueOf();
+};
 
 EnttecUSBDMXPRO.prototype.get = function(c) {
 	return this.universe[c]

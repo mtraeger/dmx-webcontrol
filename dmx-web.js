@@ -164,15 +164,15 @@ function DMXWeb() {
 			io.sockets.emit('fade', duration, fadingease); //TODO dirty?
 		});
 
-		//TODO real blackout? - store old values before backup and then restore
 		socket.on('blackout', function(universe) {
-			A.abortAnimations();
-			var u = {};
-			for (var i = 0; i < 255; i++) {
-				u[i] = 0;
-			}
-			dmx.update(universe, u);
+			//A.abortAnimations();
+			dmx.toggleBlackout(universe);
 		});
+
+		dmx.on('blackout', function (blackout) {
+			//TODO send blackout state to button pressed
+			console.log("Blackout " + blackout);
+		})
 
 		dmx.on('update', function(universe, update) {
 		    socket.emit('update', universe, update)

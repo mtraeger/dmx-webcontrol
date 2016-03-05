@@ -8,6 +8,7 @@ function EnttecOpenUsbDMX(device_id, cb) {
 	cb = cb || function() {}
 	this.universe = new Buffer(512)
 	this.universe.fill(0)
+	this.blackout = false;
 
 	self.sleepTime = 24
 	self.timeout
@@ -27,7 +28,9 @@ function EnttecOpenUsbDMX(device_id, cb) {
 }
 
 EnttecOpenUsbDMX.prototype.send_universe = function() {
-	this.dev.write(this.universe)
+	if (this.blackout == false) { //send "data" only if no blackout
+		this.dev.write(this.universe)
+	}
 }
 
 EnttecOpenUsbDMX.prototype.start = function() {
@@ -54,6 +57,19 @@ EnttecOpenUsbDMX.prototype.updateAll = function(v) {
 		this.universe[i] = v
 	}
 }
+
+EnttecOpenUsbDMX.prototype.toggleBlackout = function () { //TODO not tested
+	if (this.blackout == false) {
+		this.blackout = true;
+		var nulluniverse = new Buffer(512)
+		nulluniverse.fill(0)
+		this.dev.write(nulluniverse); //send 0 to all channels
+	} else {
+		this.dev.write(this.universe) //send this,universe data complete again
+		this.blackout = false;
+	}
+	return this.blackout.valueOf();
+};
 
 EnttecOpenUsbDMX.prototype.get = function(c) {
 	return this.universe[c]
