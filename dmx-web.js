@@ -116,6 +116,7 @@ function DMXWeb() {
 					u[i] = dmx.universes[universe].get(i)
 				}
 				socket.emit('update', universe, u)
+				socket.emit('fade', fading/100, fadingease);
 			}
 		})
 
