@@ -44,3 +44,11 @@ input[type=range].displayslider{
 .btn {
     margin-bottom: 1em;
 }
+
+#blackout {
+    transition: color 200ms ease;
+}
+
+#blackout.blink{
+    color:transparent;
+}

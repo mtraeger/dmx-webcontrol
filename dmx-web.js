@@ -108,6 +108,7 @@ function DMXWeb() {
 
 	var fading = 0;
 	var fadingease = 'linear';
+	var blackout = false;
 
 	io.sockets.on('connection', function(socket) {
 		socket.emit('init', {'devices': DMX.devices, 'setup': config})
@@ -120,6 +121,7 @@ function DMXWeb() {
 				}
 				socket.emit('update', universe, u)
 				socket.emit('fade', fading/100, fadingease);
+				socket.emit('blackout', blackout);
 			}
 		})
 
@@ -169,9 +171,9 @@ function DMXWeb() {
 			dmx.toggleBlackout(universe);
 		});
 
-		dmx.on('blackout', function (blackout) {
-			//TODO send blackout state to button pressed
-			console.log("Blackout " + blackout);
+		dmx.on('blackout', function (bout) {
+			socket.emit('blackout', bout);
+			blackout = bout;
 		})
 
 		dmx.on('update', function(universe, update) {

@@ -42,7 +42,7 @@
             }
 
             /* blackout button */
-            var blackout = $('<button class="span2 btn btn-danger">Black Out</button>');
+            var blackout = $('<button id="blackout" class="span2 btn btn-danger">Black Out</button>');
             blackout.hide().appendTo('#presets').fadeIn();
             blackout.click(function () {
                 for (var universe in setup.universes) {
@@ -115,6 +115,19 @@
         socket.on('displayslider', function (universe, update) {
             for (var k in update) {
                 $('#' + get_html_id(universe, k)+'_display').attr('value', update[k]);
+            }
+        });
+        var blackoutBlinker;
+        socket.on('blackout', function (blackout) {
+            if(blackout) {
+                $('#blackout').addClass('active');
+                blackoutBlinker = window.setInterval(function(){
+                    $('#blackout').toggleClass('blink');
+                }, 500);
+            }else {
+                window.clearInterval(blackoutBlinker);
+                $('#blackout').removeClass('active');
+                $('#blackout').removeClass('blink');
             }
         });
         socket.on('fade', function (duration, ease) {
