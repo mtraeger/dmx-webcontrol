@@ -39,8 +39,8 @@ ArtNet.prototype.close = function (cb) {
 ArtNet.prototype.update = function (u) {
     for (var c in u) {
         this.universe[c] = u[c]
-        var setC = parseInt(c) + 1
         if (this.blackout == false) {
+            var setC = parseInt(c) + 1
             artnet.set(setC, this.universe[c])
         }
         //console.log("updateSingle c=" + c + " u[c]="+u[c]+" setC="+setC)
@@ -48,13 +48,11 @@ ArtNet.prototype.update = function (u) {
     //console.log(this.universe)
 }
 
-ArtNet.prototype.updateAll = function (v, overrideBlackout) {
+ArtNet.prototype.updateAll = function (v) {
     for (var i = 0; i < 512; i++) {
-        if (v != null) {
-            this.universe[i] = v;
-        }
-        var setC = parseInt(i) + 1
-        if (this.blackout == false || overrideBlackout == true) {
+        this.universe[i] = v;
+        if (this.blackout == false) {
+            var setC = parseInt(i) + 1
             artnet.set(setC, this.universe[i])
         }
     }
@@ -67,7 +65,10 @@ ArtNet.prototype.toggleBlackout = function () {
             artnet.set(i, 0);//set all channels to 0
         }
     } else {
-        this.updateAll(null, true);
+        for (var i = 0; i < 512; i++) {
+            var setC = parseInt(i) + 1;
+            artnet.set(setC, this.universe[i]); //set back to original value
+        }
         this.blackout = false;
     }
     return this.blackout.valueOf();
