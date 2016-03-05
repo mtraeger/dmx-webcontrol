@@ -88,16 +88,24 @@
                 $(html).hide().appendTo('#sliders').fadeIn();
             }
             $("input").live("change", function (e) {
-//                console.log(e.target.parentNode.parentNode.parentNode.parentNode.id);
-                if (e.target.parentNode.parentNode.parentNode.parentNode.id == "sliders") {
-                    var i = e.target.id.split('_');
-                    var u = {};
-                    u[i[2]] = e.target.value;
-                    socket.emit('update', i[1], u);
-                }
+                updateDmx(e, false);
+            });
+            $("input").live("input", function (e) {
+                updateDmx(e, true);
             });
             socket.emit('request_refresh');
         });
+
+        function updateDmx(e, realtime) {
+            console.log(e.target.parentNode.parentNode.parentNode.parentNode.id);
+            if (e.target.parentNode.parentNode.parentNode.parentNode.id == "sliders") {
+                var i = e.target.id.split('_');
+                var u = {};
+                u[i[2]] = e.target.value;
+                socket.emit('update', i[1], u, realtime);
+            }
+        }
+
         socket.on('update', function (universe, update) {
             for (var k in update) {
                 $('#' + get_html_id(universe, k)).attr('value', update[k]);

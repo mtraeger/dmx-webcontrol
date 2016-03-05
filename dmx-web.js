@@ -119,12 +119,13 @@ function DMXWeb() {
 			}
 		})
 
-		socket.on('update', function(universe, update) {
+		socket.on('update', function(universe, update, realtime) {
 			if (fading == 0) {
 				//noFading: normal update
 				dmx.update(universe, update);
-				//TODO live values -> on input? send absolute value on move? -> direct feedback -> addinional variable moving=true/False -> when true update drirect? problem: long time animation
-			} else {
+			} else if(realtime) {
+				//ignore realtime events
+			}else {
 				var fade = new A();
 				fade.add(update,fading, fadingease);
 				fade.run(dmx.universes[universe], function() {
