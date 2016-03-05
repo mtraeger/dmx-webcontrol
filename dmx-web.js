@@ -103,6 +103,9 @@ function DMXWeb() {
 		}
 	})
 
+	var fading = 0;
+	var fadingease = 'linear';
+
 	io.sockets.on('connection', function(socket) {
 		socket.emit('init', {'devices': DMX.devices, 'setup': config})
 
@@ -129,7 +132,7 @@ function DMXWeb() {
 					io.sockets.emit('update', universe, update); //TODO dirty?
 				}, function(newvals) {
 					//onUpdate
-					socket.emit('displayslider', universe, newvals)
+					io.sockets.emit('displayslider', universe, newvals)
 				});
 				//TODO update fading time on change of fading tame for animations (only if anim.fadingtime = oldfadingtime)
 				//TODO datastructure for animations for every chanel with A
@@ -139,9 +142,6 @@ function DMXWeb() {
 			}
 		});
 
-		var fading = 0;
-		var fadingease = 'linear';
-
 		socket.on('fading', function(duration, ease) {
 			fading = duration*100 || 0;
 			fadingease = ease || 'linear';
@@ -149,6 +149,7 @@ function DMXWeb() {
 			io.sockets.emit('fade', duration, fadingease); //TODO dirty?
 		});
 
+		//TODO real blackout? - store old values before backup and then restore
 		socket.on('blackout', function(universe) {
 			A.abortAnimations();
 			var u = {};
