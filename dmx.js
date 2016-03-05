@@ -19,6 +19,7 @@ util.inherits(DMX, EventEmitter)
 
 DMX.devices   = require('./devices')
 DMX.Animation = require('./anim')
+DMX.Fader = require('./fader')
 
 DMX.prototype.registerDriver = function(name, module) {
 	this.drivers[name] = module

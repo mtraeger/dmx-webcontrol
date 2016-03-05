@@ -8,6 +8,7 @@ var socketio = require('socket.io')
 var program  = require('commander')
 var DMX      = require('./dmx')
 var A        = DMX.Animation
+var Fader    = DMX.Fader
 
 program
 	.version("0.0.1")
@@ -25,6 +26,7 @@ function DMXWeb() {
 	var dmx = new DMX()
 
 	var animations = [];
+	var fadingDelayer = [];
 
 	for(var universe in config.universes) {
 		dmx.addUniverse(
@@ -33,6 +35,7 @@ function DMXWeb() {
 			config.universes[universe].output.device
 		)
 		animations[universe] = [];
+		fadingDelayer[universe] = [];
 	}
 
 	var listen_port = config.server.listen_port || 8080
@@ -131,7 +134,81 @@ function DMXWeb() {
 				dmx.update(universe, update);
 			} else if(realtime) {
 				//ignore realtime events
-			}else {
+
+				for (var channel in update) { //single animation for each channel
+
+					var fadingGoal = update[channel];
+
+					if(fadingDelayer[universe][channel] instanceof Fader && !fadingDelayer[universe][channel].finished) { //TODO set undefined afterwards
+						fadingDelayer[universe][channel].updateValue(fadingGoal); //TODO also update speed? separate method call? -> static
+
+					}else{
+						fadingDelayer[universe][channel] = new Fader(dmx.universes[universe], channel);
+						fadingDelayer[universe][channel].run(fadingGoal, fading/100);
+
+						//	setInterval(singleStep(universe, channel, update[channel], function(universe, channel) {
+						//	clearInterval(fadingInterval[universe][channel]);
+						//	fadingInterval[universe][channel] = null;
+						//}), fading / 100);
+					}
+
+				//	var singleStep = function(universe, channel, fadingGoal, finishFading) {
+				//		var currentValue = dmx.universes[universe].get(channel);
+				//		if(currentValue == fadingGoal){
+				//			//finished
+				//			finishFading(universe,channel);
+                //
+				//			//if(onFinish) onFinish(...singleUpdate-format..); //TODO ?
+				//		}else{
+				//			var newvalue = currentValue;
+				//			if(currentValue < fadingGoal){
+				//				newvalue++;
+				//			}else{ //current bigger
+				//				newvalue--;
+				//			}
+				//			var singleUpdate = {}; //creating new object with one single channel target value
+				//			singleUpdate[channel] = newvalue;
+				//			dmx.update(universe, singleUpdate);
+				//		}
+                //
+				//	}
+                //
+				//	if(fadingInterval[universe][channel] instanceof Number) { //TODO set undefined afterwards
+				//		fadingInterval[universe][channel] = setInterval(singleStep(universe, channel, update[channel], function(universe, channel) {
+				//			clearInterval(fadingInterval[universe][channel]);
+				//			fadingInterval[universe][channel] = null;
+				//		}), fading / 100);
+				//	}else{
+				//		clearInterval(fadingInterval[universe][channel]);
+				//		fadingInterval[universe][channel] = setInterval(singleStep(universe, channel, update[channel], function(universe, channel) {
+				//			clearInterval(fadingInterval[universe][channel]);
+				//			fadingInterval[universe][channel] = null;
+				//		}), fading / 100);
+				//	}
+                //
+                //
+				//	//setTimeout(function() {
+				//	//	dmx.update(universe, update);
+				//	//}, fading/100); //Delay //TODO rm /100
+                 //   //
+				//	//if(animations[universe][channel] instanceof A){
+				//	//	animations[universe][channel].abort(); //abort old still running animation on same channel
+				//	//}
+				//	//animations[universe][channel] = new A();
+				//	//animations[universe][channel]
+				//	//	.add(singleUpdate, fading, fadingease)
+				//	//	.run(dmx.universes[universe], function (finalvals) {
+				//	//		//onFinish
+				//	//		io.sockets.emit('update', universe, finalvals); //TODO dirty?
+				//	//	}, function (newvals) {
+				//	//		//onUpdate
+				//	//		io.sockets.emit('displayslider', universe, newvals)
+				//	//	});
+                //
+				}
+
+
+			}else if(false){
 				for (var channel in update) { //single animation for each channel
 
 					var singleUpdate = {}; //creating new object with one single channel target value
