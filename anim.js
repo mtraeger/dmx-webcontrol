@@ -6,7 +6,8 @@ var resolution = 25
 Anim.abort = false;
 
 function Anim() {
-	this.fx_stack = []
+	this.fx_stack = [];
+	this.aborted = false;
 }
 
 /**
@@ -18,6 +19,14 @@ Anim.abortAnimations = function(){
 	setTimeout(function() {
 		Anim.abort = false;
 	}, 200);
+}
+
+/**
+ * Abort this single animation
+ */
+Anim.prototype.abort = function () {
+	console.log("Aborting single animation");
+	this.aborted = true;
 }
 
 /**
@@ -79,6 +88,7 @@ Anim.prototype.run = function(universe, onFinish, onUpdate) {
 	var a
 
 	var fx_stack = this.fx_stack;
+	var self = this;
 	var ani_setup = function() {
 		a = fx_stack.shift()
 		t = 0
@@ -92,7 +102,7 @@ Anim.prototype.run = function(universe, onFinish, onUpdate) {
 		}
 	}
 	var ani_step = function() {
-		if(Anim.abort){
+		if(Anim.abort || self.aborted){
 			clearInterval(iid);
 			//if(onFinish) onFinish(); //TODO required?
 			return;

@@ -24,12 +24,15 @@ function DMXWeb() {
 
 	var dmx = new DMX()
 
+	var animations = [];
+
 	for(var universe in config.universes) {
 		dmx.addUniverse(
 			universe,
 			config.universes[universe].output.driver,
 			config.universes[universe].output.device
 		)
+		animations[universe] = [];
 	}
 
 	var listen_port = config.server.listen_port || 8080
@@ -127,20 +130,27 @@ function DMXWeb() {
 			} else if(realtime) {
 				//ignore realtime events
 			}else {
-				var fade = new A();
-				fade.add(update,fading, fadingease);
-				fade.run(dmx.universes[universe], function() {
-					//onFinish
-					io.sockets.emit('update', universe, update); //TODO dirty?
-				}, function(newvals) {
-					//onUpdate
-					io.sockets.emit('displayslider', universe, newvals)
-				});
-				//TODO update fading time on change of fading tame for animations (only if anim.fadingtime = oldfadingtime)
-				//TODO datastructure for animations for every chanel with A
-				//TODO -> abort old animation on slider update and start new one (with relative values?)
+				for (var channel in update) {
+					if(animations[universe][channel] instanceof A){
+						animations[universe][channel].abort();
+					}
+					animations[universe][channel] = new A();
+					animations[universe][channel]
+						.add(update, fading, fadingease)
+						.run(dmx.universes[universe], function () {
+							//onFinish
+							io.sockets.emit('update', universe, update); //TODO dirty?
+						}, function (newvals) {
+							//onUpdate
+							io.sockets.emit('displayslider', universe, newvals)
+						});
+					//TODO update fading time on change of fading tame for animations (only if anim.fadingtime = oldfadingtime)
+					//relative fade time: max 1sec per step /10 -> ~25 sek max -> max 1/10 sec per step
+					//TODO datastructure for animations for every chanel with A
+					//TODO -> abort old animation on slider update and start new one (with relative values?)
 
-				//TODO lightshow: list of presets and slider for switching-speed (select presets from list?)
+					//TODO lightshow: list of presets and slider for switching-speed (select presets from list?)
+				}
 			}
 		});
 
