@@ -132,7 +132,7 @@ function DMXWeb() {
 			}else {
 				for (var channel in update) {
 					if(animations[universe][channel] instanceof A){
-						animations[universe][channel].abort();
+						animations[universe][channel].abort(); //abort old still running animation on same channel
 					}
 					animations[universe][channel] = new A();
 					animations[universe][channel]
