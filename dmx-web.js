@@ -144,7 +144,14 @@ function DMXWeb() {
 
 					}else{
 						fadingDelayer[universe][channel] = new Fader(dmx.universes[universe], channel);
-						fadingDelayer[universe][channel].run(fadingGoal, fading/100);
+						fadingDelayer[universe][channel].run(fadingGoal, fading / 100,
+							function (finalvals) {
+								//onFinish
+								io.sockets.emit('update', universe, finalvals);
+							}, function (newvals) {
+								//onUpdate
+								io.sockets.emit('displayslider', universe, newvals)
+							});
 
 						//	setInterval(singleStep(universe, channel, update[channel], function(universe, channel) {
 						//	clearInterval(fadingInterval[universe][channel]);
