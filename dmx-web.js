@@ -146,7 +146,7 @@ function DMXWeb() {
 			fading = duration*100 || 0;
 			fadingease = ease || 'linear';
 			//console.log(fading);
-			socket.emit('fade', duration, fadingease);
+			io.sockets.emit('fade', duration, fadingease);
 		});
 
 		socket.on('blackout', function(universe) {
