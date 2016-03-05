@@ -150,8 +150,7 @@ function DMXWeb() {
 						});
 					//TODO update fading time on change of fading tame for animations (only if anim.fadingtime = oldfadingtime)
 					//relative fade time: max 1sec per step /10 -> ~25 sek max -> max 1/10 sec per step
-					//TODO datastructure for animations for every chanel with A
-					//TODO -> abort old animation on slider update and start new one (with relative values?)
+					//TODO -> relative value updates?
 
 					//TODO lightshow: list of presets and slider for switching-speed (select presets from list?)
 				}
