@@ -31,6 +31,13 @@ input[type=range].displayslider{
     pointer-events:none;
 }
 
+#fade{
+    -webkit-appearance: slider-horizontal;
+    height: 60px;
+    width: 200px;
+    margin-bottom: 0em;
+}
+
 .device {
     clear: both;
     padding-top: 1em;

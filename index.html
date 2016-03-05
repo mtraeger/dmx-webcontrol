@@ -51,17 +51,19 @@
             });
 
 
-            //Scripts
-            var html2 = "<div id='fadecontainer'><h1>Fade</h1>";
+            //Fading Time
+            var html2 = "<div id='fadecontainer'><h2>Fade</h2>";
             html2 += '<label for="fade">Fade duration</label>';
             html2 += "</div>";
-            $(html2).hide().appendTo('#scripts').fadeIn();
-            var fader = $('<input id="fade" type="range" orient="vertical" min="0" value="0" max="100">');
+            $(html2).hide().appendTo('#sliders').fadeIn();
+            var fader = $('<input id="fade" type="range" orient="horizontal" min="0" value="0" max="100">');
             fader.hide().appendTo('#fadecontainer').fadeIn();
             fader.on("change", function (e) {
                 socket.emit('fading', e.target.value);
             })
 
+
+            //TODO scripts
             //TODO select easing methods
             //TODO start custom scripts
 
@@ -97,8 +99,7 @@
         });
 
         function updateDmx(e, realtime) {
-            console.log(e.target.parentNode.parentNode.parentNode.parentNode.id);
-            if (e.target.parentNode.parentNode.parentNode.parentNode.id == "sliders") {
+            if (e.target.id != "fade") {
                 var i = e.target.id.split('_');
                 var u = {};
                 u[i[2]] = e.target.value;
