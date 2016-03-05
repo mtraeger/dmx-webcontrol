@@ -128,21 +128,20 @@ function DMXWeb() {
 			}
 		})
 
-		socket.on('update', function(universe, update, realtime) {
+		socket.on('update', function (universe, update, clicked) { //TODO use clicked for ease effects?
+			//console.log("Clicked: " + clicked);
 			if (fading == 0) {
 				//noFading: normal update
 				dmx.update(universe, update);
-			} else if(realtime) {
-				//ignore realtime events
-
+			} else {
 				for (var channel in update) { //single animation for each channel
 
 					var fadingGoal = update[channel];
 
-					if(fadingDelayer[universe][channel] instanceof Fader && !fadingDelayer[universe][channel].finished) { //TODO set undefined afterwards
+					if (fadingDelayer[universe][channel] instanceof Fader && !fadingDelayer[universe][channel].finished) { //TODO set undefined afterwards
 						fadingDelayer[universe][channel].updateValue(fadingGoal); //TODO also update speed? separate method call? -> static
 
-					}else{
+					} else {
 						fadingDelayer[universe][channel] = new Fader(dmx.universes[universe], channel);
 						fadingDelayer[universe][channel].run(fadingGoal, fading / 100,
 							function (finalvals) {
@@ -152,95 +151,36 @@ function DMXWeb() {
 								//onUpdate
 								io.sockets.emit('displayslider', universe, newvals)
 							});
-
-						//	setInterval(singleStep(universe, channel, update[channel], function(universe, channel) {
-						//	clearInterval(fadingInterval[universe][channel]);
-						//	fadingInterval[universe][channel] = null;
-						//}), fading / 100);
 					}
-
-				//	var singleStep = function(universe, channel, fadingGoal, finishFading) {
-				//		var currentValue = dmx.universes[universe].get(channel);
-				//		if(currentValue == fadingGoal){
-				//			//finished
-				//			finishFading(universe,channel);
-                //
-				//			//if(onFinish) onFinish(...singleUpdate-format..); //TODO ?
-				//		}else{
-				//			var newvalue = currentValue;
-				//			if(currentValue < fadingGoal){
-				//				newvalue++;
-				//			}else{ //current bigger
-				//				newvalue--;
-				//			}
-				//			var singleUpdate = {}; //creating new object with one single channel target value
-				//			singleUpdate[channel] = newvalue;
-				//			dmx.update(universe, singleUpdate);
-				//		}
-                //
-				//	}
-                //
-				//	if(fadingInterval[universe][channel] instanceof Number) { //TODO set undefined afterwards
-				//		fadingInterval[universe][channel] = setInterval(singleStep(universe, channel, update[channel], function(universe, channel) {
-				//			clearInterval(fadingInterval[universe][channel]);
-				//			fadingInterval[universe][channel] = null;
-				//		}), fading / 100);
-				//	}else{
-				//		clearInterval(fadingInterval[universe][channel]);
-				//		fadingInterval[universe][channel] = setInterval(singleStep(universe, channel, update[channel], function(universe, channel) {
-				//			clearInterval(fadingInterval[universe][channel]);
-				//			fadingInterval[universe][channel] = null;
-				//		}), fading / 100);
-				//	}
-                //
-                //
-				//	//setTimeout(function() {
-				//	//	dmx.update(universe, update);
-				//	//}, fading/100); //Delay //TODO rm /100
-                 //   //
-				//	//if(animations[universe][channel] instanceof A){
-				//	//	animations[universe][channel].abort(); //abort old still running animation on same channel
-				//	//}
-				//	//animations[universe][channel] = new A();
-				//	//animations[universe][channel]
-				//	//	.add(singleUpdate, fading, fadingease)
-				//	//	.run(dmx.universes[universe], function (finalvals) {
-				//	//		//onFinish
-				//	//		io.sockets.emit('update', universe, finalvals); //TODO dirty?
-				//	//	}, function (newvals) {
-				//	//		//onUpdate
-				//	//		io.sockets.emit('displayslider', universe, newvals)
-				//	//	});
-                //
-				}
-
-
-			}else if(false){
-				for (var channel in update) { //single animation for each channel
-
-					var singleUpdate = {}; //creating new object with one single channel target value
-					singleUpdate[channel] = update[channel];
-
-					if(animations[universe][channel] instanceof A){
-						animations[universe][channel].abort(); //abort old still running animation on same channel
-					}
-					animations[universe][channel] = new A();
-					animations[universe][channel]
-						.add(singleUpdate, fading, fadingease)
-						.run(dmx.universes[universe], function (finalvals) {
-							//onFinish
-							io.sockets.emit('update', universe, finalvals); //TODO dirty?
-						}, function (newvals) {
-							//onUpdate
-							io.sockets.emit('displayslider', universe, newvals)
-						});
-					//TODO update fading time on change of fading tame for animations (only if anim.fadingtime = oldfadingtime)
-					//relative fade time: max 1sec per step /10 -> ~25 sek max -> max 1/10 sec per step
-					//TODO -> relative value updates?
-
-					//TODO lightshow: list of presets and slider for switching-speed (select presets from list?)
 				}
 			}
+
+			//else if (false) {
+			//	for (var channel in update) { //single animation for each channel
+            //
+			//		var singleUpdate = {}; //creating new object with one single channel target value
+			//		singleUpdate[channel] = update[channel];
+            //
+			//		if(animations[universe][channel] instanceof A){
+			//			animations[universe][channel].abort(); //abort old still running animation on same channel
+			//		}
+			//		animations[universe][channel] = new A();
+			//		animations[universe][channel]
+			//			.add(singleUpdate, fading, fadingease)
+			//			.run(dmx.universes[universe], function (finalvals) {
+			//				//onFinish
+			//				io.sockets.emit('update', universe, finalvals); //TODO dirty?
+			//			}, function (newvals) {
+			//				//onUpdate
+			//				io.sockets.emit('displayslider', universe, newvals)
+			//			});
+			//		//TODO update fading time on change of fading tame for animations (only if anim.fadingtime = oldfadingtime)
+			//		//relative fade time: max 1sec per step /10 -> ~25 sek max -> max 1/10 sec per step
+			//		//TODO -> relative value updates?
+            //
+			//		//TODO lightshow: list of presets and slider for switching-speed (select presets from list?)
+			//	}
+			//}
 		});
 
 		socket.on('fading', function(duration, ease) {

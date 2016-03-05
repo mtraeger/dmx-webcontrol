@@ -90,20 +90,20 @@
                 $(html).hide().appendTo('#sliders').fadeIn();
             }
             $("input").live("change", function (e) {
-                updateDmx(e, false);
+                updateDmx(e, true);
             });
             $("input").live("input", function (e) {
-                updateDmx(e, true);
+                updateDmx(e, false);
             });
             socket.emit('request_refresh');
         });
 
-        function updateDmx(e, realtime) {
+        function updateDmx(e, clicked) { //TODO combine both calls again?
             if (e.target.id != "fade") {
                 var i = e.target.id.split('_');
                 var u = {};
                 u[i[2]] = e.target.value;
-                socket.emit('update', i[1], u, realtime);
+                socket.emit('update', i[1], u, clicked);
             }
         }
 
