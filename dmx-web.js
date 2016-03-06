@@ -175,19 +175,20 @@ function DMXWeb() {
 			//			.add(singleUpdate, fading*10, fadingease)
 			//			.run(dmx.universes[universe], function (finalvals) {
 			//				//onFinish
-			//				io.sockets.emit('update', universe, finalvals); //TODO dirty?
+			//				io.sockets.emit('update', universe, finalvals);
 			//			}, function (newvals) {
 			//				//onUpdate
 			//				io.sockets.emit('displayslider', universe, newvals)
 			//			});
-			//		//TODO update fading time on change of fading tame for animations (only if anim.fadingtime = oldfadingtime)
-			//		//relative fade time: max 1sec per step /10 -> ~25 sek max -> max 1/10 sec per step
-			//		//TODO -> relative value updates?
             //
-			//		//TODO lightshow: list of presets and slider for switching-speed (select presets from list?)
 			//	}
 			//}
 		});
+
+		//TODO lightshow: list of presets and slider for switching-speed (select presets from list?)
+		//TODO fade through presets -> switch presets and controll fade via fade fader -> fader for speed -> list to select which presets should be used
+		//TODO list with extended presets, not shown by default?
+		//TODO js file with references to animation and effect files -> read in and select (start / stop)
 
 		socket.on('fading', function(duration, ease) {
 			fading = duration || 0;
