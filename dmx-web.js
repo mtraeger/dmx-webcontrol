@@ -128,7 +128,7 @@ function DMXWeb() {
 			}
 		})
 
-		socket.on('update', function (universe, update, clicked) { //TODO use clicked for ease effects?
+		socket.on('update', function (universe, update, effect) { //TODO use clicked for ease effects?
 			//console.log("Clicked: " + clicked);
 			if (fading == 0) {
 				//noFading: normal update
@@ -139,10 +139,41 @@ function DMXWeb() {
 				}
 
 				dmx.update(universe, update);
+			}else if (effect) {
+				for (var channel in update) { //effect animation for each channel
+
+					var singleUpdate = {}; //creating new object with one single channel target value
+					singleUpdate[channel] = update[channel];
+
+					//abort fading movement type
+					if (fadingDelayer[universe][channel] instanceof Fader && !fadingDelayer[universe][channel].finished) {
+						fadingDelayer[universe][channel].abort();
+					}
+
+					if(animations[universe][channel] instanceof A && !animations[universe][channel].aborted){
+						animations[universe][channel].abort(); //abort old still running animation on same channel
+					}
+					animations[universe][channel] = new A();
+					animations[universe][channel]
+						.add(singleUpdate, fading*100, fadingease) //TODO two different scales for fader?
+						.run(dmx.universes[universe], function (finalvals) {
+							//onFinish
+							io.sockets.emit('update', universe, finalvals);
+						}, function (newvals) {
+							//onUpdate
+							io.sockets.emit('displayslider', universe, newvals)
+						});
+
+				}
 			} else {
 				for (var channel in update) { //single animation for each channel
 
 					var fadingGoal = update[channel];
+
+					//abort old still running animation on same channel
+					if(animations[universe][channel] instanceof A && !animations[universe][channel].aborted){
+						animations[universe][channel].abort();
+					}
 
 					if (fadingDelayer[universe][channel] instanceof Fader && !fadingDelayer[universe][channel].finished) {
 						fadingDelayer[universe][channel].updateValue(fadingGoal); //TODO also update speed? separate method call? -> static
@@ -160,35 +191,14 @@ function DMXWeb() {
 					}
 				}
 			}
-
-			//else if (false) {
-			//	for (var channel in update) { //single animation for each channel
-            //
-			//		var singleUpdate = {}; //creating new object with one single channel target value
-			//		singleUpdate[channel] = update[channel];
-            //
-			//		if(animations[universe][channel] instanceof A){
-			//			animations[universe][channel].abort(); //abort old still running animation on same channel
-			//		}
-			//		animations[universe][channel] = new A();
-			//		animations[universe][channel]
-			//			.add(singleUpdate, fading*10, fadingease)
-			//			.run(dmx.universes[universe], function (finalvals) {
-			//				//onFinish
-			//				io.sockets.emit('update', universe, finalvals);
-			//			}, function (newvals) {
-			//				//onUpdate
-			//				io.sockets.emit('displayslider', universe, newvals)
-			//			});
-            //
-			//	}
-			//}
 		});
 
 		//TODO lightshow: list of presets and slider for switching-speed (select presets from list?)
 		//TODO fade through presets -> switch presets and controll fade via fade fader -> fader for speed -> list to select which presets should be used
 		//TODO list with extended presets, not shown by default?
 		//TODO js file with references to animation and effect files -> read in and select (start / stop)
+
+		//TODO general slider (fade time, switch fader) and black out button in top bar?
 
 		socket.on('fading', function(duration, ease) {
 			fading = duration || 0;
@@ -207,6 +217,11 @@ function DMXWeb() {
 		socket.on('blackout', function(universe) {
 			//A.abortAnimations();
 			dmx.toggleBlackout(universe);
+		});
+
+		socket.on('switching', function(value) {
+			//TODO fill me
+			//--> emit "normal" update -> effect=true
 		});
 
 		dmx.on('blackout', function (bout) {

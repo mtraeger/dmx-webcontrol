@@ -63,6 +63,38 @@
             });
 
 
+            //Switching Presets Time
+            var html3 = "<div id='switchpresets'><h2>Fade</h2>";
+            html3 += '<label for="switch">Switch presets Speed -- 0 = Off</label>';
+            html3 += "</div>";
+            $(html3).hide().appendTo('#scripts').fadeIn();
+            var switchfader = $('<input id="switch" type="range" orient="vertical" min="0" value="0" max="300">'); //TODO time?
+            switchfader.hide().appendTo('#switchpresets').fadeIn();
+            switchfader.on("input", function (e) {
+                socket.emit('switching', e.target.value);
+            });
+            //TODO select presets for animation from list?
+            //TODO also buttons to click manual effects? -> effect-fade on click, button list like home?
+            //TODO --> selct easing
+
+
+            //TODO toggle button on Home instead of this????
+            /* preset buttons */
+            for (var preset in setup.presets) {
+                var htmleffectbuttons = '<button class="span2 btn btn-info">' + setup.presets[preset].label + '</button>';
+                var e = $(htmleffectbuttons)
+                e.hide().appendTo('#scripts').fadeIn();
+                e.click(function (values) {
+                    return function () {
+                        for (var universe in values) {
+                            socket.emit('update', universe, values[universe], true);
+                        }
+                    };
+                }(setup.presets[preset].values));
+            }
+
+
+
             //TODO scripts
             //TODO select easing methods
             //TODO start custom scripts
@@ -89,8 +121,8 @@
                 html += "</div>";
                 $(html).hide().appendTo('#sliders').fadeIn();
             }
-            $("input").live("change", function (e) {
-                updateDmx(e, true);
+            $("input").live("change", function (e) {//TODO combine both calls again?
+                updateDmx(e, false);
             });
             $("input").live("input", function (e) {
                 updateDmx(e, false);
@@ -98,12 +130,12 @@
             socket.emit('request_refresh');
         });
 
-        function updateDmx(e, clicked) { //TODO combine both calls again?
-            if (e.target.id != "fade") {
+        function updateDmx(e, effect) { //TODO combine both calls again?
+            if (e.target.id.startsWith("channel_")) {
                 var i = e.target.id.split('_');
                 var u = {};
                 u[i[2]] = e.target.value;
-                socket.emit('update', i[1], u, clicked);
+                socket.emit('update', i[1], u, effect);
             }
         }
 
