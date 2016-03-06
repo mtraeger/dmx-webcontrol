@@ -212,7 +212,7 @@ function DMXWeb() {
 
 		socket.on('fading', function(duration, ease) {
 			fading = duration || 0;
-			fadingease = ease || 'linear';
+			fadingease = ease || 'outBounce';
 			//console.log(fading);
 			io.sockets.emit('fade', duration, fadingease);
 			for (var universe in fadingDelayer) {
