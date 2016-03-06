@@ -66,7 +66,7 @@ Fader.prototype.run = function(fadingGoal, speed, onFinish, onUpdate) {
 			} else { //current bigger
 				newvalue--;
 			}
-			//TODO easing function? - only for still clicked events?
+
 			var singleUpdate = {}; //creating new object with one single channel target value
 			singleUpdate[self.channel] = newvalue;
 			self.universe.update(singleUpdate);
@@ -75,7 +75,6 @@ Fader.prototype.run = function(fadingGoal, speed, onFinish, onUpdate) {
 		self.speedUpdated = false;
 	};
 
-	//TODO no special transformation or to choose?
 	self.intervalId = setInterval(singleStep, self.getModifiedSpeed());
 	//console.log(1+Math.pow(Fader.speed,2)/200)
 };

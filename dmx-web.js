@@ -9,6 +9,7 @@ var program  = require('commander')
 var DMX      = require('./dmx')
 var A        = DMX.Animation
 var Fader    = DMX.Fader
+var easingF  = require('./easing.js').ease
 
 program
 	.version("0.0.1")
@@ -128,7 +129,7 @@ function DMXWeb() {
 			}
 		})
 
-		socket.on('update', function (universe, update, effect) { //TODO use clicked for ease effects?
+		socket.on('update', function (universe, update, effect) {
 			//console.log("Clicked: " + clicked);
 			if (fading == 0) {
 				//noFading: normal update
@@ -155,7 +156,7 @@ function DMXWeb() {
 					}
 					animations[universe][channel] = new A();
 					animations[universe][channel]
-						.add(singleUpdate, fading*100, fadingease) //TODO two different scales for fader?
+						.add(singleUpdate, fading*100, fadingease) //TODO two different scales for fader? -> also special curve calculation?
 						.run(dmx.universes[universe], function (finalvals) {
 							//onFinish
 							io.sockets.emit('update', universe, finalvals);
@@ -176,7 +177,7 @@ function DMXWeb() {
 					}
 
 					if (fadingDelayer[universe][channel] instanceof Fader && !fadingDelayer[universe][channel].finished) {
-						fadingDelayer[universe][channel].updateValue(fadingGoal); //TODO also update speed? separate method call? -> static
+						fadingDelayer[universe][channel].updateValue(fadingGoal);
 
 					} else {
 						fadingDelayer[universe][channel] = new Fader(dmx.universes[universe], channel);
@@ -196,9 +197,18 @@ function DMXWeb() {
 		//TODO lightshow: list of presets and slider for switching-speed (select presets from list?)
 		//TODO fade through presets -> switch presets and controll fade via fade fader -> fader for speed -> list to select which presets should be used
 		//TODO list with extended presets, not shown by default?
-		//TODO js file with references to animation and effect files -> read in and select (start / stop)
 
-		//TODO general slider (fade time, switch fader) and black out button in top bar?
+		//TODO js file with references to animations and effect files -> read in and select (start / stop)
+
+		//TODO general sliders (fade time, switch fader) and black out button in top bar?
+
+		//TODO music detectoin / chord detection https://github.com/cwilso/PitchDetect https://www.npmjs.com/package/beats
+		//TODO audio player, dj mixer?
+
+		//TODO easing drop down
+		//for (var seaseing in easingF) {
+		//	console.log(seaseing);
+		//}
 
 		socket.on('fading', function(duration, ease) {
 			fading = duration || 0;

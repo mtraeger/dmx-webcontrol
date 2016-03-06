@@ -105,7 +105,6 @@ Anim.prototype.run = function(universe, onFinish, onUpdate) {
 	var ani_step = function() {
 		if(Anim.abort || self.aborted){
 			clearInterval(iid);
-			//if(onFinish) onFinish(); //TODO required?
 			return;
 		}
 
