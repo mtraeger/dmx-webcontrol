@@ -5,6 +5,21 @@ module.exports = {
 	'showtec-multidim2': {
 		channels: ['1', '2', '3', '4']
 	},
+	'stairville-led-par-36': {
+		channels: ['ctrl', 'red', 'green', 'blue', 'speed'],
+		ranges: {
+			'ctrl': {
+				'type': 'option',
+				'options': [
+					{'value': 0,   'label': 'RGB Control'},
+					{'value': 64,  'label': '7 Color Fades'},
+					{'value': 128, 'label': '7 color change'},
+					{'value': 193, 'label': '3 color change'}
+				]
+			}
+			//speed: 11-100 speed; 151-255 by device, music, inputpoti
+		}
+	},
 	'stairville-led-flat': {
 		channels: ['dimmer', 'red', 'green', 'blue', 'strobe', 'ctrl', 'group', 'delay'],
 		ranges: {
@@ -20,6 +35,24 @@ module.exports = {
 					{'value': 210, 'label': 'fade green'},
 					{'value': 230, 'label': 'fade blue'},
 					{'value': 252, 'label': 'Sound activity'}
+				]
+			}
+		}
+	},
+	'adj-5p-hex': {
+		channels: ['red', 'green', 'blue', 'white', 'amber', 'uv', 'dimmer', 'strobe'],
+		ranges: {
+			'strobe': {
+				'type': 'option',
+				'options': [
+					{'value': 0,   'label': 'Strobe off'},
+					{'value': 33,  'label': 'LED On'},
+					{'value': 65,  'label': 'Strobe slow-fast'},
+					{'value': 97,  'label': 'LED On'},
+					{'value': 129, 'label': 'Pulse Strobe slow-fast'},
+					{'value': 161, 'label': 'LED On'},
+					{'value': 193, 'label': 'Random Strobe slow-fast'},
+					{'value': 225, 'label': 'LED On'}
 				]
 			}
 		}
