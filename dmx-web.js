@@ -205,6 +205,8 @@ function DMXWeb() {
 		//TODO music detectoin / chord detection https://github.com/cwilso/PitchDetect https://www.npmjs.com/package/beats
 		//TODO audio player, dj mixer?
 
+		//TODO chord detection / beatdetection -> chords: cange -> change color or specific color for each chord
+
 		//TODO easing drop down
 		//for (var seaseing in easingF) {
 		//	console.log(seaseing);
