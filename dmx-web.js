@@ -207,6 +207,11 @@ function DMXWeb() {
 
 		//TODO chord detection / beatdetection -> chords: cange -> change color or specific color for each chord
 
+		//TODO connect two or more (same or different type) dmx devices
+		// connect simply by duplicating channel signals or by mapping channels (r,g,b,w,a,uv)
+		// make groups where input is given to all group members (mapped by channel name?)
+		// or additional auto groups containing all same type devices?
+
 		//TODO easing drop down
 		//for (var seaseing in easingF) {
 		//	console.log(seaseing);
