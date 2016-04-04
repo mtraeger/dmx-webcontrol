@@ -212,6 +212,8 @@ function DMXWeb() {
 		// make groups where input is given to all group members (mapped by channel name?)
 		// or additional auto groups containing all same type devices?
 
+		//TODO master slider for each color of all lights
+
 		//TODO easing drop down
 		//for (var seaseing in easingF) {
 		//	console.log(seaseing);
