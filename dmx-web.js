@@ -213,6 +213,14 @@ function DMXWeb() {
 		// or additional auto groups containing all same type devices?
 
 		//TODO master slider for each color of all lights
+		
+		//TODO animations for whole group / type of light device (also in script A() )
+		// delay animations for each device in group for a given time (1 -> 2 (+x sec) -> 3 (2+x sec) ...)
+		// from front or backwards (see light fading through the room from device to device)
+		// also from middle? with effects? 
+		// add device to more than one group? type of device group like normal group? (device type group only special name?)
+		// start effects on devices der reihe nach (number by number? - delayed)
+		
 
 		//TODO easing drop down
 		//for (var seaseing in easingF) {
