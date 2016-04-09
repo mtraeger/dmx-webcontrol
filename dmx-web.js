@@ -221,6 +221,13 @@ function DMXWeb() {
 		// add device to more than one group? type of device group like normal group? (device type group only special name?)
 		// start effects on devices der reihe nach (number by number? - delayed)
 		
+		//TODO color groups? all colors? all with colors? all with same colors?
+		//TODO presets? simple out of the box baukasten (presets per device type? -> available for all devices of type)
+		// simple drag n drop lightshow builder?
+		// different depth of effect: change one color for all and other color only for sub group?
+		
+		//TODO stacking groups: group in group - subgroups?
+		// special group: all
 
 		//TODO easing drop down
 		//for (var seaseing in easingF) {
