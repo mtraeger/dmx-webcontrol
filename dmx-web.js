@@ -221,6 +221,10 @@ function DMXWeb() {
 		// add device to more than one group? type of device group like normal group? (device type group only special name?)
 		// start effects on devices der reihe nach (number by number? - delayed)
 		
+		//TODO random device for next animation step optional
+		// random animation?
+		// change (color?, continue to animation step) if sound over threshold, change all devices if sound is over highter threshold
+		
 		//TODO color groups? all colors? all with colors? all with same colors?
 		//TODO presets? simple out of the box baukasten (presets per device type? -> available for all devices of type)
 		// simple drag n drop lightshow builder?
