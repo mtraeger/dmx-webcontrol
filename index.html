@@ -75,21 +75,22 @@
             });
             //TODO select presets for animation from list?
             //TODO also buttons to click manual effects? -> effect-fade on click, button list like home?
-            //TODO --> selct easing --> drop down list
-            //select easing
-            var easingEffects = ["linear", "outBounce"] //TODO generate effects automatical,
-            for (var easingEffect in easingEffects) {
-                //TODO select from dropdown
-                var easingSelect = '<button class="span2 btn btn-info">' + easingEffects[easingEffect] + '</button>';
-                var e = $(easingSelect)
-                e.hide().appendTo('#scripts').fadeIn();
-                e.click(function (effect) {
-                    return function () {
-                        socket.emit("fadingEaseChange", effect);
-                    };
-                }(easingEffects[easingEffect]));
-            }
 
+            //select easing //TODO --> selct easing --> drop down list
+            var easingEffects = ["linear", "outBounce"] //TODO generate effects automatical,
+
+            var easingSelect = "<select id='easingSelect'>";
+            for (var easingEffect in easingEffects) {
+                easingSelect += "<option value='"+easingEffects[easingEffect]+"'>"+easingEffects[easingEffect]+"</option>";
+            }
+            easingSelect += "</select>";
+            var dropDown = $(easingSelect)
+            dropDown.hide().appendTo('#scripts').fadeIn();
+            dropDown.change(function (effect) {
+                return function () {
+                    socket.emit("fadingEaseChange", effect.val());
+                };
+            }(dropDown));
 
             //TODO one separate toggle button on Home instead of this for switchin off on animation mode????
             /* preset buttons for presets switching */
