@@ -88,7 +88,6 @@ Switching.prototype.run = function() {
 	var singleStep = function () {
 
 		if(self.aborted){
-			console.log(self.running)
 			self.running = false;
 			clearInterval(self.intervalId);
 			self.aborted = false; //TODO also required here?
@@ -98,8 +97,7 @@ Switching.prototype.run = function() {
 		if(fx_stack.length < 1){
 			self.addPresetsToAnimations();
 		}
-		a = fx_stack.shift()
-		to = a.to;
+		to = fx_stack.shift().to;
 
 		for (var universe in to) {
 			self.updateDmx(universe,  to[universe], false);
@@ -107,6 +105,25 @@ Switching.prototype.run = function() {
 	};
 
 	self.intervalId = setInterval(singleStep, this.mSecondsPerStep);
+}
+
+
+Switching.prototype.nextStep = function () {
+	if(this.aborted){
+		this.running = false;
+		clearInterval(this.intervalId);
+		this.aborted = false; //TODO also required here?
+		return;
+	}
+
+	if(this.fx_stack.length < 1){
+		this.addPresetsToAnimations();
+	}
+	var to = this.fx_stack.shift().to;
+
+	for (var universe in to) {
+		this.updateDmx(universe,  to[universe], false);
+	}
 }
 
 module.exports = Switching

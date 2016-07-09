@@ -99,6 +99,12 @@
             //TODO also buttons to click manual effects? -> effect-fade on click, button list like home?
 
 
+            var nextSwitchStep = $('<button class="span2 btn btn-info">Next Step</button>');
+            nextSwitchStep.hide().appendTo('#scripts').fadeIn();
+            nextSwitchStep.click(function () {
+                socket.emit('nextSwitchStep');
+            });
+
             //Color page
             // color buttons and color sliders for rgb (additional color sliders?)
             for (var color in setup.colors) {

@@ -268,6 +268,10 @@ function DMXWeb() {
 			io.sockets.emit('switching', switchingTime);
 		});
 
+		socket.on('nextSwitchStep', function () {
+			switching.nextStep();
+		})
+
 		socket.on('fadingEaseChange', function (easeEffect) {
 			fadingease = easeEffect;
 			io.sockets.emit('fadingEaseChange', fadingease);
