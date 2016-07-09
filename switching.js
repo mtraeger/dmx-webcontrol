@@ -1,22 +1,16 @@
 "use strict"
 
-Switching.abort = false;
-
 function Switching(msg, updateDmx) {
 	this.fx_stack = [];
 	this.aborted = false;
 	this.running = false;
 	this.updateDmx = updateDmx;
 
-	this.mSecondsPerStep = 2000; //TODO check
-	// this.addPresetsToAnimations(); //TODO required?
+	this.mSecondsPerStep = 2000;
 	this.intervalId = null;
-	this.speedUpdated = false;
-	//TODO dirty? -> maybe function to dmx-web?
 	this.setupconfig = msg.setup
 	this.setupdevices = msg.devices
 	this.presets = this.setupconfig.presets;
-	// this.colorstuff = colorStuff;
 }
 
 Switching.prototype.addPresetsToAnimations = function () {
@@ -25,8 +19,9 @@ Switching.prototype.addPresetsToAnimations = function () {
 	// 	this.fx_stack.push({'to': this.presets[preset].values})
 	// }
 
-	//color switching
+	//color switching //TODO different strategies by button
 	//TODO fix duplication with index.html
+	//TODO generate not new color list all the time - generate once and store it
 	for (var color in this.setupconfig.colors) {
 		var universesUpdate = {};
 		for (var universe in this.setupconfig.universes) {
@@ -51,26 +46,9 @@ Switching.prototype.addPresetsToAnimations = function () {
 				}
 			}
 			universesUpdate[universe] = update;
-			// if(fadingEffect == 'linear'){
-			// 	socket.emit('update', universe, update);
-			// }else{
-			// 	socket.emit('update', universe, update, true);
-			// }
-			//TODO enable effect mode by button also here
 		}
 		this.fx_stack.push({'to': universesUpdate});
 	}
-}
-
-/**
- * Abort all animations (while 500ms in update)
- */
-Switching.abortAnimations = function(){
-	console.log("Aborting all animations");
-	Switching.abort = true;
-	setTimeout(function() {
-		Switching.abort = false;
-	}, 200);
 }
 
 /**
@@ -81,11 +59,14 @@ Switching.prototype.abort = function () {
 	this.aborted = true;
 }
 
+/**
+ * set resolution seconds per step - time until next switch
+ * @param mSecondsPerStep
+ */
 Switching.prototype.setResolution = function (mSecondsPerStep) {
 	console.log("Update Resolution");
 	this.mSecondsPerStep = mSecondsPerStep;
-	if (this.intervalId != null && this.running == true && this.speedUpdated == false) {
-		this.speedUpdated = true;
+	if (this.intervalId != null && this.running == true) {
 		clearInterval(this.intervalId);
 		this.run();
 	}
@@ -102,35 +83,28 @@ Switching.prototype.run = function() {
 
 	var fx_stack = this.fx_stack;
 	var self = this;
-
-
-	// while(!(Switching.abort || self.aborted)) {
-	// 	ani_setup();
-	// 	ani_step();
-	// 		}
-	// self.running = false;
+	self.aborted = false;
 
 	var singleStep = function () {
 
+		if(self.aborted){
+			console.log(self.running)
+			self.running = false;
+			clearInterval(self.intervalId);
+			self.aborted = false; //TODO also required here?
+			return;
+		}
+
 		if(fx_stack.length < 1){
-			self.addPresetsToAnimations(); //TODO required here?
+			self.addPresetsToAnimations();
 		}
 		a = fx_stack.shift()
 		to = a.to;
 
-		if(Switching.abort || self.aborted){
-			self.running = false;
-			clearInterval(self.intervalId);
-			return;
-		}
-
 		for (var universe in to) {
-			self.updateDmx(universe,  to[universe], false); //TODO effect?
+			self.updateDmx(universe,  to[universe], false);
 		}
-
-		self.speedUpdated = false;
 	};
-
 
 	self.intervalId = setInterval(singleStep, this.mSecondsPerStep);
 }
