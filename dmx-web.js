@@ -39,6 +39,8 @@ function DMXWeb() {
 		fadingDelayer[universe] = [];
 	}
 
+	//TODO set devices.channelPresets to specified value in devices config
+
 	var listen_port = config.server.listen_port || 8080
 	var listen_host = config.server.listen_host || '::'
 
@@ -240,7 +242,7 @@ function DMXWeb() {
 
 		socket.on('fading', function(duration, ease) {
 			fading = duration || 0;
-			fadingease = ease || 'outBounce';
+			fadingease = ease || fadingease || 'outBounce'; //TODO CHECK use default value from var above (on top) -> do not override if not set
 			//console.log(fading);
 			io.sockets.emit('fade', duration, fadingease);
 			for (var universe in fadingDelayer) {
@@ -261,6 +263,10 @@ function DMXWeb() {
 			//TODO fill me
 			//--> emit "normal" update -> effect=true
 		});
+
+		socket.on('fadingEaseChange', function (easeEffect) {
+			fadingease = easeEffect;
+		})
 
 		dmx.on('blackout', function (bout) {
 			socket.emit('blackout', bout);

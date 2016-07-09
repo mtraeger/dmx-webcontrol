@@ -18,7 +18,12 @@ module.exports = {
 				]
 			}
 			//speed: 11-100 speed; 151-255 by device, music, inputpoti
-		}
+		},
+		startRgbChannel: 1, //start value for rgb color effects (first channel is 0)
+		colors: [ //presets differing from default rgb - e.g. if additional color available, values starting at first rgb channel (see above)
+		],
+		channelPresets: [
+		]
 	},
 	'stairville-led-flat': {
 		channels: ['dimmer', 'red', 'green', 'blue', 'strobe', 'ctrl', 'group', 'delay'],
@@ -37,7 +42,14 @@ module.exports = {
 					{'value': 252, 'label': 'Sound activity'}
 				]
 			}
-		}
+		},
+		startRgbChannel: 1, //start value for rgb color effects (first channel is 0)
+		colors: [ //presets differing from default rgb - e.g. if additional color available, values starting at first rgb channel (see above)
+
+		],
+		channelPresets: [
+			{'channel': 0,   'value': 255}
+		]
 	},
 	'adj-5p-hex': {
 		channels: ['red', 'green', 'blue', 'white', 'amber', 'uv', 'dimmer', 'strobe'],
@@ -55,7 +67,25 @@ module.exports = {
 					{'value': 225, 'label': 'LED On'}
 				]
 			}
-		}
+		},
+		startRgbChannel: 0, //start value for rgb color effects (first channel is 0)
+		colors: [ //presets differing from default rgb - e.g. if additional color available, values starting at first rgb channel (see above)
+			{
+				label: 'White', //naming convention with existing colors
+				values:  {0:0,  1:0,  2:0, 3:255, 4:0}
+			},
+			{
+				label: 'Orange',
+				values: { 0:0,  1:0,  2:0, 3:0, 4:255}
+			}
+			//TODO GENERAL reset special colors on channels above 2 -> special reset
+			//or check on change if values above 2 and then set not before set values to 0
+			//problem: store current color step (modifications in between?)
+			//TODO add uv color for this device
+		],
+		channelPresets: [
+			{'channel': 6,   'value': 255}
+		]
 	},
 	'eurolite-led-bar': {
 		channels: ['ctrl', 'dimmer', 'strobe', 'red0', 'green0', 'blue0', 'red1', 'green1', 'blue1', 'red2', 'green2', 'blue2'],
@@ -87,7 +117,14 @@ module.exports = {
 				'min': 0,
 				'max': 255
 			}
-		}
+		},
+		startRgbChannel: 3, //start value for rgb color effects (first channel is 0)
+		colors: [ //presets differing from default rgb - e.g. if additional color available, values starting at first rgb channel (see above)
+
+		],
+		channelPresets: [
+			{'channel': 1,   'value': 255}
+		]
 	},
 	'stairville-led-par-56': {
 		channels: ['ctrl', 'red', 'green', 'blue', 'speed'],
@@ -101,6 +138,12 @@ module.exports = {
 					{'value': 192, 'label': '3 color change'}
 				]
 			}
-		}
+		},
+		startRgbChannel: 1, //start value for rgb color effects (first channel is 0)
+		colors: [ //presets differing from default rgb - e.g. if additional color available, values starting at first rgb channel (see above)
+
+		],
+		channelPresets: [
+		]
 	}
 }

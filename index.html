@@ -38,7 +38,7 @@
                         }
                     };
                 }(setup.presets[preset].values));
-                console.log(html);
+//                console.log(html);
             }
 
             /* blackout button */
@@ -76,10 +76,23 @@
             //TODO select presets for animation from list?
             //TODO also buttons to click manual effects? -> effect-fade on click, button list like home?
             //TODO --> selct easing --> drop down list
+            //select easing
+            var easingEffects = ["linear", "outBounce"] //TODO generate effects automatical,
+            for (var easingEffect in easingEffects) {
+                //TODO select from dropdown
+                var easingSelect = '<button class="span2 btn btn-info">' + easingEffects[easingEffect] + '</button>';
+                var e = $(easingSelect)
+                e.hide().appendTo('#scripts').fadeIn();
+                e.click(function (effect) {
+                    return function () {
+                        socket.emit("fadingEaseChange", effect);
+                    };
+                }(easingEffects[easingEffect]));
+            }
 
 
             //TODO one separate toggle button on Home instead of this for switchin off on animation mode????
-            /* preset buttons */
+            /* preset buttons for presets switching */
             for (var preset in setup.presets) {
                 var htmleffectbuttons = '<button class="span2 btn btn-info">' + setup.presets[preset].label + '</button>';
                 var e = $(htmleffectbuttons)
@@ -92,6 +105,74 @@
                     };
                 }(setup.presets[preset].values));
             }
+
+
+            //Color page
+            // color buttons and color sliders for rgb (additional color sliders?)
+            for (var color in setup.colors) {
+                var htmlColorButtons = '<button class="span2 btn btn-info">' + setup.colors[color].label + '</button>';
+                var e = $(htmlColorButtons)
+                e.hide().appendTo('#colors').fadeIn();
+                e.click(function (color) {
+                    return function () {
+
+                        for (var universe in setup.universes) {
+                            for (var device in setup.universes[universe].devices) {
+                                var dev = setup.universes[universe].devices[device];
+                                if(devices[dev.type].hasOwnProperty("startRgbChannel")){
+                                    var startRgb = devices[dev.type].startRgbChannel;
+                                    var firstRgbChannelForDevice = dev.address + startRgb;
+
+                                    for (var colorChannel in color.values){
+                                        console.log(colorChannel[0])
+                                    }
+
+//                                    for(var k in a.to) {
+//                                        config[k] = {
+//                                            'start': universe.get(k),
+//                                            'end':   a.to[k]
+//                                        }
+//                                    }
+
+                                    //TODO special override colors from device config - code below from sliders...
+                                    //use color.label for naming convention
+//                                    for (var overrideColor in devices[dev.type].colors) {
+//                                        var channel_id = dev.address + Number(overrideColor)
+//                                        html += '<label for="' + html_id + '">' + devices[dev.type].channels[overrideColor] + '</label>';
+//                                    }
+
+
+                                }
+                            }
+                            //socket.emit('color', color.label, color.values);
+                            socket.emit('update', universe, values[universe]);
+                            // socket.emit('update', universe, values[universe], true); //TODO enable effect mode by button also here
+
+                        }
+                    };
+                }(setup.colors[color]));
+            }
+            //color slider
+            for (var universe in setup.universes) {
+                var html = "<div><h1>" + universe + "</h1>";
+                for (var device in setup.universes[universe].devices) {
+                    var dev = setup.universes[universe].devices[device];
+                    html += '<div class="device">'
+                    for (var channel in devices[dev.type].channels) {
+                        var channel_id = dev.address + Number(channel)
+                        var html_id = get_html_id(universe, channel_id);
+                        html += '<div class="channel">'
+                        html += '<label for="' + html_id + '">' + devices[dev.type].channels[channel] + '</label>';
+                        html += '<input  id="' + html_id + '" type="range" orient="vertical" min="0" value="0" max="255">'
+                        html += '<input  id="' + html_id + '_display" class="displayslider" disabled type="range" orient="vertical" min="0" value="0" max="255">'
+                        html += '</div>'
+                    }
+                    html += '</div>'
+                }
+                html += "</div>";
+                $(html).hide().appendTo('#sliders').fadeIn();
+            }
+
 
 
             //TODO show heading for color in this color if color exists (or if color)
@@ -193,6 +274,7 @@
             <li class="active"><a href="#home" data-toggle="tab">Home</a></li>
             <li><a href="#sliders" data-toggle="tab">Sliders</a></li>
             <li><a href="#scripts" data-toggle="tab">Scripts</a></li>
+            <li><a href="#colors" data-toggle="tab">Colors</a></li>
         </ul>
     </div>
 </div>
@@ -207,6 +289,9 @@
 
         </div>
         <div id="scripts" class="tab-pane">
+
+        </div>
+        <div id="colors" class="tab-pane">
 
         </div>
     </div>
