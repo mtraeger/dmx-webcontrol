@@ -23,6 +23,7 @@
             $('#presets').empty();
             $('#sliders').empty();
             $('#scripts').empty();
+            $('#colors').empty();
             setup = msg.setup
             devices = msg.devices
 
@@ -143,14 +144,16 @@
                 }(setup.colors[color]));
             }
             //color slider
+            $('<div id="colorSliders" class="device" style="display: block;">').appendTo('#colors')
             var rgbColor = {0:"red", 1:"green", 2:"blue"}; //TODO add other colors - amber, white, uv?
             for (var color in rgbColor) {
+                var rgbGroup = $("<div class='channel'>").appendTo('#colorSliders');
                 var html2 = "";
                 html2 += '<label for="rgb'+rgbColor[color]+'">'+rgbColor[color]+'</label>';
                 html2 += "";
-                $(html2).hide().appendTo('#colors').fadeIn();
+                $(html2).hide().appendTo(rgbGroup).fadeIn();
                 var fader = $('<input id="rgb'+rgbColor[color]+'" type="range" orient="vertical" min="0" value="0" max="255">');
-                fader.hide().appendTo('#colors').fadeIn();
+                fader.hide().appendTo(rgbGroup).fadeIn();
                 fader.on("input", function (e) {
                         //TODO reduce code duplication (see buttons above)
                         for (var universe in setup.universes) {
