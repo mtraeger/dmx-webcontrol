@@ -116,6 +116,7 @@ function DMXWeb() {
 	var fading = 0;
 	var fadingease = 'linear';
 	var blackout = false;
+	var switchingTime = 0;
 
 	//TODO more global scope?
 	// console.log({'devices': DMX.devices, 'setup': config})
@@ -178,6 +179,7 @@ function DMXWeb() {
 				socket.emit('update', universe, u)
 				socket.emit('fade', fading, fadingease);
 				socket.emit('blackout', blackout);
+				socket.emit('switching', switchingTime);
 			}
 		})
 
@@ -249,26 +251,21 @@ function DMXWeb() {
 			dmx.toggleBlackout(universe);
 		});
 
-
-
-
-		//TODO latecomer support -> send value on connect
 		socket.on('switching', function(value) {
-			//TODO fill me
-			//--> emit "normal" update -> effect=true
+			switchingTime = value;
 
-			if(value == 0){
+			if(switchingTime == 0){
 				switching.abort();
 			}else{
 				if(!switching.running) {
 					switching.run();
 				}
 				var secondInMilliSec = 60*1000;
-				var updateMod = 1+Math.pow(value,2)/200;
+				var updateMod = 1+Math.pow(switchingTime,2)/200;
 				switching.setResolution(secondInMilliSec/updateMod)
 			}
 
-			io.sockets.emit('switching', value);
+			io.sockets.emit('switching', switchingTime);
 		});
 
 		socket.on('fadingEaseChange', function (easeEffect) {
