@@ -144,9 +144,6 @@
             }
             //color slider
             var rgbColor = {0:"red", 1:"green", 2:"blue"}; //TODO add other colors - amber, white, uv?
-//            for (var easingEffect in easingEffects) {
-//                easingSelect += "<option value='"+easingEffects[easingEffect]+"'>"+easingEffects[easingEffect]+"</option>";
-//            }
             for (var color in rgbColor) {
                 var html2 = "";
                 html2 += '<label for="rgb'+rgbColor[color]+'">'+rgbColor[color]+'</label>';
@@ -180,19 +177,6 @@
                         }
                 });
             }
-
-
-
-            //Fading Time
-            var html2 = "<div id='fadecontainer'><h2>Fade</h2>";
-            html2 += '<label for="fade">Fade duration</label>';
-            html2 += "</div>";
-            $(html2).hide().appendTo('#sliders').fadeIn();
-            var fader = $('<input id="fade" type="range" orient="horizontal" min="0" value="0" max="300">');
-            fader.hide().appendTo('#fadecontainer').fadeIn();
-            fader.on("input", function (e) {
-                socket.emit('fading', e.target.value);
-            });
 
 
             //TODO show heading for color in this color if color exists (or if color)
