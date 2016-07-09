@@ -27,6 +27,22 @@
             $('#navbar-content').empty();
             setup = msg.setup
             devices = msg.devices
+            fadingEffect = 'linear';
+
+            //select easing
+            var easingEffects = ["linear", "outBounce", "inOutCubic", "inOutQuint"]; //TODO get effects from source
+            var easingSelect = "<select id='easingSelect'>";
+            for (var easingEffect in easingEffects) {
+                easingSelect += "<option value='"+easingEffects[easingEffect]+"'>"+easingEffects[easingEffect]+"</option>";
+            }
+            easingSelect += "</select>";
+            var dropDown = $(easingSelect)
+            dropDown.hide().appendTo('#presets').fadeIn();
+            dropDown.change(function (effect) {
+                return function () {
+                    socket.emit("fadingEaseChange", effect.val());
+                };
+            }(dropDown));
 
             /* preset buttons */
             for (var preset in setup.presets) {
@@ -36,7 +52,11 @@
                 e.click(function (values) {
                     return function () {
                         for (var universe in values) {
-                            socket.emit('update', universe, values[universe]);
+                            if(fadingEffect == 'linear'){
+                                socket.emit('update', universe, values[universe]);
+                            }else{
+                                socket.emit('update', universe, values[universe], true);
+                            }
                         }
                     };
                 }(setup.presets[preset].values));
@@ -78,37 +98,6 @@
             //TODO select presets for animation from list?
             //TODO also buttons to click manual effects? -> effect-fade on click, button list like home?
 
-            //select easing
-            //TODO sync to all devices
-            var easingEffects = ["linear", "outBounce", "inOutCubic", "inOutQuint"]; //TODO get effects from source
-            var easingSelect = "<select id='easingSelect'>";
-            for (var easingEffect in easingEffects) {
-                easingSelect += "<option value='"+easingEffects[easingEffect]+"'>"+easingEffects[easingEffect]+"</option>";
-            }
-            easingSelect += "</select>";
-            var dropDown = $(easingSelect)
-            dropDown.hide().appendTo('#scripts').fadeIn();
-            dropDown.change(function (effect) {
-                return function () {
-                    socket.emit("fadingEaseChange", effect.val());
-                };
-            }(dropDown));
-
-            //TODO one separate toggle button on Home instead of this for switchin off on animation mode????
-            /* preset buttons for presets switching */
-            for (var preset in setup.presets) {
-                var htmleffectbuttons = '<button class="span2 btn btn-info">' + setup.presets[preset].label + '</button>';
-                var e = $(htmleffectbuttons)
-                e.hide().appendTo('#scripts').fadeIn();
-                e.click(function (values) {
-                    return function () {
-                        for (var universe in values) {
-                            socket.emit('update', universe, values[universe], true);
-                        }
-                    };
-                }(setup.presets[preset].values));
-            }
-
 
             //Color page
             // color buttons and color sliders for rgb (additional color sliders?)
@@ -139,7 +128,12 @@
 
                                 }
                             }
-                            socket.emit('update', universe, update);
+                            //socket.emit('update', universe, update);
+                            if(fadingEffect == 'linear'){
+                                socket.emit('update', universe, update);
+                            }else{
+                                socket.emit('update', universe, update, true);
+                            }
                             // socket.emit('update', universe, values[universe], true); //TODO enable effect mode by button also here
                         }
                     };
@@ -276,6 +270,7 @@
         });
         socket.on('fadingEaseChange', function (effect) {
             $('#easingSelect').val(effect);
+            fadingEffect = effect;
         })
     </script>
 </head>
