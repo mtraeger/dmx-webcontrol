@@ -79,7 +79,6 @@ Switching.prototype.setResolution = function (mSecondsPerStep) {
 Switching.prototype.run = function() {
 	this.running = true;
 	var to
-	var a
 
 	var fx_stack = this.fx_stack;
 	var self = this;
@@ -109,13 +108,6 @@ Switching.prototype.run = function() {
 
 
 Switching.prototype.nextStep = function () {
-	if(this.aborted){
-		this.running = false;
-		clearInterval(this.intervalId);
-		this.aborted = false; //TODO also required here?
-		return;
-	}
-
 	if(this.fx_stack.length < 1){
 		this.addPresetsToAnimations();
 	}
