@@ -2,22 +2,63 @@
 
 Switching.abort = false;
 
-function Switching(updateDmx, presets) {
+function Switching(msg, updateDmx) {
 	this.fx_stack = [];
 	this.aborted = false;
 	this.running = false;
 	this.updateDmx = updateDmx;
-	this.presets = presets
+
 	this.mSecondsPerStep = 2000; //TODO check
-	this.addPresetsToAnimations();
+	// this.addPresetsToAnimations(); //TODO required?
 	this.intervalId = null;
 	this.speedUpdated = false;
-
+	//TODO dirty? -> maybe function to dmx-web?
+	this.setupconfig = msg.setup
+	this.setupdevices = msg.devices
+	this.presets = this.setupconfig.presets;
+	// this.colorstuff = colorStuff;
 }
 
 Switching.prototype.addPresetsToAnimations = function () {
-	for (var preset in this.presets) {
-		this.fx_stack.push({'to': this.presets[preset].values})
+	// presets switching
+	// for (var preset in this.presets) {
+	// 	this.fx_stack.push({'to': this.presets[preset].values})
+	// }
+
+	//color switching
+	//TODO fix duplication with index.html
+	for (var color in this.setupconfig.colors) {
+		var universesUpdate = {};
+		for (var universe in this.setupconfig.universes) {
+			var update = {};
+			for (var device in this.setupconfig.universes[universe].devices) {
+				var dev = this.setupconfig.universes[universe].devices[device];
+				if (this.setupdevices[dev.type].hasOwnProperty("startRgbChannel")) {
+					var startRgb = this.setupdevices[dev.type].startRgbChannel;
+					var firstRgbChannelForDevice = dev.address + startRgb;
+					for (var colorChannel in this.setupconfig.colors[color].values) {
+						var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
+						update[updateChannel] = this.setupconfig.colors[color].values[colorChannel];
+					}
+
+					//TODO special override colors from device config - code below from sliders...
+					//use color.label for naming convention
+//                                    for (var overrideColor in devices[dev.type].colors) {
+//                                        var channel_id = dev.address + Number(overrideColor)
+//                                        html += '<label for="' + html_id + '">' + devices[dev.type].channels[overrideColor] + '</label>';
+//                                    }
+
+				}
+			}
+			universesUpdate[universe] = update;
+			// if(fadingEffect == 'linear'){
+			// 	socket.emit('update', universe, update);
+			// }else{
+			// 	socket.emit('update', universe, update, true);
+			// }
+			//TODO enable effect mode by button also here
+		}
+		this.fx_stack.push({'to': universesUpdate});
 	}
 }
 
@@ -50,33 +91,9 @@ Switching.prototype.setResolution = function (mSecondsPerStep) {
 	}
 }
 
-/**
- * add animations step
+
+/** starts switching between channels / colors
  *
- * @param to channels to update e.g. {1: 255, 2:200} starting at 0!
- * @param duration of step e.g. 2000 for 2 sec
- * @param easing function e.g. linear (default) or inOutCubic or outBounce from easings.js
- * @returns {Switching}
- */
-// Switching.prototype.add = function(to, duration, easing) {
-// 	var duration = duration || resolution
-// 	var easing = easing || 'linear'
-// 	this.fx_stack.push({'to': to, 'duration': duration, 'easing': easing})
-// 	return this
-// }
-
-
-// Switching.prototype.delay = function(duration) {
-// 	return this.add({}, duration)
-// }
-
-
-/** starts animation
- *
- * @param universe
- * @param onFinish callbac called nearly on end (if want garuanteed on end, call .delay(msec) before )
- *                    with argument final-value (not called if aborted)
- * @param onUpdate callback called on every value update, argument are the new values
  */
 Switching.prototype.run = function() {
 	this.running = true;

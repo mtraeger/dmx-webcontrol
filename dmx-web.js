@@ -117,6 +117,55 @@ function DMXWeb() {
 	var fadingease = 'linear';
 	var blackout = false;
 
+	//TODO more global scope?
+	// console.log({'devices': DMX.devices, 'setup': config})
+	var switching = new Switching({'devices': DMX.devices, 'setup': config}, function (universe, update, effect) {
+		updateDmx(universe, update, effect);
+	});
+
+// 	function generateColors(){
+// 		var result = [];
+// 		for (var color in config.colors) {
+// 			var universesUpdate = {};
+// 			for (var universe in config.universes) {
+// 				var update = {};
+// 				for (var device in config.universes[universe].devices) {
+// 					var dev = config.universes[universe].devices[device];
+// 					if (DMX.devices[dev.type].hasOwnProperty("startRgbChannel")) {
+// 						var startRgb = DMX.devices[dev.type].startRgbChannel;
+// 						var firstRgbChannelForDevice = dev.address + startRgb;
+// 						for (var colorChannel in config.colors[color].values) {
+// 							var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
+// 							update[updateChannel] = config.colors[color].values[colorChannel];
+// 						}
+//
+// 						//TODO special override colors from device config - code below from sliders...
+// 						//use color.label for naming convention
+// //                                    for (var overrideColor in devices[dev.type].colors) {
+// //                                        var channel_id = dev.address + Number(overrideColor)
+// //                                        html += '<label for="' + html_id + '">' + devices[dev.type].channels[overrideColor] + '</label>';
+// //                                    }
+//
+// 					}
+// 				}
+// 				universesUpdate[universe] = update;
+// 				// if(fadingEffect == 'linear'){
+// 				// 	socket.emit('update', universe, update);
+// 				// }else{
+// 				// 	socket.emit('update', universe, update, true);
+// 				// }
+// 				//TODO enable effect mode by button also here
+//
+// 			}
+// 			result[color] = {
+// 				label: color,
+// 					values: universesUpdate[universe]
+// 			}
+// 		}
+// 		return result;
+// 	}
+
+
 	io.sockets.on('connection', function(socket) {
 		socket.emit('init', {'devices': DMX.devices, 'setup': config})
 
@@ -201,10 +250,6 @@ function DMXWeb() {
 		});
 
 
-		//TODO to global scope
-		var switching = new Switching(function (universe, update, effect) {
-			updateDmx(universe, update, effect);
-		}, config.presets);
 
 
 		//TODO latecomer support -> send value on connect

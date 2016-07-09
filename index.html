@@ -107,6 +107,7 @@
                 e.hide().appendTo('#colors').fadeIn();
                 e.click(function (color) {
                     return function () {
+                        //TODO code duplication (see below and switching) -> maybe put this to dmx-web.js
                         for (var universe in setup.universes) {
                             var update = {};
                             for (var device in setup.universes[universe].devices) {
