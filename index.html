@@ -27,7 +27,7 @@
             $('#navbar-content').empty();
             setup = msg.setup
             devices = msg.devices
-            fadingEffect = 'linear';
+            fadingEffect = 'linear'; //TODO add late comer support for this value (and maybe also others)
 
             //select easing
             var easingEffects = ["linear", "outBounce", "inOutCubic", "inOutQuint"]; //TODO get effects from source
@@ -271,7 +271,10 @@
         socket.on('fadingEaseChange', function (effect) {
             $('#easingSelect').val(effect);
             fadingEffect = effect;
-        })
+        });
+        socket.on('switching', function (duration) {
+            $('#switch').attr('value', duration);
+        });
     </script>
 </head>
 <body>

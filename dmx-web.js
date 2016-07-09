@@ -262,6 +262,7 @@ function DMXWeb() {
 		socket.on('switching', function(value) {
 			//TODO fill me
 			//--> emit "normal" update -> effect=true
+			io.sockets.emit('switching', value);
 		});
 
 		socket.on('fadingEaseChange', function (easeEffect) {
