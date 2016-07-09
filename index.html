@@ -117,22 +117,20 @@
                     return function () {
 
                         for (var universe in setup.universes) {
+                            var update = {};
                             for (var device in setup.universes[universe].devices) {
                                 var dev = setup.universes[universe].devices[device];
                                 if(devices[dev.type].hasOwnProperty("startRgbChannel")){
                                     var startRgb = devices[dev.type].startRgbChannel;
                                     var firstRgbChannelForDevice = dev.address + startRgb;
 
+
                                     for (var colorChannel in color.values){
-                                        console.log(colorChannel[0])
+                                        var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
+                                        update[updateChannel] = color.values[colorChannel];
                                     }
 
-//                                    for(var k in a.to) {
-//                                        config[k] = {
-//                                            'start': universe.get(k),
-//                                            'end':   a.to[k]
-//                                        }
-//                                    }
+
 
                                     //TODO special override colors from device config - code below from sliders...
                                     //use color.label for naming convention
@@ -145,7 +143,8 @@
                                 }
                             }
                             //socket.emit('color', color.label, color.values);
-                            socket.emit('update', universe, values[universe]);
+                            console.log(update)
+                            socket.emit('update', universe, update);
                             // socket.emit('update', universe, values[universe], true); //TODO enable effect mode by button also here
 
                         }
@@ -153,25 +152,25 @@
                 }(setup.colors[color]));
             }
             //color slider
-            for (var universe in setup.universes) {
-                var html = "<div><h1>" + universe + "</h1>";
-                for (var device in setup.universes[universe].devices) {
-                    var dev = setup.universes[universe].devices[device];
-                    html += '<div class="device">'
-                    for (var channel in devices[dev.type].channels) {
-                        var channel_id = dev.address + Number(channel)
-                        var html_id = get_html_id(universe, channel_id);
-                        html += '<div class="channel">'
-                        html += '<label for="' + html_id + '">' + devices[dev.type].channels[channel] + '</label>';
-                        html += '<input  id="' + html_id + '" type="range" orient="vertical" min="0" value="0" max="255">'
-                        html += '<input  id="' + html_id + '_display" class="displayslider" disabled type="range" orient="vertical" min="0" value="0" max="255">'
-                        html += '</div>'
-                    }
-                    html += '</div>'
-                }
-                html += "</div>";
-                $(html).hide().appendTo('#sliders').fadeIn();
-            }
+//            for (var universe in setup.universes) {
+//                var html = "<div><h1>" + universe + "</h1>";
+//                for (var device in setup.universes[universe].devices) {
+//                    var dev = setup.universes[universe].devices[device];
+//                    html += '<div class="device">'
+//                    for (var channel in devices[dev.type].channels) {
+//                        var channel_id = dev.address + Number(channel)
+//                        var html_id = get_html_id(universe, channel_id);
+//                        html += '<div class="channel">'
+//                        html += '<label for="' + html_id + '">' + devices[dev.type].channels[channel] + '</label>';
+//                        html += '<input  id="' + html_id + '" type="range" orient="vertical" min="0" value="0" max="255">'
+//                        html += '<input  id="' + html_id + '_display" class="displayslider" disabled type="range" orient="vertical" min="0" value="0" max="255">'
+//                        html += '</div>'
+//                    }
+//                    html += '</div>'
+//                }
+//                html += "</div>";
+//                $(html).hide().appendTo('#sliders').fadeIn();
+//            }
 
 
 
