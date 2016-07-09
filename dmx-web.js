@@ -9,6 +9,7 @@ var program  = require('commander')
 var DMX      = require('./dmx')
 var A        = DMX.Animation
 var Fader    = DMX.Fader
+var Switching    = require('./switching')
 var easingF  = require('./easing.js').ease
 
 program
@@ -132,69 +133,9 @@ function DMXWeb() {
 		})
 
 		socket.on('update', function (universe, update, effect) {
-			//console.log("Clicked: " + clicked);
-			if (fading == 0) {
-				//noFading: normal update
-				for (var channel in update) { //abort fading and continue with normal movement
-					if (fadingDelayer[universe][channel] instanceof Fader && !fadingDelayer[universe][channel].finished) {
-						fadingDelayer[universe][channel].abort();
-					}
-				}
-
-				dmx.update(universe, update);
-			}else if (effect) {
-				for (var channel in update) { //effect animation for each channel
-
-					var singleUpdate = {}; //creating new object with one single channel target value
-					singleUpdate[channel] = update[channel];
-
-					//abort fading movement type
-					if (fadingDelayer[universe][channel] instanceof Fader && !fadingDelayer[universe][channel].finished) {
-						fadingDelayer[universe][channel].abort();
-					}
-
-					if(animations[universe][channel] instanceof A && !animations[universe][channel].aborted){
-						animations[universe][channel].abort(); //abort old still running animation on same channel
-					}
-					animations[universe][channel] = new A();
-					animations[universe][channel]
-						.add(singleUpdate, fading*100, fadingease) //TODO two different scales for fader? -> also special curve calculation?
-						.run(dmx.universes[universe], function (finalvals) {
-							//onFinish
-							io.sockets.emit('update', universe, finalvals);
-						}, function (newvals) {
-							//onUpdate
-							io.sockets.emit('displayslider', universe, newvals)
-						});
-
-				}
-			} else {
-				for (var channel in update) { //single animation for each channel
-
-					var fadingGoal = update[channel];
-
-					//abort old still running animation on same channel
-					if(animations[universe][channel] instanceof A && !animations[universe][channel].aborted){
-						animations[universe][channel].abort();
-					}
-
-					if (fadingDelayer[universe][channel] instanceof Fader && !fadingDelayer[universe][channel].finished) {
-						fadingDelayer[universe][channel].updateValue(fadingGoal);
-
-					} else {
-						fadingDelayer[universe][channel] = new Fader(dmx.universes[universe], channel);
-						fadingDelayer[universe][channel].run(fadingGoal, fading,
-							function (finalvals) {
-								//onFinish
-								io.sockets.emit('update', universe, finalvals);
-							}, function (newvals) {
-								//onUpdate
-								io.sockets.emit('displayslider', universe, newvals)
-							});
-					}
-				}
-			}
+			updateDmx(universe, update, effect);
 		});
+
 
 		//TODO lightshow: list of presets and slider for switching-speed (select presets from list?)
 		//TODO fade through presets -> switch presets and controll fade via fade fader -> fader for speed -> list to select which presets should be used
@@ -259,9 +200,29 @@ function DMXWeb() {
 			dmx.toggleBlackout(universe);
 		});
 
+
+		//TODO to global scope
+		var switching = new Switching(function (universe, update, effect) {
+			updateDmx(universe, update, effect);
+		}, config.presets);
+
+
+		//TODO latecomer support -> send value on connect
 		socket.on('switching', function(value) {
 			//TODO fill me
 			//--> emit "normal" update -> effect=true
+
+			if(value == 0){
+				switching.abort();
+			}else{
+				if(!switching.running) {
+					switching.run();
+				}
+				var secondInMilliSec = 60*1000;
+				var updateMod = 1+Math.pow(value,2)/200;
+				switching.setResolution(secondInMilliSec/updateMod)
+			}
+
 			io.sockets.emit('switching', value);
 		});
 
@@ -279,6 +240,72 @@ function DMXWeb() {
 		    socket.emit('update', universe, update)
 		})
 	})
+
+	function updateDmx(universe, update, effect) {
+		//console.log("Clicked: " + clicked);
+		if (fading == 0) {
+			//noFading: normal update
+			for (var channel in update) { //abort fading and continue with normal movement
+				if (fadingDelayer[universe][channel] instanceof Fader && !fadingDelayer[universe][channel].finished) {
+					fadingDelayer[universe][channel].abort();
+				}
+			}
+
+			dmx.update(universe, update);
+		}else if (effect) {
+			for (var channel in update) { //effect animation for each channel
+
+				var singleUpdate = {}; //creating new object with one single channel target value
+				singleUpdate[channel] = update[channel];
+
+				//abort fading movement type
+				if (fadingDelayer[universe][channel] instanceof Fader && !fadingDelayer[universe][channel].finished) {
+					fadingDelayer[universe][channel].abort();
+				}
+
+				if(animations[universe][channel] instanceof A && !animations[universe][channel].aborted){
+					animations[universe][channel].abort(); //abort old still running animation on same channel
+				}
+				animations[universe][channel] = new A();
+				animations[universe][channel]
+					.add(singleUpdate, fading*100, fadingease) //TODO two different scales for fader? -> also special curve calculation?
+					.run(dmx.universes[universe], function (finalvals) {
+						//onFinish
+						io.sockets.emit('update', universe, finalvals);
+					}, function (newvals) {
+						//onUpdate
+						io.sockets.emit('displayslider', universe, newvals)
+					});
+
+			}
+		} else {
+			for (var channel in update) { //single animation for each channel
+
+				var fadingGoal = update[channel];
+
+				//abort old still running animation on same channel
+				if(animations[universe][channel] instanceof A && !animations[universe][channel].aborted){
+					animations[universe][channel].abort();
+				}
+
+				if (fadingDelayer[universe][channel] instanceof Fader && !fadingDelayer[universe][channel].finished) {
+					fadingDelayer[universe][channel].updateValue(fadingGoal);
+
+				} else {
+					fadingDelayer[universe][channel] = new Fader(dmx.universes[universe], channel);
+					fadingDelayer[universe][channel].run(fadingGoal, fading,
+						function (finalvals) {
+							//onFinish
+							io.sockets.emit('update', universe, finalvals);
+						}, function (newvals) {
+							//onUpdate
+							io.sockets.emit('displayslider', universe, newvals)
+						});
+				}
+			}
+		}
+	}
+
 }
 
 DMXWeb()
