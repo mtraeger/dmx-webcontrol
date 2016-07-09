@@ -115,7 +115,6 @@
                 e.hide().appendTo('#colors').fadeIn();
                 e.click(function (color) {
                     return function () {
-
                         for (var universe in setup.universes) {
                             var update = {};
                             for (var device in setup.universes[universe].devices) {
@@ -123,14 +122,10 @@
                                 if(devices[dev.type].hasOwnProperty("startRgbChannel")){
                                     var startRgb = devices[dev.type].startRgbChannel;
                                     var firstRgbChannelForDevice = dev.address + startRgb;
-
-
                                     for (var colorChannel in color.values){
                                         var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
                                         update[updateChannel] = color.values[colorChannel];
                                     }
-
-
 
                                     //TODO special override colors from device config - code below from sliders...
                                     //use color.label for naming convention
@@ -139,14 +134,10 @@
 //                                        html += '<label for="' + html_id + '">' + devices[dev.type].channels[overrideColor] + '</label>';
 //                                    }
 
-
                                 }
                             }
-                            //socket.emit('color', color.label, color.values);
-                            console.log(update)
                             socket.emit('update', universe, update);
                             // socket.emit('update', universe, values[universe], true); //TODO enable effect mode by button also here
-
                         }
                     };
                 }(setup.colors[color]));
