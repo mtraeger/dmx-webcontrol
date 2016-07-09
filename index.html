@@ -24,6 +24,7 @@
             $('#sliders').empty();
             $('#scripts').empty();
             $('#colors').empty();
+            $('#navbar-content').empty();
             setup = msg.setup
             devices = msg.devices
 
@@ -44,7 +45,7 @@
 
             /* blackout button */
             var blackout = $('<button id="blackout" class="span2 btn btn-danger">Black Out</button>');
-            blackout.hide().appendTo('#presets').fadeIn();
+            blackout.hide().appendTo('#navbar-content').fadeIn();
             blackout.click(function () {
                 for (var universe in setup.universes) {
                     socket.emit('blackout', universe);
@@ -52,7 +53,7 @@
             });
 
 
-            //Fading Time
+            //Fading Time //TODO add to #navbar-content
             var html2 = "<div id='fadecontainer'><h2>Fade</h2>";
             html2 += '<label for="fade">Fade duration</label>';
             html2 += "</div>";
@@ -78,6 +79,7 @@
             //TODO also buttons to click manual effects? -> effect-fade on click, button list like home?
 
             //select easing
+            //TODO sync to all devices
             var easingEffects = ["linear", "outBounce", "inOutCubic", "inOutQuint"]; //TODO get effects from source
             var easingSelect = "<select id='easingSelect'>";
             for (var easingEffect in easingEffects) {
@@ -143,7 +145,7 @@
                     };
                 }(setup.colors[color]));
             }
-            //color slider
+            //color slider //TODO update moved sliders on all clients
             $('<div id="colorSliders" class="device" style="display: block;">').appendTo('#colors')
             var rgbColor = {0:"red", 1:"green", 2:"blue"}; //TODO add other colors - amber, white, uv?
             for (var color in rgbColor) {
@@ -272,6 +274,9 @@
             $('#fade').attr('value', duration);
             //TODO update ease effect
         });
+        socket.on('fadingEaseChange', function (effect) {
+            $('#easingSelect').val(effect);
+        })
     </script>
 </head>
 <body>
@@ -283,6 +288,9 @@
             <li><a href="#scripts" data-toggle="tab">Scripts</a></li>
             <li><a href="#colors" data-toggle="tab">Colors</a></li>
         </ul>
+        <div id="navbar-content">
+
+        </div>
     </div>
 </div>
 

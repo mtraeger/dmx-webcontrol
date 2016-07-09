@@ -266,6 +266,7 @@ function DMXWeb() {
 
 		socket.on('fadingEaseChange', function (easeEffect) {
 			fadingease = easeEffect;
+			io.sockets.emit('fadingEaseChange', fadingease);
 		})
 
 		dmx.on('blackout', function (bout) {
