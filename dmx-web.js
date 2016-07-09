@@ -149,22 +149,19 @@ function DMXWeb() {
 //
 // 					}
 // 				}
-// 				universesUpdate[universe] = update;
-// 				// if(fadingEffect == 'linear'){
-// 				// 	socket.emit('update', universe, update);
-// 				// }else{
-// 				// 	socket.emit('update', universe, update, true);
-// 				// }
-// 				//TODO enable effect mode by button also here
 //
+// 				//TODO get name of config.universes[universe] and not object reference
+// 				universesUpdate[config.universes[universe]] = update;
 // 			}
 // 			result[color] = {
 // 				label: color,
-// 					values: universesUpdate[universe]
+// 					values: universesUpdate
 // 			}
 // 		}
 // 		return result;
 // 	}
+// 	var asdf = generateColors();
+// 	console.dir(asdf);
 
 
 	io.sockets.on('connection', function(socket) {
