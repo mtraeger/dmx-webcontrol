@@ -76,9 +76,8 @@
             //TODO select presets for animation from list?
             //TODO also buttons to click manual effects? -> effect-fade on click, button list like home?
 
-            //select easing //TODO --> selct easing --> drop down list
-            var easingEffects = ["linear", "outBounce"] //TODO generate effects automatical,
-
+            //select easing
+            var easingEffects = ["linear", "outBounce", "inOutCubic", "inOutQuint"]; //TODO get effects from source
             var easingSelect = "<select id='easingSelect'>";
             for (var easingEffect in easingEffects) {
                 easingSelect += "<option value='"+easingEffects[easingEffect]+"'>"+easingEffects[easingEffect]+"</option>";
