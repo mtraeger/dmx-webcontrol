@@ -143,26 +143,56 @@
                 }(setup.colors[color]));
             }
             //color slider
-//            for (var universe in setup.universes) {
-//                var html = "<div><h1>" + universe + "</h1>";
-//                for (var device in setup.universes[universe].devices) {
-//                    var dev = setup.universes[universe].devices[device];
-//                    html += '<div class="device">'
-//                    for (var channel in devices[dev.type].channels) {
-//                        var channel_id = dev.address + Number(channel)
-//                        var html_id = get_html_id(universe, channel_id);
-//                        html += '<div class="channel">'
-//                        html += '<label for="' + html_id + '">' + devices[dev.type].channels[channel] + '</label>';
-//                        html += '<input  id="' + html_id + '" type="range" orient="vertical" min="0" value="0" max="255">'
-//                        html += '<input  id="' + html_id + '_display" class="displayslider" disabled type="range" orient="vertical" min="0" value="0" max="255">'
-//                        html += '</div>'
-//                    }
-//                    html += '</div>'
-//                }
-//                html += "</div>";
-//                $(html).hide().appendTo('#sliders').fadeIn();
+            var rgbColor = {0:"red", 1:"green", 2:"blue"}; //TODO add other colors - amber, white, uv?
+//            for (var easingEffect in easingEffects) {
+//                easingSelect += "<option value='"+easingEffects[easingEffect]+"'>"+easingEffects[easingEffect]+"</option>";
 //            }
+            for (var color in rgbColor) {
+                var html2 = "";
+                html2 += '<label for="rgb'+rgbColor[color]+'">'+rgbColor[color]+'</label>';
+                html2 += "";
+                $(html2).hide().appendTo('#colors').fadeIn();
+                var fader = $('<input id="rgb'+rgbColor[color]+'" type="range" orient="vertical" min="0" value="0" max="255">');
+                fader.hide().appendTo('#colors').fadeIn();
+                fader.on("input", function (e) {
+                        //TODO reduce code duplication (see buttons above)
+                        for (var universe in setup.universes) {
+                            var update = {};
+                            for (var device in setup.universes[universe].devices) {
+                                var dev = setup.universes[universe].devices[device];
+                                if (devices[dev.type].hasOwnProperty("startRgbChannel")) {
+                                    var startRgb = devices[dev.type].startRgbChannel;
+                                    var firstRgbChannelForDevice = dev.address + startRgb;
 
+                                    //TODO dirty - pass color var here and use it instead of colorAdd
+                                    var colorAdd = 0;
+                                    if ($(e.target)[0].id == "rgbgreen") {
+                                        colorAdd = 1;
+                                    } else if ($(e.target)[0].id == "rgbblue") {
+                                        colorAdd = 2;
+                                    }
+
+                                    var updateChannel = parseInt(colorAdd) + firstRgbChannelForDevice;
+                                    update[updateChannel] = e.target.value;
+                                }
+                            }
+                            socket.emit('update', universe, update);
+                        }
+                });
+            }
+
+
+
+            //Fading Time
+            var html2 = "<div id='fadecontainer'><h2>Fade</h2>";
+            html2 += '<label for="fade">Fade duration</label>';
+            html2 += "</div>";
+            $(html2).hide().appendTo('#sliders').fadeIn();
+            var fader = $('<input id="fade" type="range" orient="horizontal" min="0" value="0" max="300">');
+            fader.hide().appendTo('#fadecontainer').fadeIn();
+            fader.on("input", function (e) {
+                socket.emit('fading', e.target.value);
+            });
 
 
             //TODO show heading for color in this color if color exists (or if color)
