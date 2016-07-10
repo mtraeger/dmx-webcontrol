@@ -49,6 +49,42 @@ Switching.prototype.addPresetsToAnimations = function () {
 		}
 		this.fx_stack.push({'to': universesUpdate});
 	}
+
+//Test device by device update
+	for (var color in this.setupconfig.colors) {
+
+		for (var universe in this.setupconfig.universes) {
+			for (var device in this.setupconfig.universes[universe].devices) {
+				var universesUpdate = {};
+				var update = {};
+				var dev = this.setupconfig.universes[universe].devices[device];
+				if (this.setupdevices[dev.type].hasOwnProperty("startRgbChannel")) {
+					var startRgb = this.setupdevices[dev.type].startRgbChannel;
+					var firstRgbChannelForDevice = dev.address + startRgb;
+					for (var colorChannel in this.setupconfig.colors[color].values) {
+						var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
+						update[updateChannel] = this.setupconfig.colors[color].values[colorChannel];
+					}
+
+					//TODO special override colors from device config - code below from sliders...
+					//use color.label for naming convention
+//                                    for (var overrideColor in devices[dev.type].colors) {
+//                                        var channel_id = dev.address + Number(overrideColor)
+//                                        html += '<label for="' + html_id + '">' + devices[dev.type].channels[overrideColor] + '</label>';
+//                                    }
+					universesUpdate[universe] = update;
+					this.fx_stack.push({'to': universesUpdate});
+				}
+			}
+
+		}
+
+	}
+
+	//TODO random device update -> strobe effect if fast?
+	//TODO also random color (additional)?
+	//TODO additional feature random device on (only one at each time)
+
 }
 
 /**
