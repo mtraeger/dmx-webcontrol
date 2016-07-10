@@ -10,81 +10,106 @@ function Switching(msg, updateDmx) {
 	this.intervalId = null;
 	this.setupconfig = msg.setup
 	this.setupdevices = msg.devices
-	this.presets = this.setupconfig.presets;
+	this.presets = msg.setup.presets;
+	this.strategy = colors;
 }
 
 Switching.prototype.addPresetsToAnimations = function () {
-	// presets switching
-	// for (var preset in this.presets) {
-	// 	this.fx_stack.push({'to': this.presets[preset].values})
-	// }
 
-	//color switching //TODO different strategies by button
-	//TODO fix duplication with index.html
-	//TODO generate not new color list all the time - generate once and store it
-	for (var color in this.setupconfig.colors) {
-		var universesUpdate = {};
-		for (var universe in this.setupconfig.universes) {
-			var update = {};
-			for (var device in this.setupconfig.universes[universe].devices) {
-				var dev = this.setupconfig.universes[universe].devices[device];
-				if (this.setupdevices[dev.type].hasOwnProperty("startRgbChannel")) {
-					var startRgb = this.setupdevices[dev.type].startRgbChannel;
-					var firstRgbChannelForDevice = dev.address + startRgb;
-					for (var colorChannel in this.setupconfig.colors[color].values) {
-						var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-						update[updateChannel] = this.setupconfig.colors[color].values[colorChannel];
-					}
-
-					//TODO special override colors from device config - code below from sliders...
-					//use color.label for naming convention
-//                                    for (var overrideColor in devices[dev.type].colors) {
-//                                        var channel_id = dev.address + Number(overrideColor)
-//                                        html += '<label for="' + html_id + '">' + devices[dev.type].channels[overrideColor] + '</label>';
-//                                    }
-
-				}
-			}
-			universesUpdate[universe] = update;
-		}
-		this.fx_stack.push({'to': universesUpdate});
-	}
-
-//Test device by device update //TODO reduce code duplication?
-	for (var color in this.setupconfig.colors) {
-		for (var universe in this.setupconfig.universes) {
-			for (var device in this.setupconfig.universes[universe].devices) {
-				var universesUpdate = {};
-				var update = {};
-				var dev = this.setupconfig.universes[universe].devices[device];
-				if (this.setupdevices[dev.type].hasOwnProperty("startRgbChannel")) {
-					var startRgb = this.setupdevices[dev.type].startRgbChannel;
-					var firstRgbChannelForDevice = dev.address + startRgb;
-					for (var colorChannel in this.setupconfig.colors[color].values) {
-						var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-						update[updateChannel] = this.setupconfig.colors[color].values[colorChannel];
-					}
-
-					//TODO special override colors from device config - code below from sliders...
-					//use color.label for naming convention
-//                                    for (var overrideColor in devices[dev.type].colors) {
-//                                        var channel_id = dev.address + Number(overrideColor)
-//                                        html += '<label for="' + html_id + '">' + devices[dev.type].channels[overrideColor] + '</label>';
-//                                    }
-					universesUpdate[universe] = update;
-					this.fx_stack.push({'to': universesUpdate});
-				}
-			}
-
-		}
-
-	}
+	//Strategies see below
+	this.strategy();
 
 	//TODO random device update -> strobe effect if fast?
 	//TODO also random color (additional)?
 	//TODO additional feature random device on (only one at each time)
 
+	//TODO all devices switch at the same time but with random color
 }
+
+/* Set Strategies*/
+Switching.prototype.colorStrategy = function () {
+	this.strategy = colors;
+}
+
+Switching.prototype.colorDevByDevStrategy = function () {
+	this.strategy = colorsDevByDev;
+}
+
+Switching.prototype.presetsStrategy = function () {
+	this.strategy = presets;
+}
+
+/* STRATEGIES */
+var colors = function() {
+		//color switching //TODO different strategies by button
+		//TODO fix duplication with index.html
+		//TODO generate not new color list all the time - generate once and store it
+		for (var color in this.setupconfig.colors) {
+			var universesUpdate = {};
+			for (var universe in this.setupconfig.universes) {
+				var update = {};
+				for (var device in this.setupconfig.universes[universe].devices) {
+					var dev = this.setupconfig.universes[universe].devices[device];
+					if (this.setupdevices[dev.type].hasOwnProperty("startRgbChannel")) {
+						var startRgb = this.setupdevices[dev.type].startRgbChannel;
+						var firstRgbChannelForDevice = dev.address + startRgb;
+						for (var colorChannel in this.setupconfig.colors[color].values) {
+							var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
+							update[updateChannel] = this.setupconfig.colors[color].values[colorChannel];
+						}
+
+						//TODO special override colors from device config - code below from sliders...
+						//use color.label for naming convention
+//                                    for (var overrideColor in devices[dev.type].colors) {
+//                                        var channel_id = dev.address + Number(overrideColor)
+//                                        html += '<label for="' + html_id + '">' + devices[dev.type].channels[overrideColor] + '</label>';
+//                                    }
+
+					}
+				}
+				universesUpdate[universe] = update;
+			}
+			this.fx_stack.push({'to': universesUpdate});
+		}
+};
+var colorsDevByDev = function() {
+//Test device by device update //TODO reduce code duplication?
+		for (var color in this.setupconfig.colors) {
+			for (var universe in this.setupconfig.universes) {
+				for (var device in this.setupconfig.universes[universe].devices) {
+					var universesUpdate = {};
+					var update = {};
+					var dev = this.setupconfig.universes[universe].devices[device];
+					if (this.setupdevices[dev.type].hasOwnProperty("startRgbChannel")) {
+						var startRgb = this.setupdevices[dev.type].startRgbChannel;
+						var firstRgbChannelForDevice = dev.address + startRgb;
+						for (var colorChannel in this.setupconfig.colors[color].values) {
+							var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
+							update[updateChannel] = this.setupconfig.colors[color].values[colorChannel];
+						}
+
+						//TODO special override colors from device config - code below from sliders...
+						//use color.label for naming convention
+//                                    for (var overrideColor in devices[dev.type].colors) {
+//                                        var channel_id = dev.address + Number(overrideColor)
+//                                        html += '<label for="' + html_id + '">' + devices[dev.type].channels[overrideColor] + '</label>';
+//                                    }
+						universesUpdate[universe] = update;
+						this.fx_stack.push({'to': universesUpdate});
+					}
+				}
+
+			}
+
+		}
+};
+var presets = function () {
+		// presets switching
+		for (var preset in this.presets) {
+			this.fx_stack.push({'to': this.presets[preset].values})
+		}
+}
+
 
 /**
  * Abort this single animation
