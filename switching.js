@@ -22,7 +22,7 @@ Switching.prototype.addPresetsToAnimations = function () {
 
 	//TODO random device update -> strobe effect if fast?
 	//TODO also random color (additional)?
-	//TODO additional feature random device on (only one at each time)
+	//TODO additional feature random device on (only one at each time) -> see colorsSingleDevbyDev
 
 	//TODO all devices switch at the same time but with random color
 }
@@ -30,7 +30,7 @@ Switching.prototype.addPresetsToAnimations = function () {
 /* Set Strategies*/
 Switching.prototype.colorsStrategy = function () {
 	this.setStrategy(function() {
-		//color switching //TODO different strategies by button
+		//color switching
 		//TODO fix duplication with index.html
 		//TODO generate not new color list all the time - generate once and store it
 		for (var color in this.setupconfig.colors) {

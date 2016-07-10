@@ -268,6 +268,10 @@ function DMXWeb() {
 				if(!switching.running) {
 					switching.run();
 				}
+				if(switchingTime == 300){
+					switchingTime = 400; //TODO ok?, update here if slider update?
+					console.log(switchingTime)
+				}
 				var secondInMilliSec = 60*1000;
 				var updateMod = 1+Math.pow(switchingTime,2)/200;
 				switching.setResolution(secondInMilliSec/updateMod)

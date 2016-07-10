@@ -90,13 +90,13 @@
             html3 += '<label for="switch">Switching Speed (0 = Off)</label>';
             html3 += "</div>";
             $(html3).hide().appendTo('#scripts').fadeIn();
-            var switchfader = $('<input id="switch" type="range" orient="vertical" min="0" value="0" max="300">'); //TODO time?
+            var switchfader = $('<input id="switch" type="range" orient="vertical" min="0" value="0" max="300">'); //TODO time? 400?
             switchfader.hide().appendTo('#switchpresets').fadeIn();
             switchfader.on("input", function (e) {
                 socket.emit('switching', e.target.value);
             });
-            //TODO select presets for animation from list?
-            //TODO also buttons to click manual effects? -> effect-fade on click, button list like home?
+            //TODO select presets / colors for animation from list?
+            //TODO also sort presets / colors for switching via drag n drop, duplicating of colors / presets possible
 
 
             //Next step button
