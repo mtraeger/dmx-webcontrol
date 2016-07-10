@@ -87,7 +87,7 @@
 
             //Switching Presets Time
             var html3 = "<div id='switchpresets'><h2>Switch</h2>";
-            html3 += '<label for="switch">Switch presets Speed -- 0 = Off</label>';
+            html3 += '<label for="switch">Switching Speed (0 = Off)</label>';
             html3 += "</div>";
             $(html3).hide().appendTo('#scripts').fadeIn();
             var switchfader = $('<input id="switch" type="range" orient="vertical" min="0" value="0" max="300">'); //TODO time?
@@ -99,6 +99,7 @@
             //TODO also buttons to click manual effects? -> effect-fade on click, button list like home?
 
 
+            //Next step button
             var nextSwitchStep = $('<button class="span2 btn btn-info">Next Step</button>');
             nextSwitchStep.hide().appendTo('#scripts').fadeIn();
             nextSwitchStep.click(function () {
@@ -107,6 +108,7 @@
 
             //switching strategies
             var switchingStrategies = ["colors", "colorsDevByDev", "presets", "random"]; //TODO get effects from source?
+            $("<div id='switchingStrategies'><h2>Switching Strategies</h2></div id='switchingStrategies'>").hide().appendTo('#scripts').fadeIn();
             for (var strategy in switchingStrategies) {
                 var strategyButton = $('<button value="'+switchingStrategies[strategy]+'" class="span2 btn btn-info">'+switchingStrategies[strategy]+' Strategy</button>');
                 strategyButton.hide().appendTo('#scripts').fadeIn();
