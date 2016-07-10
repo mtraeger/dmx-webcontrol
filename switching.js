@@ -11,7 +11,8 @@ function Switching(msg, updateDmx) {
 	this.setupconfig = msg.setup
 	this.setupdevices = msg.devices
 	this.presets = msg.setup.presets;
-	this.strategy = colors;
+	this.colorsStrategy();
+	this.strategy = this.colorsStrategy;
 }
 
 Switching.prototype.addPresetsToAnimations = function () {
@@ -28,29 +29,7 @@ Switching.prototype.addPresetsToAnimations = function () {
 
 /* Set Strategies*/
 Switching.prototype.colorsStrategy = function () {
-	this.setStrategy(colors)
-}
-
-Switching.prototype.colorsDevByDevStrategy = function () {
-	this.setStrategy(colorsDevByDev)
-}
-
-Switching.prototype.presetsStrategy = function () {
-	this.setStrategy(presets)
-}
-
-//Helper
-Switching.prototype.setStrategy = function (strategy) {
-	this.strategy = strategy;
-	//TODO empty array? - problems if in auto animation...
-	for(var elem in this.fx_stack) {
-		this.fx_stack.shift();
-	}
-	this.addPresetsToAnimations();
-}
-
-/* STRATEGIES */
-var colors = function() {
+	this.setStrategy(function() {
 		//color switching //TODO different strategies by button
 		//TODO fix duplication with index.html
 		//TODO generate not new color list all the time - generate once and store it
@@ -81,8 +60,11 @@ var colors = function() {
 			}
 			this.fx_stack.push({'to': universesUpdate});
 		}
-};
-var colorsDevByDev = function() {
+	});
+}
+
+Switching.prototype.colorsDevByDevStrategy = function () {
+	this.setStrategy(function() {
 //Test device by device update //TODO reduce code duplication?
 		for (var color in this.setupconfig.colors) {
 			for (var universe in this.setupconfig.universes) {
@@ -112,12 +94,31 @@ var colorsDevByDev = function() {
 			}
 
 		}
-};
-var presets = function () {
+	});
+}
+
+Switching.prototype.presetsStrategy = function () {
+	this.setStrategy(function () {
 		// presets switching
 		for (var preset in this.presets) {
 			this.fx_stack.push({'to': this.presets[preset].values})
 		}
+	})
+}
+
+/**Helper for setting strategy
+ * clears stack for animation and sets new strategy
+ * afterwards reinitializes the new animation steps
+ *
+ * @param strategy to set
+ */
+Switching.prototype.setStrategy = function (strategy) {
+	this.strategy = strategy;
+	//TODO empty array? - problems if in auto animation...
+	for(var elem in this.fx_stack) {
+		this.fx_stack.shift();
+	}
+	this.addPresetsToAnimations();
 }
 
 
