@@ -22,8 +22,7 @@ module.exports = {
 		startRgbChannel: 1, //start value for rgb color effects (first channel is 0)
 		colors: [ //presets differing from default rgb - e.g. if additional color available, values starting at first rgb channel (see above)
 		],
-		channelPresets: [
-		]
+		channelPresets: {}
 	},
 	'stairville-led-flat': {
 		channels: ['dimmer', 'red', 'green', 'blue', 'strobe', 'ctrl', 'group', 'delay'],
@@ -47,9 +46,7 @@ module.exports = {
 		colors: [ //presets differing from default rgb - e.g. if additional color available, values starting at first rgb channel (see above)
 
 		],
-		channelPresets: [
-			{'channel': 0,   'value': 255}
-		]
+		channelPresets: {0: 255} //initialized values at start, e.g. for dimming channels
 	},
 	'adj-5p-hex': {
 		channels: ['red', 'green', 'blue', 'white', 'amber', 'uv', 'dimmer', 'strobe'],
@@ -83,9 +80,7 @@ module.exports = {
 			//problem: store current color step (modifications in between?)
 			//TODO add uv color for this device
 		],
-		channelPresets: [
-			{'channel': 6,   'value': 255}
-		]
+		channelPresets: {6: 255} //initialized values at start, e.g. for dimming channels
 	},
 	'eurolite-led-bar': {
 		channels: ['ctrl', 'dimmer', 'strobe', 'red0', 'green0', 'blue0', 'red1', 'green1', 'blue1', 'red2', 'green2', 'blue2'],
@@ -109,7 +104,7 @@ module.exports = {
 					{'value': 192, 'label': 'Multi flow'},
 					{'value': 208, 'label': 'Dream flow'},
 					{'value': 224, 'label': 'Two color flow'},
-					{'value': 240, 'label': 'Sound activity'}		
+					{'value': 240, 'label': 'Sound activity'}
 				]
 			},
 			'dimmer': {
@@ -122,9 +117,7 @@ module.exports = {
 		colors: [ //presets differing from default rgb - e.g. if additional color available, values starting at first rgb channel (see above)
 
 		],
-		channelPresets: [
-			{'channel': 1,   'value': 255}
-		]
+		channelPresets:	{1: 255} //initialized values at start, e.g. for dimming channels
 	},
 	'stairville-led-par-56': {
 		channels: ['ctrl', 'red', 'green', 'blue', 'speed'],
@@ -143,7 +136,6 @@ module.exports = {
 		colors: [ //presets differing from default rgb - e.g. if additional color available, values starting at first rgb channel (see above)
 
 		],
-		channelPresets: [
-		]
+		channelPresets: {}
 	}
 }

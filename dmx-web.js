@@ -38,6 +38,19 @@ function DMXWeb() {
 		)
 		animations[universe] = [];
 		fadingDelayer[universe] = [];
+
+		//preset values
+		for (var device in config.universes[universe].devices) {
+			var dev = config.universes[universe].devices[device];
+			if(DMX.devices[dev.type].hasOwnProperty("channelPresets")){
+				var presets = DMX.devices[dev.type].channelPresets
+				var toUpdate = {};
+				for(var devStart in presets){
+					toUpdate[parseInt(devStart)+dev.address] = presets[devStart];
+				}
+				dmx.update(universe, toUpdate);
+			}
+		}
 	}
 
 	//TODO set devices.channelPresets to specified value in devices config
@@ -291,7 +304,6 @@ function DMXWeb() {
 					fadingDelayer[universe][channel].abort();
 				}
 			}
-
 			dmx.update(universe, update);
 		}else if (effect) {
 			for (var channel in update) { //effect animation for each channel
