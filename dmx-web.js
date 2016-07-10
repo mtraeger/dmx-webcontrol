@@ -118,8 +118,6 @@ function DMXWeb() {
 	var blackout = false;
 	var switchingTime = 0;
 
-	//TODO more global scope?
-	// console.log({'devices': DMX.devices, 'setup': config})
 	var switching = new Switching({'devices': DMX.devices, 'setup': config}, function (universe, update, effect) {
 		updateDmx(universe, update, effect);
 	});
