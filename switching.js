@@ -42,7 +42,10 @@ Switching.prototype.presetsStrategy = function () {
 //Helper
 Switching.prototype.setStrategy = function (strategy) {
 	this.strategy = strategy;
-	this.fx_stack = [];
+	//TODO empty array? - problems if in auto animation...
+	for(var elem in this.fx_stack) {
+		this.fx_stack.shift();
+	}
 	this.addPresetsToAnimations();
 }
 
