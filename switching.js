@@ -97,6 +97,55 @@ Switching.prototype.colorsDevByDevStrategy = function () {
 	});
 }
 
+Switching.prototype.colorsSingleDevByDev = function () {
+	this.setStrategy(function() {
+//Test device by device update //TODO reduce code duplication?
+		for (var color in this.setupconfig.colors) {
+			for (var universe in this.setupconfig.universes) {
+				for (var device in this.setupconfig.universes[universe].devices) {
+					var universesUpdate = {};
+					var update = {};
+					var dev = this.setupconfig.universes[universe].devices[device];
+					if (this.setupdevices[dev.type].hasOwnProperty("startRgbChannel")) {
+						var startRgb = this.setupdevices[dev.type].startRgbChannel;
+						var firstRgbChannelForDevice = dev.address + startRgb;
+
+						//Special of this strategy: make alle the oters black
+						for (var allDevice in this.setupconfig.universes[universe].devices) {
+							var dev2 = this.setupconfig.universes[universe].devices[allDevice];
+							if (this.setupdevices[dev2.type].hasOwnProperty("startRgbChannel")) {
+								var startRgbCopy = this.setupdevices[dev2.type].startRgbChannel;
+								var firstRgbChannelForDeviceCopy = dev2.address + startRgbCopy;
+								for (var colorChannel2 in this.setupconfig.colors[color].values) {
+									update[parseInt(colorChannel2) + firstRgbChannelForDeviceCopy] = 0;
+								}
+							}
+
+						}
+
+						//old part
+						for (var colorChannel in this.setupconfig.colors[color].values) {
+							var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
+							update[updateChannel] = this.setupconfig.colors[color].values[colorChannel];
+						}
+
+						//TODO special override colors from device config - code below from sliders...
+						//use color.label for naming convention
+//                                    for (var overrideColor in devices[dev.type].colors) {
+//                                        var channel_id = dev.address + Number(overrideColor)
+//                                        html += '<label for="' + html_id + '">' + devices[dev.type].channels[overrideColor] + '</label>';
+//                                    }
+						universesUpdate[universe] = update;
+						this.fx_stack.push({'to': universesUpdate});
+					}
+				}
+
+			}
+
+		}
+	});
+}
+
 Switching.prototype.presetsStrategy = function () {
 	this.setStrategy(function () {
 		// presets switching
@@ -115,7 +164,8 @@ Switching.prototype.presetsStrategy = function () {
 Switching.prototype.setStrategy = function (strategy) {
 	this.strategy = strategy;
 	//TODO empty array? - problems if in auto animation...
-	for(var elem in this.fx_stack) {
+	//TODO correct way? dirty???
+	while(this.fx_stack.length > 0){
 		this.fx_stack.shift();
 	}
 	this.addPresetsToAnimations();

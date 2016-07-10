@@ -107,7 +107,7 @@
             });
 
             //switching strategies
-            var switchingStrategies = ["colors", "colorsDevByDev", "presets", "random"]; //TODO get effects from source?
+            var switchingStrategies = ["colors", "colorsDevByDev", "presets", "colorsSingleDevByDev"]; //TODO get effects from source?
             $("<div id='switchingStrategies'><h2>Switching Strategies</h2></div id='switchingStrategies'>").hide().appendTo('#scripts').fadeIn();
             for (var strategy in switchingStrategies) {
                 var strategyButton = $('<button value="'+switchingStrategies[strategy]+'" class="span2 btn btn-info">'+switchingStrategies[strategy]+' Strategy</button>');

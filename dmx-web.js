@@ -288,6 +288,8 @@ function DMXWeb() {
 				switching.colorsDevByDevStrategy();
 			}else if (strategy == 'presets') {
 				switching.presetsStrategy();
+			}else if (strategy == 'colorsSingleDevByDev'){
+				switching.colorsSingleDevByDev();
 			}
 		})
 
