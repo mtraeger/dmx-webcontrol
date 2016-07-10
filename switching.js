@@ -50,9 +50,8 @@ Switching.prototype.addPresetsToAnimations = function () {
 		this.fx_stack.push({'to': universesUpdate});
 	}
 
-//Test device by device update
+//Test device by device update //TODO reduce code duplication?
 	for (var color in this.setupconfig.colors) {
-
 		for (var universe in this.setupconfig.universes) {
 			for (var device in this.setupconfig.universes[universe].devices) {
 				var universesUpdate = {};
