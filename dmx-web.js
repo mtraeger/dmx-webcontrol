@@ -280,6 +280,17 @@ function DMXWeb() {
 			switching.nextStep();
 		})
 
+		socket.on('switchingStrategy', function (strategy) {
+			console.log(strategy)
+			if(strategy == 'colors'){
+				switching.colorsStrategy();
+			}else if (strategy == 'colorsDevByDev') {
+				switching.colorsDevByDevStrategy();
+			}else if (strategy == 'presets') {
+				switching.presetsStrategy();
+			}
+		})
+
 		socket.on('fadingEaseChange', function (easeEffect) {
 			fadingease = easeEffect;
 			io.sockets.emit('fadingEaseChange', fadingease);

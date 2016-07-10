@@ -105,6 +105,17 @@
                 socket.emit('nextSwitchStep');
             });
 
+            //switching strategies
+            var switchingStrategies = ["colors", "colorsDevByDev", "presets", "random"]; //TODO get effects from source?
+            for (var strategy in switchingStrategies) {
+                var strategyButton = $('<button value="'+switchingStrategies[strategy]+'" class="span2 btn btn-info">'+switchingStrategies[strategy]+' Strategy</button>');
+                strategyButton.hide().appendTo('#scripts').fadeIn();
+                strategyButton.click(function (e) {
+                    socket.emit('switchingStrategy', e.target.value);
+                });
+            }
+
+
             //Color page
             // color buttons and color sliders for rgb (additional color sliders?)
             for (var color in setup.colors) {

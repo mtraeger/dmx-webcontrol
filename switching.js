@@ -27,16 +27,23 @@ Switching.prototype.addPresetsToAnimations = function () {
 }
 
 /* Set Strategies*/
-Switching.prototype.colorStrategy = function () {
-	this.strategy = colors;
+Switching.prototype.colorsStrategy = function () {
+	this.setStrategy(colors)
 }
 
-Switching.prototype.colorDevByDevStrategy = function () {
-	this.strategy = colorsDevByDev;
+Switching.prototype.colorsDevByDevStrategy = function () {
+	this.setStrategy(colorsDevByDev)
 }
 
 Switching.prototype.presetsStrategy = function () {
-	this.strategy = presets;
+	this.setStrategy(presets)
+}
+
+//Helper
+Switching.prototype.setStrategy = function (strategy) {
+	this.strategy = strategy;
+	this.fx_stack = [];
+	this.addPresetsToAnimations();
 }
 
 /* STRATEGIES */
