@@ -22,8 +22,9 @@
         socket.on('init', function (msg) {
             $('#presets').empty();
             $('#sliders').empty();
-            $('#scripts').empty();
+            $('#switching').empty();
             $('#colors').empty();
+            $('#scripts').empty();
             $('#navbar-content').empty();
             setup = msg.setup
             devices = msg.devices
@@ -89,7 +90,7 @@
             var html3 = "<div id='switchpresets'><h2>Switch</h2>";
             html3 += '<label for="switch">Switching Speed (0 = Off)</label>';
             html3 += "</div>";
-            $(html3).hide().appendTo('#scripts').fadeIn();
+            $(html3).hide().appendTo('#switching').fadeIn();
             var switchfader = $('<input id="switch" type="range" orient="vertical" min="0" value="0" max="300">'); //TODO time? 400?
             switchfader.hide().appendTo('#switchpresets').fadeIn();
             switchfader.on("input", function (e) {
@@ -101,17 +102,17 @@
 
             //Next step button
             var nextSwitchStep = $('<button class="span2 btn btn-info">Next Step</button>');
-            nextSwitchStep.hide().appendTo('#scripts').fadeIn();
+            nextSwitchStep.hide().appendTo('#switching').fadeIn();
             nextSwitchStep.click(function () {
                 socket.emit('nextSwitchStep');
             });
 
             //switching strategies
             var switchingStrategies = ["colors", "colorsDevByDev", "presets", "colorsSingleDevByDev"]; //TODO get effects from source?
-            $("<div id='switchingStrategies'><h2>Switching Strategies</h2></div id='switchingStrategies'>").hide().appendTo('#scripts').fadeIn();
+            $("<div id='switchingStrategies'><h2>Switching Strategies</h2></div id='switchingStrategies'>").hide().appendTo('#switching').fadeIn();
             for (var strategy in switchingStrategies) {
                 var strategyButton = $('<button value="'+switchingStrategies[strategy]+'" class="span2 btn btn-info">'+switchingStrategies[strategy]+' Strategy</button>');
-                strategyButton.hide().appendTo('#scripts').fadeIn();
+                strategyButton.hide().appendTo('#switching').fadeIn();
                 strategyButton.click(function (e) {
                     socket.emit('switchingStrategy', e.target.value);
                 });
@@ -303,8 +304,9 @@
         <ul class="nav" id="myTab">
             <li class="active"><a href="#home" data-toggle="tab">Home</a></li>
             <li><a href="#sliders" data-toggle="tab">Sliders</a></li>
-            <li><a href="#scripts" data-toggle="tab">Scripts</a></li>
+            <li><a href="#switching" data-toggle="tab">Switching</a></li>
             <li><a href="#colors" data-toggle="tab">Colors</a></li>
+            <li><a href="#scripts" data-toggle="tab">Scripts</a></li>
         </ul>
         <div id="navbar-content">
 
@@ -321,10 +323,13 @@
         <div id="sliders" class="tab-pane">
 
         </div>
-        <div id="scripts" class="tab-pane">
+        <div id="switching" class="tab-pane">
 
         </div>
         <div id="colors" class="tab-pane">
+
+        </div>
+        <div id="scripts" class="tab-pane">
 
         </div>
     </div>
