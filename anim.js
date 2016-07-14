@@ -41,6 +41,7 @@ Anim.prototype.abort = function () {
  * @param easing function e.g. linear (default) or inOutCubic or outBounce from easings.js
  * @returns {Anim}
  */
+//TODO bring back original options param
 Anim.prototype.add = function(to, duration, easing) {
 	var duration = duration || resolution
 	var easing = easing || 'linear'
@@ -48,7 +49,7 @@ Anim.prototype.add = function(to, duration, easing) {
 	return this
 }
 
-//TODO bring back original options param?
+
 
 /**
  * add relative chanels for multiple devices

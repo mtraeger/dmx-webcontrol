@@ -65,13 +65,7 @@ Switching.prototype.colorsStrategy = function () {
 							update[updateChannel] = this.setupconfig.colors[color].values[colorChannel];
 						}
 
-						//TODO special override colors from device config - code below from sliders...
-						//use color.label for naming convention
-//                                    for (var overrideColor in devices[dev.type].colors) {
-//                                        var channel_id = dev.address + Number(overrideColor)
-//                                        html += '<label for="' + html_id + '">' + devices[dev.type].channels[overrideColor] + '</label>';
-//                                    }
-
+						// Maybe override colors here if special device colors
 					}
 				}
 				universesUpdate[universe] = update;
@@ -103,12 +97,7 @@ Switching.prototype.colorsDevByDevStrategy = function () {
 							update[updateChannel] = this.setupconfig.colors[color].values[colorChannel];
 						}
 
-						//TODO special override colors from device config - code below from sliders...
-						//use color.label for naming convention
-//                                    for (var overrideColor in devices[dev.type].colors) {
-//                                        var channel_id = dev.address + Number(overrideColor)
-//                                        html += '<label for="' + html_id + '">' + devices[dev.type].channels[overrideColor] + '</label>';
-//                                    }
+
 						universesUpdate[universe] = update;
 						this.fx_stack.push({'to': universesUpdate});
 					}
@@ -158,12 +147,8 @@ Switching.prototype.colorsSingleDevByDev = function () {
 							update[updateChannel] = this.setupconfig.colors[color].values[colorChannel];
 						}
 
-						//TODO special override colors from device config - code below from sliders...
-						//use color.label for naming convention
-//                                    for (var overrideColor in devices[dev.type].colors) {
-//                                        var channel_id = dev.address + Number(overrideColor)
-//                                        html += '<label for="' + html_id + '">' + devices[dev.type].channels[overrideColor] + '</label>';
-//                                    }
+
+
 						universesUpdate[universe] = update;
 						this.fx_stack.push({'to': universesUpdate});
 					}
@@ -197,8 +182,6 @@ Switching.prototype.presetsStrategy = function () {
  */
 Switching.prototype.setStrategy = function (strategy) {
 	this.strategy = strategy;
-	//TODO empty array? - problems if in auto animation...
-	//TODO correct way? dirty???
 	while(this.fx_stack.length > 0){
 		this.fx_stack.shift();
 	}
@@ -247,7 +230,7 @@ Switching.prototype.run = function() {
 		if(self.aborted){
 			self.running = false;
 			clearInterval(self.intervalId);
-			self.aborted = false; //TODO also required here?
+			self.aborted = false;
 			return;
 		}
 

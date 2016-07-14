@@ -133,46 +133,6 @@ function DMXWeb() {
 		updateDmx(universe, update, effect);
 	});
 
-// 	function generateColors(){
-// 		var result = [];
-// 		for (var color in config.colors) {
-// 			var universesUpdate = {};
-// 			for (var universe in config.universes) {
-// 				var update = {};
-// 				for (var device in config.universes[universe].devices) {
-// 					var dev = config.universes[universe].devices[device];
-// 					if (DMX.devices[dev.type].hasOwnProperty("startRgbChannel")) {
-// 						var startRgb = DMX.devices[dev.type].startRgbChannel;
-// 						var firstRgbChannelForDevice = dev.address + startRgb;
-// 						for (var colorChannel in config.colors[color].values) {
-// 							var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-// 							update[updateChannel] = config.colors[color].values[colorChannel];
-// 						}
-//
-// 						//TODO special override colors from device config - code below from sliders...
-// 						//use color.label for naming convention
-// //                                    for (var overrideColor in devices[dev.type].colors) {
-// //                                        var channel_id = dev.address + Number(overrideColor)
-// //                                        html += '<label for="' + html_id + '">' + devices[dev.type].channels[overrideColor] + '</label>';
-// //                                    }
-//
-// 					}
-// 				}
-//
-// 				//TODO get name of config.universes[universe] and not object reference
-// 				universesUpdate[config.universes[universe]] = update;
-// 			}
-// 			result[color] = {
-// 				label: color,
-// 					values: universesUpdate
-// 			}
-// 		}
-// 		return result;
-// 	}
-// 	var asdf = generateColors();
-// 	console.dir(asdf);
-
-
 	io.sockets.on('connection', function(socket) {
 		socket.emit('init', {'devices': DMX.devices, 'setup': config})
 
@@ -213,23 +173,23 @@ function DMXWeb() {
 		// or additional auto groups containing all same type devices?
 
 		//TODO master slider for each color of all lights
-		
+
 		//TODO animations for whole group / type of light device (also in script A() )
 		// delay animations for each device in group for a given time (1 -> 2 (+x sec) -> 3 (2+x sec) ...)
 		// from front or backwards (see light fading through the room from device to device)
-		// also from middle? with effects? 
+		// also from middle? with effects?
 		// add device to more than one group? type of device group like normal group? (device type group only special name?)
 		// start effects on devices der reihe nach (number by number? - delayed)
-		
+
 		//TODO random device for next animation step optional
 		// random animation?
 		// change (color?, continue to animation step) if sound over threshold, change all devices if sound is over highter threshold
-		
+
 		//TODO color groups? all colors? all with colors? all with same colors?
 		//TODO presets? simple out of the box baukasten (presets per device type? -> available for all devices of type)
 		// simple drag n drop lightshow builder?
 		// different depth of effect: change one color for all and other color only for sub group?
-		
+
 		//TODO stacking groups: group in group - subgroups?
 		// special group: all
 
@@ -267,8 +227,8 @@ function DMXWeb() {
 					switching.run();
 				}
 				if(switchingTime == 300){
-					switchingTime = 400; //TODO ok?, update here if slider update?
-					console.log(switchingTime)
+					switchingTime = 400;
+					// console.log(switchingTime)
 				}
 				var secondInMilliSec = 60*1000;
 				var updateMod = 1+Math.pow(switchingTime,2)/200;
