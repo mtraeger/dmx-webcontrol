@@ -43,7 +43,8 @@ Switching.prototype.addPresetsToAnimations = function () {
 
 /**
  * Strategy
- * Show all colors one after each other (generated from settings with help of param startRgbChannel
+ * Show all colors one after each other (generated from settings with help of param startRgbChannel)
+ * (startRgbChannel in dev settings should mark the first RGB channel (R) from wich GB will be found as next channels)
  */
 Switching.prototype.colorsStrategy = function () {
 	this.setStrategy(function() {
@@ -83,6 +84,7 @@ Switching.prototype.colorsStrategy = function () {
 /**
  * Strategy
  * Switch through all colors device by device
+ * (generated with startRgbChannel - see general color strategy)
  */
 Switching.prototype.colorsDevByDevStrategy = function () {
 	this.setStrategy(function() {
@@ -122,6 +124,7 @@ Switching.prototype.colorsDevByDevStrategy = function () {
  * Strategy
  * Switch through all colors device by device
  * But only one device is active - all other in this animation affected RGB devices are black
+ * (generated with startRgbChannel - see general color strategy)
  */
 Switching.prototype.colorsSingleDevByDev = function () {
 	this.setStrategy(function() {

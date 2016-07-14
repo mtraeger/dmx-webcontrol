@@ -19,9 +19,7 @@ module.exports = {
 			}
 			//speed: 11-100 speed; 151-255 by device, music, inputpoti
 		},
-		startRgbChannel: 1, //start value for rgb color effects (first channel is 0)
-		colors: [ //presets differing from default rgb - e.g. if additional color available, values starting at first rgb channel (see above)
-		],
+		startRgbChannel: 1,
 		channelPresets: {}
 	},
 	'stairville-led-flat': {
@@ -42,11 +40,8 @@ module.exports = {
 				]
 			}
 		},
-		startRgbChannel: 1, //start value for rgb color effects (first channel is 0)
-		colors: [ //presets differing from default rgb - e.g. if additional color available, values starting at first rgb channel (see above)
-
-		],
-		channelPresets: {0: 255} //initialized values at start, e.g. for dimming channels
+		startRgbChannel: 1,
+		channelPresets: {0: 255}
 	},
 	'adj-5p-hex': {
 		channels: ['red', 'green', 'blue', 'white', 'amber', 'uv', 'dimmer', 'strobe'],
@@ -67,6 +62,7 @@ module.exports = {
 		},
 		startRgbChannel: 0, //start value for rgb color effects (first channel is 0)
 		colors: [ //presets differing from default rgb - e.g. if additional color available, values starting at first rgb channel (see above)
+			//TODO not implemented yet
 			{
 				label: 'White', //naming convention with existing colors
 				values:  {0:0,  1:0,  2:0, 3:255, 4:0}
@@ -75,10 +71,6 @@ module.exports = {
 				label: 'Orange',
 				values: { 0:0,  1:0,  2:0, 3:0, 4:255}
 			}
-			//TODO GENERAL reset special colors on channels above 2 -> special reset
-			//or check on change if values above 2 and then set not before set values to 0
-			//problem: store current color step (modifications in between?)
-			//TODO add uv color for this device
 		],
 		channelPresets: {6: 255} //initialized values at start, e.g. for dimming channels
 	},
@@ -113,11 +105,8 @@ module.exports = {
 				'max': 255
 			}
 		},
-		startRgbChannel: 3, //start value for rgb color effects (first channel is 0)
-		colors: [ //presets differing from default rgb - e.g. if additional color available, values starting at first rgb channel (see above)
-
-		],
-		channelPresets:	{1: 255} //initialized values at start, e.g. for dimming channels
+		startRgbChannel: 3,
+		channelPresets:	{1: 255}
 	},
 	'stairville-led-par-56': {
 		channels: ['ctrl', 'red', 'green', 'blue', 'speed'],
@@ -132,10 +121,7 @@ module.exports = {
 				]
 			}
 		},
-		startRgbChannel: 1, //start value for rgb color effects (first channel is 0)
-		colors: [ //presets differing from default rgb - e.g. if additional color available, values starting at first rgb channel (see above)
-
-		],
+		startRgbChannel: 1, 
 		channelPresets: {}
 	}
 }
