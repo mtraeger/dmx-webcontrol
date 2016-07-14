@@ -53,8 +53,6 @@ function DMXWeb() {
 		}
 	}
 
-	//TODO set devices.channelPresets to specified value in devices config
-
 	var listen_port = config.server.listen_port || 8080
 	var listen_host = config.server.listen_host || '::'
 
@@ -242,7 +240,7 @@ function DMXWeb() {
 
 		socket.on('fading', function(duration, ease) {
 			fading = duration || 0;
-			fadingease = ease || fadingease || 'outBounce'; //TODO CHECK use default value from var above (on top) -> do not override if not set
+			fadingease = ease || fadingease || 'outBounce';
 			//console.log(fading);
 			io.sockets.emit('fade', duration, fadingease);
 			for (var universe in fadingDelayer) {
@@ -338,7 +336,7 @@ function DMXWeb() {
 				}
 				animations[universe][channel] = new A();
 				animations[universe][channel]
-					.add(singleUpdate, fading*100, fadingease) //TODO two different scales for fader? -> also special curve calculation?
+					.add(singleUpdate, fading*100, fadingease)
 					.run(dmx.universes[universe], function (finalvals) {
 						//onFinish
 						io.sockets.emit('update', universe, finalvals);
