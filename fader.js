@@ -2,6 +2,15 @@
 
 var ease = require('./easing.js').ease
 
+/**
+ * Fading effect with adaption of target while animating. Smooth delay of input values from one channel.
+ * Runs only on a single specific channel.
+ * Adaption of delay possible while animation is possible as well as aborting an animation.
+ *
+ * @param universe
+ * @param channel
+ * @constructor
+ */
 function Fader(universe, channel) {
 	this.universe = universe;
 	this.channel = channel;
@@ -16,6 +25,10 @@ function Fader(universe, channel) {
 
 Fader.speed = 1;
 
+/**
+ * Set the new speed of this animation - possible while animatoin is running
+ * @param newspeed
+ */
 Fader.prototype.updateSpeed = function (newspeed) {
 	Fader.speed = newspeed;
 	if (this.intervalId != null && this.finished == false && this.speedUpdated == false) {
@@ -25,6 +38,10 @@ Fader.prototype.updateSpeed = function (newspeed) {
 	}
 };
 
+/**
+ * Modify speed values for "higher accuracy" at lower values
+ * @returns {number}
+ */
 Fader.prototype.getModifiedSpeed = function() {
 	return 1+Math.pow(Fader.speed,2)/200;
 };
@@ -37,10 +54,24 @@ Fader.prototype.abort = function () {
 	this.aborted = true;
 }
 
+/**
+ * Set new target value where to end the animation - possible while animation is running.
+ * @param fadingGoal
+ */
 Fader.prototype.updateValue = function(fadingGoal) {
 	this.fadingGoal = fadingGoal;
 };
 
+/**
+ * Setup animation and start it
+ * Modification of parameters possible while running - see updateValue, updateSpeed
+ * Aborting with abort possible
+ *
+ * @param fadingGoal initial goal where it should finish
+ * @param speed initial how fast
+ * @param onFinish
+ * @param onUpdate
+ */
 Fader.prototype.run = function(fadingGoal, speed, onFinish, onUpdate) {
 	Fader.speed = speed;
 	this.fadingGoal = fadingGoal;

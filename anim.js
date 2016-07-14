@@ -5,6 +5,10 @@ var resolution = 25
 
 Anim.abort = false;
 
+/**
+ * Animations with fix start and end. But can be aborted.
+ * @constructor
+ */
 function Anim() {
 	this.fx_stack = [];
 	this.aborted = false;

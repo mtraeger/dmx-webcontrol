@@ -1,5 +1,13 @@
 "use strict"
 
+/**
+ * Switch automatically between different light situations.
+ * Selection of strategy possible
+ *
+ * @param msg -> {'devices': DMX.devices, 'setup': config}
+ * @param updateDmx function for updating dmx with at least universe, update and maybe effect
+ * @constructor
+ */
 function Switching(msg, updateDmx) {
 	this.fx_stack = [];
 	this.aborted = false;
@@ -15,6 +23,10 @@ function Switching(msg, updateDmx) {
 	this.strategy = this.colorsStrategy;
 }
 
+/**
+ * Continuously called, adds all animation steps of one round to animation stack.
+ * Called when stack will become empty
+ */
 Switching.prototype.addPresetsToAnimations = function () {
 
 	//Strategies see below
@@ -27,7 +39,12 @@ Switching.prototype.addPresetsToAnimations = function () {
 	//TODO all devices switch at the same time but with random color
 }
 
-/* Set Strategies*/
+/* Set Strategies */
+
+/**
+ * Strategy
+ * Show all colors one after each other (generated from settings with help of param startRgbChannel
+ */
 Switching.prototype.colorsStrategy = function () {
 	this.setStrategy(function() {
 		//color switching
@@ -63,6 +80,10 @@ Switching.prototype.colorsStrategy = function () {
 	});
 }
 
+/**
+ * Strategy
+ * Switch through all colors device by device
+ */
 Switching.prototype.colorsDevByDevStrategy = function () {
 	this.setStrategy(function() {
 //Test device by device update //TODO reduce code duplication?
@@ -97,6 +118,11 @@ Switching.prototype.colorsDevByDevStrategy = function () {
 	});
 }
 
+/**
+ * Strategy
+ * Switch through all colors device by device
+ * But only one device is active - all other in this animation affected RGB devices are black
+ */
 Switching.prototype.colorsSingleDevByDev = function () {
 	this.setStrategy(function() {
 //Test device by device update //TODO reduce code duplication?
@@ -146,6 +172,10 @@ Switching.prototype.colorsSingleDevByDev = function () {
 	});
 }
 
+/**
+ * Strategy
+ * Show one preset after each other
+ */
 Switching.prototype.presetsStrategy = function () {
 	this.setStrategy(function () {
 		// presets switching
@@ -155,7 +185,8 @@ Switching.prototype.presetsStrategy = function () {
 	})
 }
 
-/**Helper for setting strategy
+/**
+ * Helper for setting strategy
  * clears stack for animation and sets new strategy
  * afterwards reinitializes the new animation steps
  *
@@ -181,7 +212,7 @@ Switching.prototype.abort = function () {
 }
 
 /**
- * set resolution seconds per step - time until next switch
+ * set resolution in seconds per step -> time until next switch
  * @param mSecondsPerStep
  */
 Switching.prototype.setResolution = function (mSecondsPerStep) {
@@ -194,7 +225,10 @@ Switching.prototype.setResolution = function (mSecondsPerStep) {
 }
 
 
-/** starts switching between channels / colors
+/**
+ * Starts animation process with processing the animation stack.
+ * Will stop onyl if .abort is called
+ * Updating animation-content possible with different strategy methods (see above)
  *
  */
 Switching.prototype.run = function() {
@@ -228,6 +262,10 @@ Switching.prototype.run = function() {
 }
 
 
+/**
+ * Forcing next step of the animation
+ * Can be called while animation is running or while not running
+ */
 Switching.prototype.nextStep = function () {
 	if(this.fx_stack.length < 1){
 		this.addPresetsToAnimations();
