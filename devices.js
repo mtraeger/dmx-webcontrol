@@ -121,7 +121,7 @@ module.exports = {
 				]
 			}
 		},
-		startRgbChannel: 1, 
+		startRgbChannel: 1,
 		channelPresets: {}
 	}
 }
