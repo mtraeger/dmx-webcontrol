@@ -31,7 +31,7 @@
             fadingEffect = 'linear'; //TODO add late comer support for this value (and maybe also others)
 
             //select easing
-            var easingEffects = ["linear", "outBounce", "inOutCubic", "inOutQuint"]; //TODO get effects from source
+            var easingEffects = ["linear", "outBounce", "inOutCubic", "inOutQuint"]; //TODO get (more) effects from easing.js
             var easingSelect = "<select id='easingSelect'>";
             for (var easingEffect in easingEffects) {
                 easingSelect += "<option value='"+easingEffects[easingEffect]+"'>"+easingEffects[easingEffect]+"</option>";
@@ -87,7 +87,7 @@
 
 
             //Switching Presets Time
-            var html3 = "<div id='switchpresets'><h2>Switch</h2>";
+            var html3 = "<div style='display: block' id='switchpresets'><h2>Switch</h2>";
             html3 += '<label for="switch">Switching Speed (0 = Off)</label>';
             html3 += "</div>";
             $(html3).hide().appendTo('#switching').fadeIn();
@@ -102,17 +102,17 @@
 
             //Next step button
             var nextSwitchStep = $('<button class="span2 btn btn-info">Next Step</button>');
-            nextSwitchStep.hide().appendTo('#switching').fadeIn();
+            nextSwitchStep.hide().appendTo('#switchpresets').fadeIn();
             nextSwitchStep.click(function () {
                 socket.emit('nextSwitchStep');
             });
 
             //switching strategies
             var switchingStrategies = ["colors", "colorsDevByDev", "presets", "colorsSingleDevByDev"]; //TODO get effects from source?
-            $("<div id='switchingStrategies'><h2>Switching Strategies</h2></div id='switchingStrategies'>").hide().appendTo('#switching').fadeIn();
+            $("<div id='switchingStrategies' style='display: block'><h2>Switching Strategies</h2></div>").hide().appendTo('#switching').fadeIn();
             for (var strategy in switchingStrategies) {
                 var strategyButton = $('<button value="'+switchingStrategies[strategy]+'" class="span2 btn btn-info">'+switchingStrategies[strategy]+' Strategy</button>');
-                strategyButton.hide().appendTo('#switching').fadeIn();
+                strategyButton.hide().appendTo('#switchingStrategies').fadeIn();
                 strategyButton.click(function (e) {
                     socket.emit('switchingStrategy', e.target.value);
                 });
@@ -140,13 +140,6 @@
                                         update[updateChannel] = color.values[colorChannel];
                                     }
 
-                                    //TODO special override colors from device config - code below from sliders...
-                                    //use color.label for naming convention
-//                                    for (var overrideColor in devices[dev.type].colors) {
-//                                        var channel_id = dev.address + Number(overrideColor)
-//                                        html += '<label for="' + html_id + '">' + devices[dev.type].channels[overrideColor] + '</label>';
-//                                    }
-
                                 }
                             }
                             //socket.emit('update', universe, update);
@@ -155,14 +148,13 @@
                             }else{
                                 socket.emit('update', universe, update, true);
                             }
-                            // socket.emit('update', universe, values[universe], true); //TODO enable effect mode by button also here
                         }
                     };
                 }(setup.colors[color]));
             }
-            //color slider //TODO update moved sliders on all clients
+            //color slider //TODO update moved sliders on all clients, update sliders on color button update
             $('<div id="colorSliders" class="device" style="display: block;">').appendTo('#colors')
-            var rgbColor = {0:"red", 1:"green", 2:"blue"}; //TODO add other colors - amber, white, uv?
+            var rgbColor = {0:"red", 1:"green", 2:"blue"};
             for (var color in rgbColor) {
                 var rgbGroup = $("<div class='channel'>").appendTo('#colorSliders');
                 var html2 = "";
@@ -181,7 +173,6 @@
                                     var startRgb = devices[dev.type].startRgbChannel;
                                     var firstRgbChannelForDevice = dev.address + startRgb;
 
-                                    //TODO dirty - pass color var here and use it instead of colorAdd
                                     var colorAdd = 0;
                                     if ($(e.target)[0].id == "rgbgreen") {
                                         colorAdd = 1;
@@ -223,6 +214,7 @@
 
             //TODO show current values for slider
             //TODO buttons for config channel or input[type=range] datalist
+
             /* sliders */
             for (var universe in setup.universes) {
                 var html = "<div><h1>" + universe + "</h1>";
@@ -243,7 +235,7 @@
                 html += "</div>";
                 $(html).hide().appendTo('#sliders').fadeIn();
             }
-            $("input").live("change", function (e) {//TODO combine both calls again?
+            $("input").live("change", function (e) {
                 updateDmx(e, false);
             });
             $("input").live("input", function (e) {
@@ -252,7 +244,7 @@
             socket.emit('request_refresh');
         });
 
-        function updateDmx(e, effect) { //TODO combine both calls again?
+        function updateDmx(e, effect) {
             if (e.target.id.startsWith("channel_")) {
                 var i = e.target.id.split('_');
                 var u = {};
@@ -287,7 +279,6 @@
         });
         socket.on('fade', function (duration, ease) {
             $('#fade').attr('value', duration);
-            //TODO update ease effect
         });
         socket.on('fadingEaseChange', function (effect) {
             $('#easingSelect').val(effect);
@@ -324,7 +315,8 @@
 
         </div>
         <div id="switching" class="tab-pane">
-
+            <div class="row-fluid" id="switching-strategies">
+            </div>
         </div>
         <div id="colors" class="tab-pane">
 
