@@ -96,9 +96,6 @@
             switchfader.on("input", function (e) {
                 socket.emit('switching', e.target.value);
             });
-            //TODO select presets / colors for animation from list?
-            //TODO also sort presets / colors for switching via drag n drop, duplicating of colors / presets possible
-
 
             //Next step button
             var nextSwitchStep = $('<button class="span2 btn btn-info">Next Step</button>');
@@ -214,6 +211,10 @@
 
             //TODO show current values for slider
             //TODO buttons for config channel or input[type=range] datalist
+
+            // switching:
+            //TODO select presets / colors for switching from list?
+            //TODO also sort presets / colors for switching via drag n drop, duplicating of colors / presets possible
 
             /* sliders */
             for (var universe in setup.universes) {
