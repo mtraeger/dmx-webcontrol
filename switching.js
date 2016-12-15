@@ -32,11 +32,6 @@ Switching.prototype.addPresetsToAnimations = function () {
 	//Strategies see below
 	this.strategy();
 
-	//TODO random device update -> strobe effect if fast?
-	//TODO also random color (additional)?
-	//TODO additional feature random device on (only one at each time) -> see colorsSingleDevbyDev
-
-	//TODO all devices switch at the same time but with random color
 }
 
 /* Set Strategies */

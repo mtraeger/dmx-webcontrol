@@ -154,50 +154,6 @@ function DMXWeb() {
 		});
 
 
-		//TODO lightshow: list of presets and slider for switching-speed (select presets from list?)
-		//TODO fade through presets -> switch presets and controll fade via fade fader -> fader for speed -> list to select which presets should be used
-		//TODO list with extended presets, not shown by default?
-
-		//TODO js file with references to animations and effect files -> read in and select (start / stop)
-
-		//TODO general sliders (fade time, switch fader) and black out button in top bar?
-
-		//TODO music detectoin / chord detection https://github.com/cwilso/PitchDetect https://www.npmjs.com/package/beats
-		//TODO audio player, dj mixer?
-
-		//TODO chord detection / beatdetection -> chords: cange -> change color or specific color for each chord
-
-		//TODO connect two or more (same or different type) dmx devices
-		// connect simply by duplicating channel signals or by mapping channels (r,g,b,w,a,uv)
-		// make groups where input is given to all group members (mapped by channel name?)
-		// or additional auto groups containing all same type devices?
-
-		//TODO master slider for each color of all lights
-
-		//TODO animations for whole group / type of light device (also in script A() )
-		// delay animations for each device in group for a given time (1 -> 2 (+x sec) -> 3 (2+x sec) ...)
-		// from front or backwards (see light fading through the room from device to device)
-		// also from middle? with effects?
-		// add device to more than one group? type of device group like normal group? (device type group only special name?)
-		// start effects on devices der reihe nach (number by number? - delayed)
-
-		//TODO random device for next animation step optional
-		// random animation?
-		// change (color?, continue to animation step) if sound over threshold, change all devices if sound is over highter threshold
-
-		//TODO color groups? all colors? all with colors? all with same colors?
-		//TODO presets? simple out of the box baukasten (presets per device type? -> available for all devices of type)
-		// simple drag n drop lightshow builder?
-		// different depth of effect: change one color for all and other color only for sub group?
-
-		//TODO stacking groups: group in group - subgroups?
-		// special group: all
-
-		//TODO easing drop down
-		//for (var seaseing in easingF) {
-		//	console.log(seaseing);
-		//}
-
 		socket.on('fading', function(duration, ease) {
 			fading = duration || 0;
 			fadingease = ease || fadingease || 'outBounce';
