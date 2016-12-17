@@ -20,9 +20,6 @@ function Anim() {
 Anim.abortAnimations = function(){
 	console.log("Aborting all animations");
 	Anim.abort = true;
-	setTimeout(function() {
-		Anim.abort = false;
-	}, 200);
 }
 
 /**
@@ -110,6 +107,7 @@ Anim.prototype.run = function(universe, onFinish, onUpdate) {
 	var ani_step = function() {
 		if(Anim.abort || self.aborted){
 			clearInterval(iid);
+            Anim.abort = false;
 			return;
 		}
 
