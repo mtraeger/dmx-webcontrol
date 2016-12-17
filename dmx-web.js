@@ -74,27 +74,55 @@ function DMXWeb() {
 	})
 
 	app.get('/', function(req, res) {
-	  res.sendfile(__dirname + '/index.html')
+		res.sendfile(__dirname + '/index.html')
 	})
 
-	//css and js offline
-	app.get('/css/bootstrap-combined.min.css', function(req, res) {
-		res.sendfile(__dirname + '/css/bootstrap-combined.min.css')
+    //css and js offline
+    app.get('/css/bootstrap-combined.min.css', function(req, res) {
+        res.sendfile(__dirname + '/css/bootstrap-combined.min.css')
+    })
+    app.get('/js/jquery.min.js', function(req, res) {
+        res.sendfile(__dirname + '/js/jquery.min.js')
+    })
+    app.get('/js/jquery-ui.min.js', function(req, res) {
+        res.sendfile(__dirname + '/js/jquery-ui.min.js')
+    })
+    app.get('/js/bootstrap.min.js', function(req, res) {
+        res.sendfile(__dirname + '/js/bootstrap.min.js')
+    })
+    app.get('/css/slider.css', function(req, res) {
+        res.sendfile(__dirname + '/css/slider.css')
+    })
+    app.get('/css/style.css', function(req, res) {
+        res.sendfile(__dirname + '/css/style.css')
+    })
+
+	app.get('/config', function(req, res) {
+		var response = {"devices": DMX.devices, "universes": {}}
+		Object.keys(config.universes).forEach(function(key) {
+			response.universes[key] = config.universes[key].devices
+		})
+
+		res.json(response)
 	})
-	app.get('/js/jquery.min.js', function(req, res) {
-		res.sendfile(__dirname + '/js/jquery.min.js')
+
+	app.get('/state/:universe', function(req, res) {
+		if(!(req.params.universe in dmx.universes)) {
+			res.status(404).json({"error": "universe not found"})
+			return
+		}
+
+		res.json({"state": dmx.universeToObject(req.params.universe)})
 	})
-	app.get('/js/jquery-ui.min.js', function(req, res) {
-		res.sendfile(__dirname + '/js/jquery-ui.min.js')
-	})
-	app.get('/js/bootstrap.min.js', function(req, res) {
-		res.sendfile(__dirname + '/js/bootstrap.min.js')
-	})
-	app.get('/css/slider.css', function(req, res) {
-		res.sendfile(__dirname + '/css/slider.css')
-	})
-	app.get('/css/style.css', function(req, res) {
-		res.sendfile(__dirname + '/css/style.css')
+	
+	app.post('/state/:universe', function(req, res) {
+		if(!(req.params.universe in dmx.universes)) {
+			res.status(404).json({"error": "universe not found"})
+			return
+		}
+
+		dmx.update(req.params.universe, req.body)
+		res.json({"state": dmx.universeToObject(req.params.universe)})
 	})
 
 	app.post('/animation/:universe', function(req, res) {
@@ -102,10 +130,7 @@ function DMXWeb() {
 			var universe = dmx.universes[req.params.universe]
 
 			// preserve old states
-			var old = {}
-			for(var i = 0; i < 256; i++) {
-				old[i] = universe.get(i)
-			}
+			var old = dmx.universeToObject(req.params.universe)
 
 			var animation = new A()
 			for(var step in req.body) {
@@ -138,14 +163,10 @@ function DMXWeb() {
 
 		socket.on('request_refresh', function() {
 			for(var universe in config.universes) {
-				var u = {}
-				for(var i = 0; i < 256; i++) {
-					u[i] = dmx.universes[universe].get(i)
-				}
-				socket.emit('update', universe, u)
-				socket.emit('fade', fading, fadingease);
-				socket.emit('blackout', blackout);
-				socket.emit('switching', switchingTime);
+				socket.emit('update', universe, dmx.universeToObject(universe))
+                socket.emit('fade', fading, fadingease);
+                socket.emit('blackout', blackout);
+                socket.emit('switching', switchingTime);
 			}
 		})
 
@@ -222,7 +243,7 @@ function DMXWeb() {
 		})
 
 		dmx.on('update', function(universe, update) {
-		    socket.emit('update', universe, update)
+			socket.emit('update', universe, update)
 		})
 	})
 

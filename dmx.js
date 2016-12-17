@@ -12,9 +12,11 @@ function DMX(options) {
 	this.blackoutBuffer = {};
 
 	this.registerDriver('null',                require('./drivers/null'))
+	this.registerDriver('dmx4all',             require('./drivers/dmx4all'))
 	this.registerDriver('enttec-usb-dmx-pro',  require('./drivers/enttec-usb-dmx-pro'))
 	this.registerDriver('enttec-open-usb-dmx', require('./drivers/enttec-open-usb-dmx'))
-	this.registerDriver('art-net',             require('./drivers/art-net'))
+	this.registerDriver('artnet',              require('./drivers/artnet'))
+	this.registerDriver('bbdmx',               require('./drivers/bbdmx'))
 }
 
 util.inherits(DMX, EventEmitter)
@@ -66,6 +68,15 @@ DMX.prototype.toggleBlackout = function(universe) {
 		this.blackout = false;
 	}
     this.emit('blackout', this.blackout);
+}
+
+DMX.prototype.universeToObject = function(universe) {
+    var universe = this.universes[universe]
+    var u = {}
+    for(var i = 0; i < universe.length; i++) {
+        u[i] = universe.get(i)
+    }
+    return u
 }
 
 module.exports = DMX

@@ -4,9 +4,6 @@ DMX-512 controller library for node.js - also includes a Webinterface and HTTP A
 
 ## Install
 
-	# ftdi module requires ftd2xx headers provided by libftdxx1
-	# install info here: https://github.com/KABA-CCEAC/node-ftdi#prerequisites
-	# install script here: https://github.com/KABA-CCEAC/node-ftdi/blob/master/install.sh
 	npm install -g dmx
 
 ## Webinterface
@@ -65,10 +62,14 @@ Create a new DMX instance. This class is used to tie multiple universes together
 
 
 Register a new DMX Driver module by its name.
-Two Drivers are currently registered by default:
+These drivers are currently registered by default:
 
 - null: a development driver that prints the universe to stdout
-- enttec-usb-dmx-pro: a driver for devices using a Enttec USB DMX Pro chip like the "DMXKing ultraDMX Micro". This driver requires the ftdi module (<https://github.com/KABA-CCEAC/node-ftdi>)
+- artnet: driver for EnttecODE
+- bbdmx: driver for [BeagleBone-DMX](https://github.com/boxysean/beaglebone-DMX)
+- dmx4all: driver for DMX4ALL devices like the "NanoDMX USB Interface"
+- enttec-usb-dmx-pro: a driver for devices using a Enttec USB DMX Pro chip like the "DMXKing ultraDMX Micro".
+- enttec-open-usb-dmx: driver for "Enttec Open DMX USB". This device is NOT recommended, there are known hardware limitations and this driver is not very stable. (If possible better obtain a device with the "pro" chip)
 
 #### dmx.addUniverse(name, driver, device_id)
 
@@ -77,6 +78,7 @@ Two Drivers are currently registered by default:
 - <code>device_id</code> - Number or Object
 
 Add a new DMX Universe with a name, driver and an optional device_id used by the driver to identify the device.
+For enttec-usb-dmx-pro and enttec-open-usb-dmx device_id is the path the the serial device. For artnet it is the target ip.
 
 #### dmx.update(universe, channels)
 
