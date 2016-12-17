@@ -63,19 +63,19 @@ var anim = new A()
 	.delay(1000)
 	.add({1: 255, 3: 200}, 2200)
 	.delay(3000) //following: easing examples
-	.add({1: 0, 2:0, 3:0}, 2000, 'outBounce')
-	.add({1: 255, 2:255, 3:255}, 3000, 'inOutCubic')
+	.add({1: 0, 2:0, 3:0}, 2000, {easing: 'outBounce'})
+	.add({1: 255, 2:255, 3:255}, 3000, {easing: 'inOutCubic'} )
 	.delay(1000)
-	.add({2:0, 3:150}, 3000, 'inOutQuint')
+	.add({2:0, 3:150}, 3000, {easing: 'inOutQuint'})
 	.delay(5000)
-	.add({1: 0, 2:0, 3:0}, 2000, 'outCirc')
+	.add({1: 0, 2:0, 3:0}, 2000, {easing: 'outCirc'})
 	.delay(500)
-	.add({1:180}, 3000, 'outElastic') //ease elastic not to full value! it overfills the goal! e.g. max 180
+	.add({1:180}, 3000, {easing: 'outElastic'}) //ease elastic not to full value! it overfills the goal! e.g. max 180
 	.delay(1000)
-	.add({1:70}, 3000, 'inOutBack')
+	.add({1:70}, 3000, {easing: 'inOutBack'})
 	.delay(1000)
-	.add({1:255}, 3000, 'inElastic')
-	.add({1:0}, 5000, 'outQuart')
+	.add({1:255}, 3000, {easing: 'inElastic'})
+	.add({1:0}, 5000, {easing: 'outQuart'})
 
 //animation with two devices
 var doubleAnim = new A().add({0: 255, 8:255}) //initialize dimmer channel
@@ -88,24 +88,24 @@ var doubleAnim = new A().add({0: 255, 8:255}) //initialize dimmer channel
 	.delay(1000)
 	.addMultipleDevs({1: 255, 3: 200}, 2200, [1])
 	.delay(3000) //following: easing examples
-	.addMultipleDevs({1: 0, 2:0, 3:0}, 2000, [1,9], 'outBounce')
-	.addMultipleDevs({1: 255, 2:255, 3:255}, 3000, [1,9], 'inOutCubic')
+	.addMultipleDevs({1: 0, 2:0, 3:0}, 2000, [1,9], {easing: 'outBounce'})
+	.addMultipleDevs({1: 255, 2:255, 3:255}, 3000, [1,9], {easing: 'inOutCubic'})
 	.delay(1000)
-	.addMultipleDevs({2:0, 3:150}, 3000, [1,9], 'inOutQuint')
+	.addMultipleDevs({2:0, 3:150}, 3000, [1,9], {easing: 'inOutQuint'})
 	.delay(5000)
-	.addMultipleDevs({1: 0, 2:0, 3:0}, 2000, [1,9], 'outCirc')
+	.addMultipleDevs({1: 0, 2:0, 3:0}, 2000, [1,9], {easing: 'outCirc'})
 	.delay(500)
-	.addMultipleDevs({1:180}, 3000, [1,9], 'outElastic') //ease elastic not to full value! it overfills the goal! e.g. max 180
+	.addMultipleDevs({1:180}, 3000, [1,9], {easing: 'outElastic'}) //ease elastic not to full value! it overfills the goal! e.g. max 180
 	.delay(1000)
-	.addMultipleDevs({1:70}, 3000, [1], 'inOutBack')
+	.addMultipleDevs({1:70}, 3000, [1], {easing: 'inOutBack'})
 	.delay(1000)
-	.addMultipleDevs({1:255}, 3000, [9], 'inElastic')
+	.addMultipleDevs({1:255}, 3000, [9], {easing: 'inElastic'})
 	.delay(2000)
-	.addMultipleDevs({1:0}, 5000, [1,9], 'outQuart')
+	.addMultipleDevs({1:0}, 5000, [1,9], {easing: 'outQuart'})
 
 //uncomment a (single) line for an example
-//anim.run(universe, done)
-doubleAnim.run(universe, done)
+anim.run(universe, done)
+//doubleAnim.run(universe, done)
 //warp(universe, 1, 10, 220, 360)
 //green_water(universe, [1], 4000)
 //green_water(universe, [1,9], 4000)

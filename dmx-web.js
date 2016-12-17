@@ -112,7 +112,7 @@ function DMXWeb() {
 				animation.add(
 					req.body[step].to,
 					req.body[step].duration || 0,
-					req.body[step].options  || {} //TODO update or bring back original options in anim.js add()
+					req.body[step].options  || {}
 				)
 			}
 			animation.add(old, 0)
@@ -252,7 +252,7 @@ function DMXWeb() {
 				}
 				animations[universe][channel] = new A();
 				animations[universe][channel]
-					.add(singleUpdate, fading*100, fadingease)
+					.add(singleUpdate, fading*100, {easing: fadingease})
 					.run(dmx.universes[universe], function (finalvals) {
 						//onFinish
 						io.sockets.emit('update', universe, finalvals);
