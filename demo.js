@@ -7,7 +7,7 @@ var dmx = new DMX()
 
 // var universe = dmx.addUniverse('demo', 'enttec-usb-dmx-pro', 0)
 // var universe = dmx.addUniverse('demo', 'enttec-open-usb-dmx', 0)
-var universe = dmx.addUniverse('demo', 'art-net')
+var universe = dmx.addUniverse('demo', 'null')
 
 universe.update({0: 1, 1: 0})
 universe.update({15: 1, 16: 255})
