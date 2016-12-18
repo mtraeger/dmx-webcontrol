@@ -163,12 +163,12 @@ function DMXWeb() {
 
 		socket.on('request_refresh', function() {
 			for(var universe in config.universes) {
-				socket.emit('update', universe, dmx.universeToObject(universe))
-                socket.emit('fade', fading, fadingease);
-                socket.emit('blackout', blackout);
-                socket.emit('switching', switchingTime);
+				socket.emit('update', universe, dmx.universeToObject(universe));
 			}
-		})
+            socket.emit('fade', fading, fadingease);
+            socket.emit('blackout', blackout);
+            socket.emit('switching', switchingTime);
+		});
 
 		socket.on('update', function (universe, update, effect) {
 			updateDmx(universe, update, effect);
