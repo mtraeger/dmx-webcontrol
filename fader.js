@@ -7,11 +7,13 @@ var ease = require('./easing.js').ease
  * Runs only on a single specific channel.
  * Adaption of delay possible while animation is possible as well as aborting an animation.
  *
+ * @param dmx dmx.js instance
  * @param universe
  * @param channel
  * @constructor
  */
-function Fader(universe, channel) {
+function Fader(dmx, universe, channel) {
+	this.dmx = dmx;
 	this.universe = universe;
 	this.channel = channel;
 	this.fadingGoal = 0;
@@ -81,7 +83,7 @@ Fader.prototype.run = function(fadingGoal, speed, onFinish, onUpdate) {
 	var self = this;
 
 	var singleStep = function () {
-		var currentValue = self.universe.get(self.channel);
+		var currentValue = self.dmx.get(self.universe, self.channel);
 
 		if (currentValue == self.fadingGoal || self.aborted) {//finished
 			clearInterval(self.intervalId);
@@ -100,7 +102,7 @@ Fader.prototype.run = function(fadingGoal, speed, onFinish, onUpdate) {
 
 			var singleUpdate = {}; //creating new object with one single channel target value
 			singleUpdate[self.channel] = newvalue;
-			self.universe.update(singleUpdate);
+			self.dmx.update(self.universe, singleUpdate, false);
 			if(onUpdate) onUpdate(singleUpdate);
 		}
 		self.speedUpdated = false;

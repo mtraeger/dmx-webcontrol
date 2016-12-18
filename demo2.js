@@ -5,13 +5,14 @@ var A = DMX.Animation
 
 var dmx = new DMX()
 
-var universe = dmx.addUniverse('demo', 'artnet', '192.168.1.10')
+var universeName = 'demo'
+var universe = dmx.addUniverse(universeName, 'artnet', '192.168.1.10')
 
 //universe.update({0: 1, 1: 0})
 //universe.update({1: 255, 2:90, 3: 120, 4: 230})
 
-universe.update({0:255}) //TODO setting chanel 1 (dimmer of flat-par) to 255 in beginning
-universe.update({8:255})
+dmx.update(universeName, {0:255}) //TODO setting chanel 1 (dimmer of flat-par) to 255 in beginning
+dmx.update(universeName, {8:255})
 
 //attention: chanels starting at 0 !!!
 
@@ -22,7 +23,7 @@ universe.update({8:255})
 
 function done() {console.log('DONE')}
 
-function green_water(universe, channels, duration) {
+function green_water(universeName, channels, duration) {
 	var colors = [
 		[160, 230,  20],
 		[255, 255,   0],
@@ -36,24 +37,24 @@ function green_water(universe, channels, duration) {
 		for(var i = 0; i < 3; i++) {
 			u[channels[c] + i] = colors[r][i]
 		}
-		new A().add(u, duration).run(universe)
+		new A(dmx).add(u, duration).run(universeName)
 	}
-	setTimeout(function() {green_water(universe, channels, duration);}, duration * 2)
+	setTimeout(function() {green_water(universeName, channels, duration);}, duration * 2)
 }
 
-function warp(universe, channel, min, max, duration) {
+function warp(universeName, channel, min, max, duration) {
 	var a = {}, b = {}
 	a[channel] = min;
 	b[channel] = max;
-	new A().add(a, duration).add(b, duration).run(universe, function() {
-		warp(universe, channel, min, max, duration)
+	new A(dmx).add(a, duration).add(b, duration).run(universeName, function() {
+		warp(universeName, channel, min, max, duration)
 	})
 }
 
 
 
 //simple animation
-var anim = new A()
+var anim = new A(dmx)
 	.add({1: 255}, 2000)
 	.add({1: 0}, 2000)
 	.delay(3000)
@@ -78,7 +79,7 @@ var anim = new A()
 	.add({1:0}, 5000, {easing: 'outQuart'})
 
 //animation with two devices
-var doubleAnim = new A().add({0: 255, 8:255}) //initialize dimmer channel
+var doubleAnim = new A(dmx).add({0: 255, 8:255}) //initialize dimmer channel
 	.addMultipleDevs({1: 255, 2:200}, 2000, [1,9]) //use devices on chanel 1 and 9 (here IDs 0 and 8) (see init line above)
 	.add({1: 0}, 2000)
 	.delay(3000)
@@ -104,14 +105,14 @@ var doubleAnim = new A().add({0: 255, 8:255}) //initialize dimmer channel
 	.addMultipleDevs({1:0}, 5000, [1,9], {easing: 'outQuart'})
 
 //uncomment a (single) line for an example
-anim.run(universe, done)
-//doubleAnim.run(universe, done)
-//warp(universe, 1, 10, 220, 360)
-//green_water(universe, [1], 4000)
-//green_water(universe, [1,9], 4000)
+anim.run(universeName, done)
+//doubleAnim.run(universeName, done)
+//warp(universeName, 1, 10, 220, 360)
+//green_water(universeName, [1], 4000)
+//green_water(universeName, [1,9], 4000)
 
 
-var x = new A()
+var x = new A(dmx)
 	.add({1: 255, 2: 110, 3: 255}, 1200)
 	.delay(1000)
 	.add({1: 0}, 600)
@@ -139,11 +140,11 @@ var x = new A()
 	.delay(2000)
 	.add({2: 0}, 1000)
 
-var y = new A()
+var y = new A(dmx)
 	.add({1: 255}, 10000)
 
 //uncomment for more example runs
-//x.run(universe, done)
-//y.run(universe, done)
+//x.run(universeName, done)
+//y.run(universeName, done)
 
 return

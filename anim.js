@@ -8,8 +8,11 @@ Anim.abort = false;
 /**
  * Animations with fix start and end. But can be aborted.
  * @constructor
+ *
+ * @param dmx dmx.js instance
  */
-function Anim() {
+function Anim(dmx) {
+	this.dmx = dmx;
 	this.fx_stack = [];
 	this.aborted = false;
 }
@@ -99,7 +102,7 @@ Anim.prototype.run = function(universe, onFinish, onUpdate) {
 		config = {}
 		for(var k in a.to) {
 			config[k] = {
-				'start': universe.get(k),
+				'start': self.dmx.get(universe, k),
 				'end':   a.to[k]
 			}
 		}
@@ -116,7 +119,7 @@ Anim.prototype.run = function(universe, onFinish, onUpdate) {
 			new_vals[k] = Math.round(config[k].start + ease[a.options['easing']](t, 0, 1, d) * (config[k].end - config[k].start))
 		}
 		t = t + resolution
-		universe.update(new_vals)
+		self.dmx.update(universe, new_vals, false) //only value updates of dmx
 
 		if(onUpdate) onUpdate(new_vals);
 

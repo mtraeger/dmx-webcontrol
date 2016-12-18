@@ -127,12 +127,12 @@ function DMXWeb() {
 
 	app.post('/animation/:universe', function(req, res) {
 		try {
-			var universe = dmx.universes[req.params.universe]
+			var universe = req.params.universe
 
 			// preserve old states
 			var old = dmx.universeToObject(req.params.universe)
 
-			var animation = new A()
+			var animation = new A(dmx)
 			for(var step in req.body) {
 				animation.add(
 					req.body[step].to,
@@ -190,7 +190,6 @@ function DMXWeb() {
 		});
 
 		socket.on('blackout', function(universe) {
-			//A.abortAnimations();
 			dmx.toggleBlackout(universe);
 		});
 
@@ -271,10 +270,10 @@ function DMXWeb() {
 				if(animations[universe][channel] instanceof A && !animations[universe][channel].aborted){
 					animations[universe][channel].abort(); //abort old still running animation on same channel
 				}
-				animations[universe][channel] = new A();
+				animations[universe][channel] = new A(dmx);
 				animations[universe][channel]
 					.add(singleUpdate, fading*100, {easing: fadingease})
-					.run(dmx.universes[universe], function (finalvals) {
+					.run(universe, function (finalvals) {
 						//onFinish
 						io.sockets.emit('update', universe, finalvals);
 					}, function (newvals) {
@@ -297,7 +296,7 @@ function DMXWeb() {
 					fadingDelayer[universe][channel].updateValue(fadingGoal);
 
 				} else {
-					fadingDelayer[universe][channel] = new Fader(dmx.universes[universe], channel);
+					fadingDelayer[universe][channel] = new Fader(dmx, universe, channel);
 					fadingDelayer[universe][channel].run(fadingGoal, fading,
 						function (finalvals) {
 							//onFinish

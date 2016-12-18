@@ -29,25 +29,28 @@ DMX.prototype.registerDriver = function(name, module) {
 }
 
 DMX.prototype.addUniverse = function(name, driver, device_id) {
-    this.blackout[name] = {}
+    this.blackout[name] = {};
 	this.blackout[name].state = false;
 	return this.universes[name] = new this.drivers[driver](device_id)
 }
 
-DMX.prototype.update = function(universe, channels) {
+DMX.prototype.update = function(universe, channels, emit) {
 	if (this.blackout[universe].state == false) { //send "data" only if no blackout
-		this.universes[universe].update(channels)
+		this.universes[universe].update(channels);
 	}else { //update buffer on changes while blackout
         for (var channel in channels) {
             this.blackout[universe].buffer[channel] = channels[channel];
         }
 	}
-	this.emit('update', universe, channels)
+    var emitUpdate = emit !== false; //prevent emit only if false
+	if(emitUpdate) {
+        this.emit('update', universe, channels);
+    }
 }
 
 DMX.prototype.updateAll = function(universe, value) {
     if (this.blackout[universe].state == false) { //send "data" only if no blackout
-        this.universes[universe].updateAll(value)
+        this.universes[universe].updateAll(value);
 	} else { //update buffer on changes while blackout
         for (var i = 0; i < 512; i++) {
             this.blackout[universe].buffer[i] = value;
@@ -58,25 +61,32 @@ DMX.prototype.updateAll = function(universe, value) {
 
 DMX.prototype.toggleBlackout = function(universe) {
     if (this.blackout[universe].state == false) {
-        this.blackout[universe].buffer = {}
+        this.blackout[universe].buffer = {};
         this.blackout[universe].state = true;
 		for (var i = 0; i < 512; i++) { //store current state
             this.blackout[universe].buffer[i] = this.universes[universe].get(i);
         }
-        this.universes[universe].updateAll(0)
+        this.universes[universe].updateAll(0);
     } else {
         this.universes[universe].update(this.blackout[universe].buffer); //restore values
-        this.blackout[universe].buffer = {}
+        this.blackout[universe].buffer = {};
         this.blackout[universe].state = false;
 	}
     this.emit('blackout', this.blackout[universe].state, universe);
 }
 
+DMX.prototype.get = function(universe, channel) {
+    if (this.blackout[universe].state == false) { //send "data" only if no blackout
+        return this.universes[universe].get(channel);
+    } else { //return buffer value
+        return this.blackout[universe].buffer[channel];
+    }
+}
+
 DMX.prototype.universeToObject = function(universe) {
-    var universe = this.universes[universe]
     var u = {}
     for(var i = 0; i < 512; i++) {
-        u[i] = universe.get(i)
+        u[i] = this.get(universe, i)
     }
     return u
 }
