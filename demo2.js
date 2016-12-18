@@ -5,7 +5,7 @@ var A = DMX.Animation
 
 var dmx = new DMX()
 
-var universe = dmx.addUniverse('demo', 'art-net')
+var universe = dmx.addUniverse('demo', 'artnet', '192.168.1.10')
 
 //universe.update({0: 1, 1: 0})
 //universe.update({1: 255, 2:90, 3: 120, 4: 230})
