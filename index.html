@@ -237,7 +237,7 @@
             }
         });
         var blackoutBlinker;
-        socket.on('blackout', function (blackout) {
+        socket.on('blackout', function (blackout) { //TODO use 2nd blackout param for different universes
             if(blackout) {
                 $('#blackout').addClass('active');
                 blackoutBlinker = window.setInterval(function(){
