@@ -59,3 +59,14 @@ input[type=range].displayslider{
 #blackout.blink{
     color:transparent;
 }
+
+#easingSelect {
+    margin-top: 5px;
+    margin-right: 15px;
+    float: left;
+}
+
+#fade {
+    margin-top: -25px;
+    margin-bottom: -20px;
+}

@@ -30,20 +30,41 @@
             devices = msg.devices;
             fadingEffect = 'linear';
 
-            //select easing //TODO maybe also add to #navbar-content
+            //select easing
             var easingEffects = ["linear", "inBounce", "outBounce", "inOutBounce", "inSine", "outSine", "inOutSine", "inCubic", "outCubic", "inOutCubic", "inQuint", "outQuint", "inOutQuint", "inCirc", "outCirc", "inOutCirc"]; //TODO get (more) effects from easing.js (be careful with overfilling values!)
             var easingSelect = "<select id='easingSelect'>";
             for (var easingEffect in easingEffects) {
-                easingSelect += "<option value='"+easingEffects[easingEffect]+"'>"+easingEffects[easingEffect]+"</option>";
+                easingSelect += "<option value='"+easingEffects[easingEffect]+"'>Ease "+easingEffects[easingEffect]+"</option>";
             }
             easingSelect += "</select>";
             var dropDown = $(easingSelect)
-            dropDown.hide().appendTo('#presets').fadeIn();
+            dropDown.hide().appendTo('#navbar-content').fadeIn();
             dropDown.change(function (effect) {
                 return function () {
                     socket.emit("fadingEaseChange", effect.val());
                 };
             }(dropDown));
+
+            //Fading Time
+            var html2 = "<div id='fadecontainer' style='float: left;'>";
+            html2 += '<label for="fade">Fade duration</label>';
+            html2 += "</div>";
+            $(html2).hide().appendTo('#navbar-content').fadeIn();
+            var fader = $('<input id="fade" type="range" orient="horizontal" min="0" value="0" max="300">');
+            fader.hide().appendTo('#fadecontainer').fadeIn();
+            fader.on("input", function (e) {
+                socket.emit('fading', e.target.value);
+            });
+
+            /* blackout button */
+            var blackout = $('<button id="blackout" class="span2 btn btn-danger" style="float: right">Black Out</button>');
+            blackout.hide().appendTo('#navbar-content').fadeIn();
+            blackout.click(function () {
+                for (var universe in setup.universes) {
+                    socket.emit('blackout', universe);
+                }
+            });
+
 
             /* preset buttons */
             for (var preset in setup.presets) {
@@ -63,27 +84,6 @@
                 }(setup.presets[preset].values));
 //                console.log(html);
             }
-
-            /* blackout button */
-            var blackout = $('<button id="blackout" class="span2 btn btn-danger">Black Out</button>');
-            blackout.hide().appendTo('#navbar-content').fadeIn();
-            blackout.click(function () {
-                for (var universe in setup.universes) {
-                    socket.emit('blackout', universe);
-                }
-            });
-
-
-            //Fading Time //TODO add to #navbar-content
-            var html2 = "<div id='fadecontainer'><h2>Fade</h2>";
-            html2 += '<label for="fade">Fade duration</label>';
-            html2 += "</div>";
-            $(html2).hide().appendTo('#sliders').fadeIn();
-            var fader = $('<input id="fade" type="range" orient="horizontal" min="0" value="0" max="300">');
-            fader.hide().appendTo('#fadecontainer').fadeIn();
-            fader.on("input", function (e) {
-                socket.emit('fading', e.target.value);
-            });
 
 
             //Switching Presets Time
