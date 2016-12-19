@@ -155,7 +155,12 @@ function DMXWeb() {
 	var switchingTime = 0;
 
 	var switching = new Switching({'devices': DMX.devices, 'setup': config}, function (universe, update, effect) {
-		updateDmx(universe, update, effect);
+        if(fadingease == 'linear'){
+            updateDmx(universe, update, false);
+        }else{
+            updateDmx(universe, update, true);
+        }
+		// updateDmx(universe, update, effect);
 	});
 
 	io.sockets.on('connection', function(socket) {
