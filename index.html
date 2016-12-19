@@ -251,7 +251,6 @@
         });
         socket.on('fade', function (duration, ease) {
             $('#fade').attr('value', duration);
-            $('#easingSelect').val(ease);
         });
         socket.on('fadingEaseChange', function (effect) {
             $('#easingSelect').val(effect);

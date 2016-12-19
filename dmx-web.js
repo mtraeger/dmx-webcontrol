@@ -171,6 +171,7 @@ function DMXWeb() {
 				socket.emit('update', universe, dmx.universeToObject(universe));
 			}
             socket.emit('fade', fading, fadingease);
+            socket.emit('fadingEaseChange', fadingease);
             socket.emit('blackout', blackout);
             socket.emit('switching', switchingTime);
 		});
