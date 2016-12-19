@@ -26,9 +26,9 @@
             $('#colors').empty();
             $('#scripts').empty();
             $('#navbar-content').empty();
-            setup = msg.setup
-            devices = msg.devices
-            fadingEffect = 'linear'; //TODO add late comer support for this value (and maybe also others)
+            setup = msg.setup;
+            devices = msg.devices;
+            fadingEffect = 'linear';
 
             //select easing //TODO maybe also add to #navbar-content
             var easingEffects = ["linear", "inBounce", "outBounce", "inOutBounce", "inSine", "outSine", "inOutSine", "inCubic", "outCubic", "inOutCubic", "inQuint", "outQuint", "inOutQuint", "inCirc", "outCirc", "inOutCirc"]; //TODO get (more) effects from easing.js (be careful with overfilling values!)
@@ -251,6 +251,7 @@
         });
         socket.on('fade', function (duration, ease) {
             $('#fade').attr('value', duration);
+            $('#easingSelect').val(ease);
         });
         socket.on('fadingEaseChange', function (effect) {
             $('#easingSelect').val(effect);
