@@ -106,7 +106,7 @@
 
             //switching strategies
             var switchingStrategies = ["colors", "colorsDevByDev", "presets", "colorsSingleDevByDev"]; //TODO get effects from source?
-            $("<div id='switchingStrategies' style='display: block'><h2>Switching Strategies</h2></div>").hide().appendTo('#switching').fadeIn();
+            $("<div id='switchingStrategies' style='clear: both;'><h2>Switching Strategies</h2></div>").hide().appendTo('#switching').fadeIn();
             for (var strategy in switchingStrategies) {
                 var strategyButton = $('<button value="'+switchingStrategies[strategy]+'" class="span2 btn btn-info">'+switchingStrategies[strategy]+' Strategy</button>');
                 strategyButton.hide().appendTo('#switchingStrategies').fadeIn();
