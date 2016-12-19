@@ -30,8 +30,8 @@
             devices = msg.devices
             fadingEffect = 'linear'; //TODO add late comer support for this value (and maybe also others)
 
-            //select easing
-            var easingEffects = ["linear", "outBounce", "inOutCubic", "inOutQuint"]; //TODO get (more) effects from easing.js
+            //select easing //TODO maybe also add to #navbar-content
+            var easingEffects = ["linear", "inBounce", "outBounce", "inOutBounce", "inSine", "outSine", "inOutSine", "inCubic", "outCubic", "inOutCubic", "inQuint", "outQuint", "inOutQuint", "inCirc", "outCirc", "inOutCirc"]; //TODO get (more) effects from easing.js (be careful with overfilling values!)
             var easingSelect = "<select id='easingSelect'>";
             for (var easingEffect in easingEffects) {
                 easingSelect += "<option value='"+easingEffects[easingEffect]+"'>"+easingEffects[easingEffect]+"</option>";
