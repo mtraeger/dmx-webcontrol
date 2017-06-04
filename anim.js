@@ -123,6 +123,7 @@ Anim.prototype.run = function(universe, onFinish, onUpdate) {
 		t = t + resolution
 		self.dmx.update(universe, new_vals, false) //only value updates of dmx
 
+        // if(onUpdate) onUpdate(new_vals);
         if(onUpdate && new Date().getTime() - lastUpdate > 100){ //update display slider only every 100 ms
             onUpdate(new_vals);
             lastUpdate = new Date().getTime();
