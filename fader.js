@@ -81,6 +81,7 @@ Fader.prototype.run = function(fadingGoal, speed, onFinish, onUpdate) {
 	this.onUpdate = onUpdate;
 
 	var self = this;
+	var lastUpdate = new Date().getTime();
 
 	var singleStep = function () {
 		var currentValue = self.dmx.get(self.universe, self.channel);
@@ -103,7 +104,11 @@ Fader.prototype.run = function(fadingGoal, speed, onFinish, onUpdate) {
 			var singleUpdate = {}; //creating new object with one single channel target value
 			singleUpdate[self.channel] = newvalue;
 			self.dmx.update(self.universe, singleUpdate, false);
-			if(onUpdate) onUpdate(singleUpdate);
+
+			if(onUpdate && new Date().getTime() - lastUpdate > 100){ //update display slider only every 100 ms
+                onUpdate(singleUpdate);
+                lastUpdate = new Date().getTime();
+			};
 		}
 		self.speedUpdated = false;
 	};
