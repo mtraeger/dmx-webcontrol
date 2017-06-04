@@ -88,12 +88,14 @@ Anim.prototype.delay = function(duration) {
  * @param onUpdate callback called on every value update, argument are the new values
  */
 Anim.prototype.run = function(universe, onFinish, onUpdate) {
-	var config = {}
-	var t = 0
-	var d = 0
-	var a
+	var config = {};
+	var t = 0;
+	var d = 0;
+	var a;
 
-	var fx_stack = this.fx_stack;
+    var lastUpdate = new Date().getTime();
+
+    var fx_stack = this.fx_stack;
 	var self = this;
 	var ani_setup = function() {
 		a = fx_stack.shift()
@@ -121,7 +123,11 @@ Anim.prototype.run = function(universe, onFinish, onUpdate) {
 		t = t + resolution
 		self.dmx.update(universe, new_vals, false) //only value updates of dmx
 
-		if(onUpdate) onUpdate(new_vals);
+        if(onUpdate && new Date().getTime() - lastUpdate > 100){ //update display slider only every 100 ms
+            onUpdate(new_vals);
+            lastUpdate = new Date().getTime();
+        };
+
 
 		if(t > d) {
 			if(fx_stack.length > 0) {
