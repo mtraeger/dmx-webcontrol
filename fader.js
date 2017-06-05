@@ -45,7 +45,9 @@ Fader.prototype.updateSpeed = function (newspeed) {
  * @returns {number}
  */
 Fader.prototype.getModifiedSpeed = function() {
-	return 1+Math.pow(Fader.speed,2)/200;
+	return 0.1 * Math.exp((Fader.speed/13)+1);
+	// return Math.exp((Fader.speed/10)-1) / 30;
+	// return 1+Math.pow(Fader.speed,2)/200;
 };
 
 /**

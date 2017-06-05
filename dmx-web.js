@@ -278,9 +278,12 @@ function DMXWeb() {
 				if(animations[universe][channel] instanceof A && !animations[universe][channel].aborted){
 					animations[universe][channel].abort(); //abort old still running animation on same channel
 				}
+
+				var fadeVal = 0.1 * Math.exp((fading/13)+1);
+
 				animations[universe][channel] = new A(dmx);
 				animations[universe][channel]
-					.add(singleUpdate, fading*100, {easing: fadingease})
+					.add(singleUpdate, fadeVal*1000, {easing: fadingease})
 					.run(universe, function (finalvals) {
 						//onFinish
 						io.sockets.emit('update', universe, finalvals);

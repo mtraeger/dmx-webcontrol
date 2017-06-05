@@ -50,7 +50,7 @@
             html2 += '<label for="fade">Fade duration</label>';
             html2 += "</div>";
             $(html2).hide().appendTo('#navbar-content').fadeIn();
-            var fader = $('<input id="fade" type="range" orient="horizontal" min="0" value="0" max="300">');
+            var fader = $('<input id="fade" type="range" orient="horizontal" min="0" value="0" max="100">');
             fader.hide().appendTo('#fadecontainer').fadeIn();
             fader.on("input", function (e) {
                 socket.emit('fading', e.target.value);
