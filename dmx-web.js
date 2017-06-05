@@ -149,6 +149,11 @@ function DMXWeb() {
 		}
 	})
 
+    app.get('/switchNextStep', function(req, res) {
+        switching.nextStep();
+        res.status(200).json({"success": true});
+    })
+
 	var fading = 0;
 	var fadingease = 'linear';
 	var fadingTime = 0;
