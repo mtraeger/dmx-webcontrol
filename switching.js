@@ -188,7 +188,7 @@ Switching.prototype.setStrategy = function (strategy) {
  * Abort this single animation
  */
 Switching.prototype.abort = function () {
-	console.log("Aborting single animation");
+	// console.log("Aborting single animation");
 	this.aborted = true;
 }
 
@@ -197,7 +197,7 @@ Switching.prototype.abort = function () {
  * @param mSecondsPerStep
  */
 Switching.prototype.setResolution = function (mSecondsPerStep) {
-	console.log("Update Resolution");
+	// console.log("Update Resolution");
 	this.mSecondsPerStep = mSecondsPerStep;
 	if (this.intervalId != null && this.running == true) {
 		clearInterval(this.intervalId);

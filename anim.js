@@ -21,7 +21,7 @@ function Anim(dmx) {
  * Abort all animations (while 500ms in update)
  */
 Anim.abortAnimations = function(){
-	console.log("Aborting all animations");
+	// console.log("Aborting all animations");
 	Anim.abort = true;
 }
 
@@ -29,7 +29,7 @@ Anim.abortAnimations = function(){
  * Abort this single animation
  */
 Anim.prototype.abort = function () {
-	console.log("Aborting single animation");
+	// console.log("Aborting single animation");
 	this.aborted = true;
 }
 
