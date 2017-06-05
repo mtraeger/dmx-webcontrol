@@ -279,7 +279,8 @@ function DMXWeb() {
 					animations[universe][channel].abort(); //abort old still running animation on same channel
 				}
 
-				var fadeVal = 0.1 * Math.exp((fading/13)+1);
+				//see also fader.js in getModifiedSpeed
+				var fadeVal = 0.1 * Math.exp((fading/13)+1); //fader scaling for static animations in seconds
 
 				animations[universe][channel] = new A(dmx);
 				animations[universe][channel]

@@ -45,9 +45,8 @@ Fader.prototype.updateSpeed = function (newspeed) {
  * @returns {number}
  */
 Fader.prototype.getModifiedSpeed = function() {
-	return 0.1 * Math.exp((Fader.speed/13)+1);
-	// return Math.exp((Fader.speed/10)-1) / 30;
-	// return 1+Math.pow(Fader.speed,2)/200;
+	// see function also in dmx-web for static animation
+	return 0.1 * Math.exp((Fader.speed/13)+1)*1000 / 256; //*1000 for millisec and div by 256 for size per step
 };
 
 /**
@@ -117,7 +116,6 @@ Fader.prototype.run = function(fadingGoal, speed, onFinish, onUpdate) {
 	};
 
 	self.intervalId = setInterval(singleStep, self.getModifiedSpeed());
-	//console.log(1+Math.pow(Fader.speed,2)/200)
 };
 
 module.exports = Fader
