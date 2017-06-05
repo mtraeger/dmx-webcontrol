@@ -152,6 +152,7 @@ function DMXWeb() {
 	var fading = 0;
 	var fadingease = 'linear';
 	var blackout = false;
+	var switchingTimeFader = 0;
 	var switchingTime = 0;
 
 	var switching = new Switching({'devices': DMX.devices, 'setup': config}, function (universe, update, effect) {
@@ -173,7 +174,7 @@ function DMXWeb() {
             socket.emit('fade', fading, fadingease);
             socket.emit('fadingEaseChange', fadingease);
             socket.emit('blackout', blackout);
-            socket.emit('switching', switchingTime);
+            socket.emit('switching', switchingTimeFader, switchingTime);
 		});
 
 		socket.on('update', function (universe, update, effect) {
@@ -200,23 +201,25 @@ function DMXWeb() {
 		});
 
 		socket.on('switching', function(value) {
-			switchingTime = value;
+			switchingTimeFader = value;
 
-			if(switchingTime == 0){
+			if(switchingTimeFader == 0){
 				switching.abort();
+				switchingTime = 0;
 			}else{
 				if(!switching.running) {
 					switching.run();
 				}
-				if(switchingTime == 100){
-					switchingTime = 110; //should be 0.05 as switching time
+				if(switchingTimeFader == 100){
+					switchingTimeFader = 110; //should be 0.05 as switching time
 				}
 
-				var time = 300 * Math.exp(-0.8 * switchingTime/10); //divide by 10 because function in range x 0-10
+				var time = 300 * Math.exp(-0.8 * switchingTimeFader/10); //divide by 10 because function in range x 0-10
                 switching.setResolution(time * 1000); //in milliSec * 1000
+				switchingTime =  Math.round(time*100)/100
 			}
 
-			io.sockets.emit('switching', switchingTime);
+			io.sockets.emit('switching', switchingTimeFader, switchingTime);
 		});
 
 		socket.on('nextSwitchStep', function () {

@@ -89,6 +89,7 @@
             //Switching Presets Time
             var html3 = "<div style='display: block' id='switchpresets'><h2>Switch</h2>";
             html3 += '<label for="switch">Switching Speed (0 = Off)</label>';
+            html3 += '<div>Current Step: <span id="switchTime">0</span> seconds</div>';
             html3 += "</div>";
             $(html3).hide().appendTo('#switching').fadeIn();
             var switchfader = $('<input id="switch" type="range" orient="vertical" min="0" value="0" max="100">');
@@ -256,8 +257,9 @@
             $('#easingSelect').val(effect);
             fadingEffect = effect;
         });
-        socket.on('switching', function (duration) {
+        socket.on('switching', function (duration, time) {
             $('#switch').attr('value', duration);
+            $('#switchTime').text(time);
         });
     </script>
 </head>
