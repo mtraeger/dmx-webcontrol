@@ -208,13 +208,12 @@ function DMXWeb() {
 				if(!switching.running) {
 					switching.run();
 				}
-				if(switchingTime == 300){
-					switchingTime = 400;
-					// console.log(switchingTime)
+				if(switchingTime == 100){
+					switchingTime = 110; //should be 0.05 as switching time
 				}
-				var secondInMilliSec = 60*1000;
-				var updateMod = 1+Math.pow(switchingTime,2)/200;
-				switching.setResolution(secondInMilliSec/updateMod)
+
+				var time = 300 * Math.exp(-0.8 * switchingTime/10); //divide by 10 because function in range x 0-10
+                switching.setResolution(time * 1000); //in milliSec * 1000
 			}
 
 			io.sockets.emit('switching', switchingTime);
