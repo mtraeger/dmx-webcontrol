@@ -47,7 +47,7 @@
 
             //Fading Time
             var html2 = "<div id='fadecontainer' style='float: left;'>";
-            html2 += '<label for="fade">Fade duration</label>';
+            html2 += '<label for="fade">Fade duration <span id="fadingTime">0</span> sec</label>';
             html2 += "</div>";
             $(html2).hide().appendTo('#navbar-content').fadeIn();
             var fader = $('<input id="fade" type="range" orient="horizontal" min="0" value="0" max="100">');
@@ -250,8 +250,9 @@
                 $('#blackout').removeClass('blink');
             }
         });
-        socket.on('fade', function (duration, ease) {
+        socket.on('fade', function (duration, ease, fadingTime) {
             $('#fade').attr('value', duration);
+            $('#fadingTime').text(fadingTime);
         });
         socket.on('fadingEaseChange', function (effect) {
             $('#easingSelect').val(effect);

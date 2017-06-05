@@ -45,8 +45,8 @@ Fader.prototype.updateSpeed = function (newspeed) {
  * @returns {number}
  */
 Fader.prototype.getModifiedSpeed = function() {
-	// see function also in dmx-web for static animation
-	return 0.1 * Math.exp((Fader.speed/13)+1)*1000 / 256; //*1000 for millisec and div by 256 for size per step
+	// see function also in dmx-web for static animation -> socket_on-fading
+	return (0.1 * Math.exp((Fader.speed/13)+1)*1000 - 0.15)/ 256; //*1000 for millisec and div by 256 for size per step
 };
 
 /**

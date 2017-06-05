@@ -151,6 +151,7 @@ function DMXWeb() {
 
 	var fading = 0;
 	var fadingease = 'linear';
+	var fadingTime = 0;
 	var blackout = false;
 	var switchingTimeFader = 0;
 	var switchingTime = 0;
@@ -171,7 +172,7 @@ function DMXWeb() {
 			for(var universe in config.universes) {
 				socket.emit('update', universe, dmx.universeToObject(universe));
 			}
-            socket.emit('fade', fading, fadingease);
+            socket.emit('fade', fading, fadingease, fadingTime);
             socket.emit('fadingEaseChange', fadingease);
             socket.emit('blackout', blackout);
             socket.emit('switching', switchingTimeFader, switchingTime);
@@ -184,9 +185,18 @@ function DMXWeb() {
 
 		socket.on('fading', function(duration, ease) {
 			fading = duration || 0;
-			fadingease = ease || fadingease || 'outBounce';
+			fadingease = ease || fadingease || 'linear';
 			//console.log(fading);
-			io.sockets.emit('fade', duration, fadingease);
+
+			if(duration != 0) {
+                //see also fader.js in getModifiedSpeed
+                var time = 0.1 * Math.exp((fading / 13) + 1) -0.15; //-0.15 for correction of start value
+                fadingTime = Math.round(time * 100) / 100;
+            }else{
+				fadingTime = 0;
+			}
+
+			io.sockets.emit('fade', duration, fadingease, fadingTime);
 			for (var universe in fadingDelayer) {
 				for (var channel in fadingDelayer[universe]) {
 					if (fadingDelayer[universe][channel] instanceof Fader && !fadingDelayer[universe][channel].finished) {
@@ -216,7 +226,7 @@ function DMXWeb() {
 
 				var time = 300 * Math.exp(-0.8 * switchingTimeFader/10); //divide by 10 because function in range x 0-10
                 switching.setResolution(time * 1000); //in milliSec * 1000
-				switchingTime =  Math.round(time*100)/100
+				switchingTime =  Math.round(time*100)/100;
 			}
 
 			io.sockets.emit('switching', switchingTimeFader, switchingTime);
@@ -279,12 +289,9 @@ function DMXWeb() {
 					animations[universe][channel].abort(); //abort old still running animation on same channel
 				}
 
-				//see also fader.js in getModifiedSpeed
-				var fadeVal = 0.1 * Math.exp((fading/13)+1); //fader scaling for static animations in seconds
-
 				animations[universe][channel] = new A(dmx);
 				animations[universe][channel]
-					.add(singleUpdate, fadeVal*1000, {easing: fadingease})
+					.add(singleUpdate, fadingTime*1000, {easing: fadingease})
 					.run(universe, function (finalvals) {
 						//onFinish
 						io.sockets.emit('update', universe, finalvals);
