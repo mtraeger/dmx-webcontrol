@@ -97,6 +97,8 @@ function DMXWeb() {
         res.sendfile(__dirname + '/css/style.css')
     })
 
+    app.use('/beat', express.static('beatDetect'));
+
 	app.get('/config', function(req, res) {
 		var response = {"devices": DMX.devices, "universes": {}}
 		Object.keys(config.universes).forEach(function(key) {
