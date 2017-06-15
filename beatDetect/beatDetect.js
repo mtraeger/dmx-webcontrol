@@ -91,3 +91,16 @@ function loadUrl(url) {
     req.open("GET", url, true);
     req.send(null);
 }
+
+
+function thresholdChange(value) {
+    beatThreshold = value / 100;
+}
+
+function beatHoldFramesChange(value) {
+    beatHoldFrames = value;
+}
+
+function beatDecayRateChange(value) {
+    beatDecayRate = value / 100;
+}

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Beat Detect 1</title>
+
+    <script src="p5/p5.js"></script>
+    <script src="p5/addons/p5.sound.js"></script>
+    <script src="p5/addons/p5.dom.js"></script>
+
+    <script src="beatDetect.js"></script>
+
+</head>
+<body>
+
+
+Detect beats and emit an event to switch the light. The browser window with this page has to be active (maybe use new
+window).
+
+Strategy: from example
+
+
+<div class="channel">
+    <p>what amplitude level can trigger a beat?</p>
+    <label for="threshold">Threshold</label>
+    <input id="threshold" type="range" min="0" value="11" max="100"
+           onchange="thresholdChange(this.value)" oninput="thresholdOut.value = this.value/100">
+    <output name="thresholdOut" id="thresholdOut">0.11</output>
+</div>
+
+<div class="channel">
+    <p>
+        how many draw loop frames before the beatCutoff starts to decay
+        so that another beat can be triggered.
+        frameRate() is usually around 60 frames per second,
+        so 20 fps = 3 beats per second, meaning if the song is over 180 BPM,
+        we wont respond to every beat.
+    </p>
+    <label for="framesPerBeat">Beat hold frames</label>
+    <input id="framesPerBeat" type="range" min="1" value="30" max="60"
+           onchange="beatHoldFramesChange(this.value)" oninput="framesPerBeatOut.value = this.value">
+    <output name="framesPerBeatOut" id="framesPerBeatOut">30</output>
+</div>
+
+<div class="channel">
+
+    <p>When we have a beat, beatCutoff will be reset to 1.1*beatThreshold, and then decay
+        Level must be greater than beatThreshold and beatCutoff before the next beat can trigger.
+        how fast does beat cutoff decay?
+    </p>
+
+    <label for="beatDecayRate">beatDecayRate</label>
+    <input id="beatDecayRate" type="range" min="0" value="98" max="100"
+           onchange="beatDecayRateChange(this.value)" oninput="beatDecayRateOut.value = this.value/100">
+    <output name="beatDecayRateOut" id="beatDecayRateOut">0.98</output>
+</div>
+
+
+</body>
+</html>
