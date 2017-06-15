@@ -106,11 +106,12 @@ Fader.prototype.run = function(fadingGoal, speed, onFinish, onUpdate) {
 			singleUpdate[self.channel] = newvalue;
 			self.dmx.update(self.universe, singleUpdate, false);
 
-            // if(onUpdate) onUpdate(singleUpdate);
-			if(onUpdate && new Date().getTime() - lastUpdate > 100){ //update display slider only every 100 ms
-                onUpdate(singleUpdate);
-                lastUpdate = new Date().getTime();
-			};
+            if(onUpdate) onUpdate(singleUpdate);
+            // comment line above and uncomment lines below for better performance on display-slider update in browser
+			// if(onUpdate && new Date().getTime() - lastUpdate > 100){ //update display slider only every 100 ms
+             //    onUpdate(singleUpdate);
+             //    lastUpdate = new Date().getTime();
+			// };
 		}
 		self.speedUpdated = false;
 	};
