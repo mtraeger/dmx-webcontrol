@@ -14,8 +14,8 @@
 
         var fft, mic, peakDetect;
         var lowerFreq = 20, //default 20Hz
-            higherFreq = 400, //default 20000Hz
-            threshold = 0.35, //0 - 1, default 0.35, log scaled
+            higherFreq = 100, //default 20000Hz
+            threshold = 0.50, //0 - 1, default 0.35, log scaled
             framesPerPeak = 20; //Default 20
 
         function setup() {
@@ -30,6 +30,7 @@
             peakDetect.onPeak(function (value) {
                 loadUrl("/switchNextStep");
 //                console.log("Value of the peak: " + value);
+                beatIntensity.value = Math.round(value*1000)/1000;
             })
 
         }
@@ -104,25 +105,32 @@ window).
 
 Strategy: peakDetect
 
+<div>
+    <p>
+        Intennsity of last beat event:
+        <output name="beatIntensity" id="beatIntensity">0</output>
+    </p>
+</div>
+
 <div class="channel">
     <label for="threshold">Threshold</label>
-    <input id="threshold" type="range" min="0" value="35" max="100"
+    <input id="threshold" type="range" min="0" value="50" max="100"
            onchange="thresholdChange(this.value)" oninput="thresholdOut.value = this.value/100">
-    <output name="thresholdOut" id="thresholdOut">0.35</output>
+    <output name="thresholdOut" id="thresholdOut">0.50</output>
 </div>
 
 <div class="channel">
     <label for="lowerFreq">Lower Frequency</label>
-    <input id="lowerFreq" type="range" min="20" value="20" max="5000"
+    <input id="lowerFreq" type="range" min="20" value="20" max="1000"
            onchange="lowerFreqChange(this.value)" oninput="lowerFreqOut.value = this.value">
     <output name="lowerFreqOut" id="lowerFreqOut">20</output>
 </div>
 
 <div class="channel">
     <label for="higherFreq">Higher Frequency</label>
-    <input id="higherFreq" type="range" min="10" value="400" max="20000"
+    <input id="higherFreq" type="range" min="10" value="100" max="2000"
            onchange="higherFreqChange(this.value)" oninput="higherFreqOut.value = this.value">
-    <output name="higherFreqOut" id="higherFreqOut">400</output>
+    <output name="higherFreqOut" id="higherFreqOut">100</output>
     <!--TODO: suggested: 400-->
 </div>
 
