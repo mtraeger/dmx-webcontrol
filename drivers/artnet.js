@@ -14,7 +14,7 @@ function EnttecODE(device_id, options) {
 	self.universe = new Buffer(512)
 	self.universe.fill(0)
 
-	self.sleepTime = 24
+	self.sleepTime = 2 //TODO maybe 2 seconds for fluent fading on short times?, default 24
 
 	options = options || {}
 	self.universe_id.writeInt16BE(options.universe || 0, 0)
