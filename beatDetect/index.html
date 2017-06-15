@@ -121,14 +121,14 @@ Strategy: peakDetect
 
 <div class="channel">
     <label for="lowerFreq">Lower Frequency</label>
-    <input id="lowerFreq" type="range" min="20" value="20" max="1000"
+    <input id="lowerFreq" type="range" min="10" value="20" max="1000"
            onchange="lowerFreqChange(this.value)" oninput="lowerFreqOut.value = this.value">
     <output name="lowerFreqOut" id="lowerFreqOut">20</output>
 </div>
 
 <div class="channel">
     <label for="higherFreq">Higher Frequency</label>
-    <input id="higherFreq" type="range" min="10" value="100" max="2000"
+    <input id="higherFreq" type="range" min="20" value="100" max="2000"
            onchange="higherFreqChange(this.value)" oninput="higherFreqOut.value = this.value">
     <output name="higherFreqOut" id="higherFreqOut">100</output>
     <!--TODO: suggested: 400-->
