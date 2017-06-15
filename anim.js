@@ -1,7 +1,7 @@
 "use strict"
 
 var ease = require('./easing.js').ease
-var resolution = 25
+var resolution = 10 //for faster fading, default 25
 
 Anim.abort = false;
 
