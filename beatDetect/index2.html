@@ -12,20 +12,32 @@
 
         //TODO https://p5js.org/reference/#/p5.PeakDetect
 
-        var fft, peakDetect;
-        var mic;
+        var fft, mic, peakDetect;
+        var lowerFreq = 20, //default 20Hz
+            higherFreq = 20000, //default 20000Hz
+            threshold = 0.35, //0 - 1, default 0.35, log scaled
+            framesPerPeak = 20; //Default 20
+
         function setup() {
             mic = new p5.AudioIn();
             mic.start();
 
             fft = new p5.FFT();
             fft.setInput(mic);
-            peakDetect = new p5.PeakDetect(); //new p5.PeakDetect([freq1],[freq2],[threshold],[framesPerPeak])
+//            peakDetect = new p5.PeakDetect();
+            peakDetect = new p5.PeakDetect(lowerFreq, higherFreq, threshold, framesPerPeak);
+
+//            peakDetect._onPeak(function (value) {
+//                loadUrl("/switchNextStep");
+//                console.log("Value of the peak: " + value);
+//            })
 
         }
         function draw() {
             background(0);
             micLevel = mic.getLevel();
+
+            //draw stuff
             ellipse(width / 2, constrain(height - micLevel * height * 5, 0, height), 10, 10);
 
             // peakDetect accepts an fft post-analysis
@@ -37,9 +49,28 @@
 //                console.log("beat");
             }
 
-
         }
 
+
+        function thresholdChange(value) {
+            threshold = value / 100;
+//            peakDetect = new p5.PeakDetect(lowerFreq, higherFreq, threshold, framesPerPeak);
+            peakDetect.threshold = threshold;
+        }
+
+        function lowerFreqChange(value) {
+            lowerFreq = Number(value);
+//            peakDetect = new p5.PeakDetect(lowerFreq, higherFreq, threshold, framesPerPeak);
+            peakDetect.f1 = lowerFreq;
+        }
+
+        function higherFreqChange(value) {
+            higherFreq = Number(value);
+//            peakDetect = new p5.PeakDetect(lowerFreq, higherFreq, threshold, framesPerPeak);
+            peakDetect.f2 = higherFreq;
+        }
+
+        //        TODO Frames per peak
 
         function loadUrl(url) {
             var req = new XMLHttpRequest();
@@ -54,9 +85,32 @@
 <body>
 
 
-Detect beats and emit an event to switch the light. The browser window with this page has to be active (maybe use new window).
+Detect beats and emit an event to switch the light. The browser window with this page has to be active (maybe use new
+window).
 
 Strategy: peakDetect
+
+<div class="channel">
+    <label for="threshold">Threshold</label>
+    <input id="threshold" type="range" min="0" value="35" max="100"
+           onchange="thresholdChange(this.value)" oninput="thresholdOut.value = this.value">
+    <output name="thresholdOut" id="thresholdOut">35</output>
+</div>
+
+<div class="channel">
+    <label for="lowerFreq">Lower Frequency</label>
+    <input id="lowerFreq" type="range" min="20" value="20" max="5000"
+           onchange="lowerFreqChange(this.value)" oninput="lowerFreqOut.value = this.value">
+    <output name="lowerFreqOut" id="lowerFreqOut">20</output>
+</div>
+
+<div class="channel">
+    <label for="higherFreq">Higher Frequency</label>
+    <input id="higherFreq" type="range" min="10" value="20000" max="20000"
+           onchange="higherFreqChange(this.value)" oninput="higherFreqOut.value = this.value">
+    <output name="higherFreqOut" id="higherFreqOut">20000</output>
+    <!--TODO: suggested: 440->
+</div>
 
 </body>
 </html>
