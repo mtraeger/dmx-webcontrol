@@ -10,7 +10,7 @@
 
     <script>
 
-        //TODO https://p5js.org/reference/#/p5.PeakDetect
+        //https://p5js.org/reference/#/p5.PeakDetect
 
         var fft, mic, peakDetect;
         var lowerFreq = 20, //default 20Hz
@@ -107,8 +107,8 @@ Strategy: peakDetect
 <div class="channel">
     <label for="threshold">Threshold</label>
     <input id="threshold" type="range" min="0" value="35" max="100"
-           onchange="thresholdChange(this.value)" oninput="thresholdOut.value = this.value">
-    <output name="thresholdOut" id="thresholdOut">35</output>
+           onchange="thresholdChange(this.value)" oninput="thresholdOut.value = this.value/100">
+    <output name="thresholdOut" id="thresholdOut">0.35</output>
 </div>
 
 <div class="channel">
@@ -127,7 +127,7 @@ Strategy: peakDetect
 </div>
 
 <div class="channel">
-    <label for="framesPerBeat">Lower Frequency</label>
+    <label for="framesPerBeat">Frames per Peak</label>
     <input id="framesPerBeat" type="range" min="1" value="20" max="60"
            onchange="framesPerPeakChange(this.value)" oninput="framesPerBeatOut.value = this.value">
     <output name="framesPerBeatOut" id="framesPerBeatOut">20</output>
