@@ -105,6 +105,8 @@
                 socket.emit('nextSwitchStep');
             });
 
+            //TODO add link to /beat for automatic beat detection
+
             //switching strategies
             var switchingStrategies = ["colors", "colorsDevByDev", "presets", "colorsSingleDevByDev"]; //TODO get effects from source?
             $("<div id='switchingStrategies' style='clear: both;'><h2>Switching Strategies</h2></div>").hide().appendTo('#switching').fadeIn();

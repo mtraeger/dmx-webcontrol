@@ -14,7 +14,7 @@
 
         var fft, mic, peakDetect;
         var lowerFreq = 20, //default 20Hz
-            higherFreq = 20000, //default 20000Hz
+            higherFreq = 400, //default 20000Hz
             threshold = 0.35, //0 - 1, default 0.35, log scaled
             framesPerPeak = 20; //Default 20
 
@@ -27,10 +27,10 @@
 //            peakDetect = new p5.PeakDetect();
             peakDetect = new p5.PeakDetect(lowerFreq, higherFreq, threshold, framesPerPeak);
 
-//            peakDetect._onPeak(function (value) {
-//                loadUrl("/switchNextStep");
+            peakDetect.onPeak(function (value) {
+                loadUrl("/switchNextStep");
 //                console.log("Value of the peak: " + value);
-//            })
+            })
 
         }
         function draw() {
@@ -44,10 +44,10 @@
             fft.analyze();
             peakDetect.update(fft);
 
-            if (peakDetect.isDetected) {
-                loadUrl("/switchNextStep");
-//                console.log("beat");
-            }
+//            if (peakDetect.isDetected) {
+//                loadUrl("/switchNextStep");
+////                console.log("beat");
+//            }
 
         }
 
@@ -70,13 +70,27 @@
             peakDetect.f2 = higherFreq;
         }
 
-        //        TODO Frames per peak
+        function framesPerPeakChange(value) {
+            framesPerPeak = Number(value);
+//            peakDetect = new p5.PeakDetect(lowerFreq, higherFreq, threshold, framesPerPeak);
+            peakDetect.framesPerPeak = framesPerPeak;
+        }
 
         function loadUrl(url) {
             var req = new XMLHttpRequest();
             req.open("GET", url, true);
             req.send(null);
         }
+
+        // Frequency ranges from p5 sound
+        //        this.bass = [
+        //            20,
+        //            140
+        //        ];
+        //        this.lowMid = [
+        //            140,
+        //            400
+        //        ];
 
     </script>
 
@@ -106,10 +120,17 @@ Strategy: peakDetect
 
 <div class="channel">
     <label for="higherFreq">Higher Frequency</label>
-    <input id="higherFreq" type="range" min="10" value="20000" max="20000"
+    <input id="higherFreq" type="range" min="10" value="400" max="20000"
            onchange="higherFreqChange(this.value)" oninput="higherFreqOut.value = this.value">
-    <output name="higherFreqOut" id="higherFreqOut">20000</output>
-    <!--TODO: suggested: 440->
+    <output name="higherFreqOut" id="higherFreqOut">400</output>
+    <!--TODO: suggested: 400-->
+</div>
+
+<div class="channel">
+    <label for="framesPerBeat">Lower Frequency</label>
+    <input id="framesPerBeat" type="range" min="1" value="20" max="60"
+           onchange="framesPerPeakChange(this.value)" oninput="framesPerBeatOut.value = this.value">
+    <output name="framesPerBeatOut" id="framesPerBeatOut">20</output>
 </div>
 
 </body>
