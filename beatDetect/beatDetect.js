@@ -2,8 +2,8 @@
  * Created by michael on 14.06.17.
  */
 //based on https://github.com/therewasaguy/p5-music-viz/tree/gh-pages/demos/01d_beat_detect_amplitude
-//TODO maybe include https://github.com/therewasaguy/p5-music-viz/blob/gh-pages/demos/01c_amplitude_threshold/sketch.js
-// and or https://github.com/therewasaguy/p5-music-viz/blob/gh-pages/demos/01c_amplitude_threshold/sketch.js
+//maybe include https://github.com/therewasaguy/p5-music-viz/blob/gh-pages/demos/01c_amplitude_threshold/sketch.js
+// and or https://github.com/therewasaguy/p5-music-viz/blob/gh-pages/demos/01b_amplitude_time/sketch.js
 
 /**
  *  This technique tracks a beatThreshold level.
