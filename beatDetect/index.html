@@ -26,6 +26,9 @@
 
 
         function setup() {
+            createCanvas(710, 200);
+            background(255);
+
             mic = new p5.AudioIn();
             mic.start();
 
@@ -41,12 +44,11 @@
             })
 
         }
+
         function draw() {
-            background(0);
             micLevel = mic.getLevel();
 
-            //draw jumping circle
-            ellipse(width / 2, constrain(height - micLevel * height * 5, 0, height), 10, 10);
+            drawLevelBar();
 
             // peakDetect accepts an fft post-analysis
             fft.analyze();
@@ -78,6 +80,20 @@
             var req = new XMLHttpRequest();
             req.open("GET", url, true);
             req.send(null);
+        }
+
+        function drawLevelBar() {
+            // Graph the overall potential volume, w/ a line at the threshold
+            var y = map(micLevel, 0, 1, height, 0);
+            var ythreshold = map(threshold, 0, 1, height, 0);
+            noStroke();
+            fill(175);
+            rect(0, 0, 20, height);
+            // Then draw a rectangle on the graph, sized according to volume
+            fill(0);
+            rect(0, y, 20, y);
+            stroke(0);
+            line(0, ythreshold, 19, ythreshold);
         }
 
     </script>
