@@ -83,6 +83,7 @@
         }
 
         function drawLevelBar() {
+            // source: https://github.com/therewasaguy/p5-music-viz/blob/gh-pages/demos/01c_amplitude_threshold/sketch.js
             // Graph the overall potential volume, w/ a line at the threshold
             var y = map(micLevel, 0, 1, height, 0);
             var ythreshold = map(threshold, 0, 1, height, 0);
