@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Beat Detect 2</title>
+    <title>Beat Detect</title>
 
     <script src="p5/p5.js"></script>
     <script src="p5/addons/p5.sound.js"></script>
@@ -10,7 +10,7 @@
 
     <script>
 
-        //https://p5js.org/reference/#/p5.PeakDetect
+        //Source (basis for this JS) and Doc: https://p5js.org/reference/#/p5.PeakDetect
 
         var fft, mic, peakDetect;
         var lowerFreq = 20, //default 20Hz
@@ -18,19 +18,26 @@
             threshold = 0.50, //0 - 1, default 0.35, log scaled
             framesPerPeak = 20; //Default 20
 
+        // Frequency range for bass from p5 sound
+        //        this.bass = [
+        //            20,
+        //            140
+        //        ];
+
+
         function setup() {
             mic = new p5.AudioIn();
             mic.start();
 
             fft = new p5.FFT();
             fft.setInput(mic);
+
 //            peakDetect = new p5.PeakDetect();
             peakDetect = new p5.PeakDetect(lowerFreq, higherFreq, threshold, framesPerPeak);
 
             peakDetect.onPeak(function (value) {
                 loadUrl("/switchNextStep");
-//                console.log("Value of the peak: " + value);
-                beatIntensity.value = Math.round(value*1000)/1000;
+                beatIntensity.value = Math.round(value * 1000) / 1000;
             })
 
         }
@@ -38,42 +45,32 @@
             background(0);
             micLevel = mic.getLevel();
 
-            //draw stuff
+            //draw jumping circle
             ellipse(width / 2, constrain(height - micLevel * height * 5, 0, height), 10, 10);
 
             // peakDetect accepts an fft post-analysis
             fft.analyze();
             peakDetect.update(fft);
-
-//            if (peakDetect.isDetected) {
-//                loadUrl("/switchNextStep");
-////                console.log("beat");
-//            }
-
         }
 
 
         function thresholdChange(value) {
             threshold = value / 100;
-//            peakDetect = new p5.PeakDetect(lowerFreq, higherFreq, threshold, framesPerPeak);
             peakDetect.threshold = threshold;
         }
 
         function lowerFreqChange(value) {
             lowerFreq = Number(value);
-//            peakDetect = new p5.PeakDetect(lowerFreq, higherFreq, threshold, framesPerPeak);
             peakDetect.f1 = lowerFreq;
         }
 
         function higherFreqChange(value) {
             higherFreq = Number(value);
-//            peakDetect = new p5.PeakDetect(lowerFreq, higherFreq, threshold, framesPerPeak);
             peakDetect.f2 = higherFreq;
         }
 
         function framesPerPeakChange(value) {
             framesPerPeak = Number(value);
-//            peakDetect = new p5.PeakDetect(lowerFreq, higherFreq, threshold, framesPerPeak);
             peakDetect.framesPerPeak = framesPerPeak;
         }
 
@@ -83,16 +80,6 @@
             req.send(null);
         }
 
-        // Frequency ranges from p5 sound
-        //        this.bass = [
-        //            20,
-        //            140
-        //        ];
-        //        this.lowMid = [
-        //            140,
-        //            400
-        //        ];
-
     </script>
 
 
@@ -100,14 +87,15 @@
 <body>
 
 
-Detect beats and emit an event to switch the light. The browser window with this page has to be active (maybe use new
-window).
-
+Detect beats and emit an event to switch the light. The browser window with this page has to be active. (Using a new
+window with only this page is suggested.)
+<br>
 Strategy: peakDetect
+<br>
 
 <div>
     <p>
-        Intennsity of last beat event:
+        Intennsity of last peak event:
         <output name="beatIntensity" id="beatIntensity">0</output>
     </p>
 </div>
@@ -131,7 +119,6 @@ Strategy: peakDetect
     <input id="higherFreq" type="range" min="20" value="100" max="2000"
            onchange="higherFreqChange(this.value)" oninput="higherFreqOut.value = this.value">
     <output name="higherFreqOut" id="higherFreqOut">100</output>
-    <!--TODO: suggested: 400-->
 </div>
 
 <div class="channel">
