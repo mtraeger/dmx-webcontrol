@@ -1,10 +1,20 @@
 # node-dmx
 
-DMX-512 controller library for node.js - also includes a Webinterface and HTTP API.
+DMX-512 controller library for node.js - also includes a Web-Interface and HTTP API.
+
+Forked from https://github.com/wiedi/node-dmx
+Enhanced functionality with Blackout, fading-ease and delay, automatic preset and color switching as well as color selection for all devices.
+
+Dev-Test of Beat-Detection: `localhost:8080/beat`
+
+Run with `node dmx-web.js`. Tested with NodeJS 4.4. Open `localhost:8080` in your browser.
+
+The following documentation needs to be updated partially (but is mostly still valid)
+
 
 ## Install
 
-	npm install -g dmx
+	npm install -g dmx-webcontrol
 
 ## Webinterface
 
