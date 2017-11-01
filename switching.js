@@ -16,11 +16,18 @@ function Switching(msg, updateDmx) {
 
 	this.mSecondsPerStep = 2000;
 	this.intervalId = null;
-	this.setupconfig = msg.setup
-	this.setupdevices = msg.devices
+	this.setupconfig = msg.setup;
+	this.setupdevices = msg.devices;
 	this.presets = msg.setup.presets;
+
+    // for (var color in self.setupconfig.colors) { //assign IDs to color
+    //     self.setupconfig.colors[color].id = color;
+    // }
+    this.selectedColors = this.setupconfig.colors.slice();
+
 	this.colorsStrategy();
 	this.strategy = this.colorsStrategy;
+
 }
 
 /**
@@ -32,7 +39,7 @@ Switching.prototype.addPresetsToAnimations = function () {
 	//Strategies see below
 	this.strategy();
 
-}
+};
 
 /* Set Strategies */
 
@@ -46,7 +53,7 @@ Switching.prototype.colorsStrategy = function () {
 		//color switching
 		//TODO fix duplication with index.html
 		//TODO generate not new color list all the time - generate once and store it
-		for (var color in this.setupconfig.colors) {
+		for (var color in this.selectedColors) {
 			var universesUpdate = {};
 			for (var universe in this.setupconfig.universes) {
 				var update = {};
@@ -55,9 +62,9 @@ Switching.prototype.colorsStrategy = function () {
 					if (this.setupdevices[dev.type].hasOwnProperty("startRgbChannel")) {
 						var startRgb = this.setupdevices[dev.type].startRgbChannel;
 						var firstRgbChannelForDevice = dev.address + startRgb;
-						for (var colorChannel in this.setupconfig.colors[color].values) {
+						for (var colorChannel in this.selectedColors[color].values) {
 							var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-							update[updateChannel] = this.setupconfig.colors[color].values[colorChannel];
+							update[updateChannel] = this.selectedColors[color].values[colorChannel];
 						}
 
 						// Maybe override colors here if special device colors
@@ -68,7 +75,7 @@ Switching.prototype.colorsStrategy = function () {
 			this.fx_stack.push({'to': universesUpdate});
 		}
 	});
-}
+};
 
 /**
  * Strategy
@@ -78,7 +85,7 @@ Switching.prototype.colorsStrategy = function () {
 Switching.prototype.colorsDevByDevStrategy = function () {
 	this.setStrategy(function() {
 //Test device by device update //TODO reduce code duplication?
-		for (var color in this.setupconfig.colors) {
+		for (var color in this.selectedColors) {
 			for (var universe in this.setupconfig.universes) {
 				for (var device in this.setupconfig.universes[universe].devices) {
 					var universesUpdate = {};
@@ -87,9 +94,9 @@ Switching.prototype.colorsDevByDevStrategy = function () {
 					if (this.setupdevices[dev.type].hasOwnProperty("startRgbChannel")) {
 						var startRgb = this.setupdevices[dev.type].startRgbChannel;
 						var firstRgbChannelForDevice = dev.address + startRgb;
-						for (var colorChannel in this.setupconfig.colors[color].values) {
+						for (var colorChannel in this.selectedColors[color].values) {
 							var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-							update[updateChannel] = this.setupconfig.colors[color].values[colorChannel];
+							update[updateChannel] = this.selectedColors[color].values[colorChannel];
 						}
 
 
@@ -102,7 +109,7 @@ Switching.prototype.colorsDevByDevStrategy = function () {
 
 		}
 	});
-}
+};
 
 /**
  * Strategy
@@ -113,47 +120,44 @@ Switching.prototype.colorsDevByDevStrategy = function () {
 Switching.prototype.colorsSingleDevByDev = function () {
 	this.setStrategy(function() {
 //Test device by device update //TODO reduce code duplication?
-		for (var color in this.setupconfig.colors) {
-			for (var universe in this.setupconfig.universes) {
-				for (var device in this.setupconfig.universes[universe].devices) {
-					var universesUpdate = {};
-					var update = {};
-					var dev = this.setupconfig.universes[universe].devices[device];
-					if (this.setupdevices[dev.type].hasOwnProperty("startRgbChannel")) {
-						var startRgb = this.setupdevices[dev.type].startRgbChannel;
-						var firstRgbChannelForDevice = dev.address + startRgb;
+		for (var color in this.selectedColors) {
+            for (var universe in this.setupconfig.universes) {
+                for (var device in this.setupconfig.universes[universe].devices) {
+                    var universesUpdate = {};
+                    var update = {};
+                    var dev = this.setupconfig.universes[universe].devices[device];
+                    if (this.setupdevices[dev.type].hasOwnProperty("startRgbChannel")) {
+                        var startRgb = this.setupdevices[dev.type].startRgbChannel;
+                        var firstRgbChannelForDevice = dev.address + startRgb;
 
-						//Special of this strategy: make alle the oters black
-						for (var allDevice in this.setupconfig.universes[universe].devices) {
-							var dev2 = this.setupconfig.universes[universe].devices[allDevice];
-							if (this.setupdevices[dev2.type].hasOwnProperty("startRgbChannel")) {
-								var startRgbCopy = this.setupdevices[dev2.type].startRgbChannel;
-								var firstRgbChannelForDeviceCopy = dev2.address + startRgbCopy;
-								for (var colorChannel2 in this.setupconfig.colors[color].values) {
-									update[parseInt(colorChannel2) + firstRgbChannelForDeviceCopy] = 0;
-								}
-							}
+                        //Special of this strategy: make alle the oters black
+                        for (var allDevice in this.setupconfig.universes[universe].devices) {
+                            var dev2 = this.setupconfig.universes[universe].devices[allDevice];
+                            if (this.setupdevices[dev2.type].hasOwnProperty("startRgbChannel")) {
+                                var startRgbCopy = this.setupdevices[dev2.type].startRgbChannel;
+                                var firstRgbChannelForDeviceCopy = dev2.address + startRgbCopy;
+                                for (var colorChannel2 in this.selectedColors[color].values) {
+                                    update[parseInt(colorChannel2) + firstRgbChannelForDeviceCopy] = 0;
+                                }
+                            }
 
-						}
+                        }
 
-						//old part
-						for (var colorChannel in this.setupconfig.colors[color].values) {
-							var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-							update[updateChannel] = this.setupconfig.colors[color].values[colorChannel];
-						}
+                        //old part
+                        for (var colorChannel in this.selectedColors[color].values) {
+                            var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
+                            update[updateChannel] = this.selectedColors[color].values[colorChannel];
+                        }
 
 
-
-						universesUpdate[universe] = update;
-						this.fx_stack.push({'to': universesUpdate});
-					}
-				}
-
-			}
-
+                        universesUpdate[universe] = update;
+                        this.fx_stack.push({'to': universesUpdate});
+                    }
+                }
+            }
 		}
 	});
-}
+};
 
 /**
  * Strategy
@@ -166,7 +170,7 @@ Switching.prototype.presetsStrategy = function () {
 			this.fx_stack.push({'to': this.presets[preset].values})
 		}
 	})
-}
+};
 
 /**
  * Helper for setting strategy
@@ -177,12 +181,19 @@ Switching.prototype.presetsStrategy = function () {
  */
 Switching.prototype.setStrategy = function (strategy) {
 	this.strategy = strategy;
-	while(this.fx_stack.length > 0){
-		this.fx_stack.shift();
-	}
+    this.clearSwitchingStepsStack();
 	this.addPresetsToAnimations();
-}
+};
 
+
+/**
+ * Helper for clearing the animation stack
+ */
+Switching.prototype.clearSwitchingStepsStack = function () {
+    while(this.fx_stack.length > 0){
+        this.fx_stack.shift();
+    }
+};
 
 /**
  * Abort this single animation
@@ -190,7 +201,7 @@ Switching.prototype.setStrategy = function (strategy) {
 Switching.prototype.abort = function () {
 	// console.log("Aborting single animation");
 	this.aborted = true;
-}
+};
 
 /**
  * set resolution in seconds per step -> time until next switch
@@ -203,7 +214,40 @@ Switching.prototype.setResolution = function (mSecondsPerStep) {
 		clearInterval(this.intervalId);
 		this.run();
 	}
-}
+};
+
+/**
+ * update used colors for color animations
+ * @param selectedColor color to add or remove
+ * @param enabled boolean wether color should be active or not
+ */
+Switching.prototype.setSelectedColors = function (selectedColor, enabled) {
+
+    var match = this.setupconfig.colors.filter(function (obj) {
+        return obj.label === selectedColor;
+    });
+
+    match = match[0];
+    var matchPosition = this.selectedColors.indexOf(match);
+
+    if (!enabled && matchPosition > -1) {
+        this.selectedColors.splice(matchPosition, 1);
+    } else if (enabled) {
+        this.selectedColors.push(match);
+    }
+
+    // this.clearSwitchingStepsStack();
+    // this.addPresetsToAnimations();
+    //TODO restart color cycle from current position
+};
+
+
+/**
+ * @return current selected colors for color animations
+ */
+Switching.prototype.getSelectedColors = function () {
+    return this.selectedColors;
+};
 
 
 /**
@@ -214,7 +258,7 @@ Switching.prototype.setResolution = function (mSecondsPerStep) {
  */
 Switching.prototype.run = function() {
 	this.running = true;
-	var to
+	var to;
 
 	var fx_stack = this.fx_stack;
 	var self = this;
@@ -229,18 +273,11 @@ Switching.prototype.run = function() {
 			return;
 		}
 
-		if(fx_stack.length < 1){
-			self.addPresetsToAnimations();
-		}
-		to = fx_stack.shift().to;
-
-		for (var universe in to) {
-			self.updateDmx(universe,  to[universe], false);
-		}
-	};
+		self.nextStep();
+    };
 
 	self.intervalId = setInterval(singleStep, this.mSecondsPerStep);
-}
+};
 
 
 /**
@@ -251,11 +288,14 @@ Switching.prototype.nextStep = function () {
 	if(this.fx_stack.length < 1){
 		this.addPresetsToAnimations();
 	}
-	var to = this.fx_stack.shift().to;
 
-	for (var universe in to) {
-		this.updateDmx(universe,  to[universe], false);
-	}
-}
+    if (this.fx_stack.length > 0) { //update dmx only if elements in stack
+        var to = this.fx_stack.shift().to;
 
-module.exports = Switching
+        for (var universe in to) {
+            this.updateDmx(universe, to[universe], false);
+        }
+    }
+};
+
+module.exports = Switching;

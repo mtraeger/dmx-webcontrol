@@ -86,7 +86,8 @@
             }
 
 
-            //Switching Presets Time
+            // ### Switching ###
+            //Switching Time
             var html3 = "<div style='display: block' id='switchpresets'><h2>Switch</h2>";
             html3 += '<label for="switch">Switching Speed (0 = Off)</label>';
             html3 += '<div>Current Step: <span id="switchTime">0</span> seconds</div>';
@@ -118,8 +119,35 @@
                 });
             }
 
+            //switching colors
+            var switchingColors = setup.colors;
+            $("<div id='switchingColors' style='clear: both;'><h2>Switching Colors</h2></div>").hide().appendTo('#switching').fadeIn();
+            //switching colors selection for colors
+            for (var color in switchingColors) {
+                var colorSelect = $('<label><input type="checkbox" name="' + switchingColors[color].label + '" > ' + switchingColors[color].label + '</label>');
+                colorSelect.hide().appendTo('#switchingColors').fadeIn();
+                colorSelect.click(function (e) {
+                    socket.emit('selectedColors', e.target.name, e.target.checked);
+                });
+            }
+            //All and No Color Buttons
+            var colorSelectAll = $('<button class="span2 btn btn-info">All Colors</button>');
+            colorSelectAll.hide().appendTo('#switchingColors').fadeIn();
+            colorSelectAll.click(function (e) {
+                for (var color in switchingColors) {
+                    socket.emit('selectedColors', switchingColors[color].label, true);
+                }
+            });
+            var colorDeselectAll = $('<button class="span2 btn btn-info">No Color</button>');
+            colorDeselectAll.hide().appendTo('#switchingColors').fadeIn();
+            colorDeselectAll.click(function (e) {
+                for (var color in switchingColors) {
+                    socket.emit('selectedColors', switchingColors[color].label, false);
+                }
+            });
 
-            //Color page
+
+            // #### Color page ###
             // color buttons and color sliders for rgb (additional color sliders?)
             for (var color in setup.colors) {
                 var htmlColorButtons = '<button class="span2 btn btn-info">' + setup.colors[color].label + '</button>';
@@ -263,6 +291,9 @@
         socket.on('switching', function (duration, time) {
             $('#switch').attr('value', duration);
             $('#switchTime').text(time);
+        });
+        socket.on('selectedColors', function (color, selected) {
+            $('#switchingColors input[name="' + color + '"]').prop('checked', selected);
         });
     </script>
 </head>

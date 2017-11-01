@@ -173,7 +173,7 @@ function DMXWeb() {
 	});
 
 	io.sockets.on('connection', function(socket) {
-		socket.emit('init', {'devices': DMX.devices, 'setup': config})
+        socket.emit('init', {'devices': DMX.devices, 'setup': config});
 
 		socket.on('request_refresh', function() {
 			for(var universe in config.universes) {
@@ -183,6 +183,10 @@ function DMXWeb() {
             socket.emit('fadingEaseChange', fadingease);
             socket.emit('blackout', blackout);
             socket.emit('switching', switchingTimeFader, switchingTime);
+            for(var color in switching.getSelectedColors()) {
+                var selectedColor = switching.getSelectedColors()[color];
+                socket.emit('selectedColors', selectedColor.label, true);
+            }
 		});
 
 		socket.on('update', function (universe, update, effect) {
@@ -239,12 +243,17 @@ function DMXWeb() {
 			io.sockets.emit('switching', switchingTimeFader, switchingTime);
 		});
 
+		socket.on('selectedColors', function (color, enabled) {
+			switching.setSelectedColors(color, enabled);
+            io.sockets.emit('selectedColors', color, enabled);
+        });
+
 		socket.on('nextSwitchStep', function () {
 			switching.nextStep();
-		})
+		});
 
 		socket.on('switchingStrategy', function (strategy) {
-			console.log(strategy)
+			// console.log(strategy)
 			if(strategy == 'colors'){
 				switching.colorsStrategy();
 			}else if (strategy == 'colorsDevByDev') {
@@ -254,22 +263,22 @@ function DMXWeb() {
 			}else if (strategy == 'colorsSingleDevByDev'){
 				switching.colorsSingleDevByDev();
 			}
-		})
+		});
 
 		socket.on('fadingEaseChange', function (easeEffect) {
 			fadingease = easeEffect;
 			io.sockets.emit('fadingEaseChange', fadingease);
-		})
+		});
 
 		dmx.on('blackout', function (bout) {
 			socket.emit('blackout', bout);
 			blackout = bout;
-		})
+		});
 
 		dmx.on('update', function(universe, update) {
 			socket.emit('update', universe, update)
 		})
-	})
+	});
 
 	function updateDmx(universe, update, effect) {
 		//console.log("Clicked: " + clicked);
