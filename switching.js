@@ -16,6 +16,10 @@ function Switching(msg, updateDmx) {
 
     this.mSecondsPerStep = 2000;
     this.intervalId = null;
+    this.mSecondsStrobeDuration = 100;
+    this.mSecondsStrobeLimit = 200; //shorter steps have no strobe mode
+    this.strobeModeEnabled = false;
+    this.timeoutDurationId = null;
     this.setupconfig = msg.setup;
     this.setupdevices = msg.devices;
     this.presets = msg.setup.presets;
@@ -85,7 +89,7 @@ Switching.prototype.colorsStrategy = function () {
  */
 Switching.prototype.colorsDevByDevStrategy = function () {
     this.setStrategy(function () {
-    //device by device update
+        //device by device update
         for (var colorNum in this.selectedColors) {
             var color = this.selectedColors[colorNum];
             for (var universeNum in this.setupconfig.universes) {
@@ -121,7 +125,7 @@ Switching.prototype.colorsDevByDevStrategy = function () {
  */
 Switching.prototype.colorsSingleDevByDev = function () {
     this.setStrategy(function () {
-    //single device by device update
+        //single device by device update
         for (var colorNum in this.selectedColors) {
             var color = this.selectedColors[colorNum];
             for (var universeNum in this.setupconfig.universes) {
@@ -160,7 +164,6 @@ Switching.prototype.colorsSingleDevByDev = function () {
         }
     });
 };
-
 
 
 /**
@@ -223,7 +226,8 @@ Switching.prototype.setResolution = function (mSecondsPerStep) {
 /**
  * update used colors for color animations
  * @param selectedColor color to add or remove
- * @param enabled boolean wether color should be active or not
+ * @param enabled boolean whether color should be active or not
+ * @return boolean, whether the request was fulfilled or not
  */
 Switching.prototype.setSelectedColors = function (selectedColor, enabled) {
 
@@ -270,6 +274,23 @@ Switching.prototype.getSelectedColors = function () {
     return this.selectedColors;
 };
 
+/**
+ * toggle strobe mode
+ * @return boolean, whether mode is active or not
+ */
+Switching.prototype.toggleStrobeMode = function () {
+    this.strobeModeEnabled = this.strobeModeEnabled !== true;
+    return this.strobeModeEnabled;
+};
+
+
+/**
+ * @return strobe mode status
+ */
+Switching.prototype.isStrobeMode = function () {
+    return this.strobeModeEnabled;
+};
+
 
 /**
  * Starts animation process with processing the animation stack.
@@ -287,6 +308,7 @@ Switching.prototype.run = function () {
         if (self.aborted) {
             self.running = false;
             clearInterval(self.intervalId);
+            clearTimeout(self.timeoutDurationId);
             self.aborted = false;
             return;
         }
@@ -303,6 +325,8 @@ Switching.prototype.run = function () {
  * Can be called while animation is running or while not running
  */
 Switching.prototype.nextStep = function () {
+    var self = this;
+
     if (this.fx_stack.length < 1) {
         this.addPresetsToAnimations();
     }
@@ -314,6 +338,22 @@ Switching.prototype.nextStep = function () {
         for (var universe in currentStep.to) {
             this.updateDmx(universe, currentStep.to[universe], false);
         }
+
+
+        //Flashing - strobeMode
+        if (this.strobeModeEnabled && (this.mSecondsPerStep > this.mSecondsStrobeLimit || !this.running )) {
+            var makeBlack = function () {
+                for (var universe in currentStep.to) {
+                    var update = {};
+                    for (var channel in currentStep.to[universe]) {
+                        update[channel] = 0;
+                    }
+                    self.updateDmx(universe, update, false);
+                }
+            };
+            self.timeoutDurationId = setTimeout(makeBlack, this.mSecondsStrobeDuration);
+        }
+
     }
 };
 

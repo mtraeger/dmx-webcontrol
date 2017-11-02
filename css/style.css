@@ -56,11 +56,11 @@ input[type=range].displayslider{
     margin-bottom: 1em;
 }
 
-#blackout {
+#blackout, #strobeMode{
     transition: color 200ms ease;
 }
 
-#blackout.blink{
+#blackout.blink, #strobeMode.blink{
     color:transparent;
 }
 

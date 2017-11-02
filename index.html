@@ -106,6 +106,13 @@
                 socket.emit('nextSwitchStep');
             });
 
+            // StrobeMode button
+            var strobeMode = $('<button id="strobeMode" class="span2 btn btn-info">Strobe Mode</button>');
+            strobeMode.hide().appendTo('#switchpresets').fadeIn();
+            strobeMode.click(function () {
+                socket.emit('strobeMode');
+            });
+
             //TODO add link to /beat for automatic beat detection
 
             //switching strategies
@@ -294,6 +301,19 @@
         });
         socket.on('selectedColors', function (color, selected) {
             $('#switchingColors input[name="' + color + '"]').prop('checked', selected);
+        });
+        var strobeModeBlinker;
+        socket.on('strobeMode', function (enabled) {
+            if(enabled) {
+                $('#strobeMode').addClass('active');
+                strobeModeBlinker = window.setInterval(function(){
+                    $('#strobeMode').toggleClass('blink');
+                }, 500);
+            }else {
+                window.clearInterval(strobeModeBlinker);
+                $('#strobeMode').removeClass('active');
+                $('#strobeMode').removeClass('blink');
+            }
         });
     </script>
 </head>

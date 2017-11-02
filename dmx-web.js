@@ -189,6 +189,7 @@ function DMXWeb() {
                 var selectedColor = switching.getSelectedColors()[color];
                 socket.emit('selectedColors', selectedColor.label, true);
             }
+            socket.emit('strobeMode', switching.isStrobeMode());
 		});
 
 		socket.on('update', function (universe, update, effect) {
@@ -250,6 +251,11 @@ function DMXWeb() {
             if (updated) {
                 io.sockets.emit('selectedColors', color, enabled);
             }
+        });
+
+        socket.on('strobeMode', function () {
+            var active = switching.toggleStrobeMode();
+			io.sockets.emit('strobeMode', active);
         });
 
 		socket.on('nextSwitchStep', function () {
