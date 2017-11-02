@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 "use strict"
 
+var fs       = require('fs')
 var http     = require('http')
 var connect  = require('connect')
 var express  = require('express')
@@ -18,7 +19,7 @@ program
 	.parse(process.argv)
 
 
-var	config = require(program.config)
+var	config = JSON.parse(fs.readFileSync(program.config, 'utf8'))
 
 function DMXWeb() {
 	var app    = express()
@@ -34,7 +35,8 @@ function DMXWeb() {
 		dmx.addUniverse(
 			universe,
 			config.universes[universe].output.driver,
-			config.universes[universe].output.device
+			config.universes[universe].output.device,
+			config.universes[universe].output.options
 		)
 		animations[universe] = [];
 		fadingDelayer[universe] = [];

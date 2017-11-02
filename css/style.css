@@ -3,6 +3,10 @@ body {
     color: #eee;
 }
 
+h1 {
+    clear: both;
+}
+
 input[type=range] {
     -webkit-appearance: slider-vertical;
     height: 200px;

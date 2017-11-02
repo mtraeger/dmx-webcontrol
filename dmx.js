@@ -10,12 +10,13 @@ function DMX(options) {
 	this.devices   = options.devices || require('./devices')
     this.blackout  = [];
 
-	this.registerDriver('null',                require('./drivers/null'))
-	this.registerDriver('dmx4all',             require('./drivers/dmx4all'))
-	this.registerDriver('enttec-usb-dmx-pro',  require('./drivers/enttec-usb-dmx-pro'))
-	this.registerDriver('enttec-open-usb-dmx', require('./drivers/enttec-open-usb-dmx'))
-	this.registerDriver('artnet',              require('./drivers/artnet'))
-	this.registerDriver('bbdmx',               require('./drivers/bbdmx'))
+	this.registerDriver('null',                   require('./drivers/null'))
+	this.registerDriver('dmx4all',                require('./drivers/dmx4all'))
+	this.registerDriver('enttec-usb-dmx-pro',     require('./drivers/enttec-usb-dmx-pro'))
+	this.registerDriver('enttec-open-usb-dmx',    require('./drivers/enttec-open-usb-dmx'))
+	this.registerDriver('dmxking-ultra-dmx-pro',  require('./drivers/dmxking-ultra-dmx-pro'))
+	this.registerDriver('artnet',                 require('./drivers/artnet'))
+	this.registerDriver('bbdmx',                  require('./drivers/bbdmx'))
 }
 
 util.inherits(DMX, EventEmitter)
@@ -28,10 +29,10 @@ DMX.prototype.registerDriver = function(name, module) {
 	this.drivers[name] = module
 }
 
-DMX.prototype.addUniverse = function(name, driver, device_id) {
+DMX.prototype.addUniverse = function(name, driver, device_id, options) {
     this.blackout[name] = {};
 	this.blackout[name].state = false;
-	return this.universes[name] = new this.drivers[driver](device_id)
+	return this.universes[name] = new this.drivers[driver](device_id, options)
 }
 
 DMX.prototype.update = function(universe, channels, emit) {
@@ -52,7 +53,7 @@ DMX.prototype.updateAll = function(universe, value) {
     if (this.blackout[universe].state == false) { //send "data" only if no blackout
         this.universes[universe].updateAll(value);
 	} else { //update buffer on changes while blackout
-        for (var i = 0; i < 512; i++) {
+        for (var i = 1; i <= 512; i++) {
             this.blackout[universe].buffer[i] = value;
         }
 	}
@@ -63,7 +64,7 @@ DMX.prototype.toggleBlackout = function(universe) {
     if (this.blackout[universe].state == false) {
         this.blackout[universe].buffer = {};
         this.blackout[universe].state = true;
-		for (var i = 0; i < 512; i++) { //store current state
+		for (var i = 1; i <= 512; i++) { //store current state
             this.blackout[universe].buffer[i] = this.universes[universe].get(i);
         }
         this.universes[universe].updateAll(0);
@@ -85,7 +86,7 @@ DMX.prototype.get = function(universe, channel) {
 
 DMX.prototype.universeToObject = function(universe) {
     var u = {}
-    for(var i = 0; i < 512; i++) {
+    for(var i = 1; i <= 512; i++) {
         u[i] = this.get(universe, i)
     }
     return u
