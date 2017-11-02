@@ -230,15 +230,20 @@ Switching.prototype.setSelectedColors = function (selectedColor, enabled) {
     match = match[0];
     var matchPosition = this.selectedColors.indexOf(match);
 
+    var updatedReturn = false;
     if (!enabled && matchPosition > -1) {
         this.selectedColors.splice(matchPosition, 1);
-    } else if (enabled) {
+        updatedReturn = true
+    } else if (enabled && matchPosition < 0) {
         this.selectedColors.push(match);
+        updatedReturn = true;
     }
 
     // this.clearSwitchingStepsStack();
     // this.addPresetsToAnimations();
     //TODO restart color cycle from current position
+
+	return updatedReturn;
 };
 
 

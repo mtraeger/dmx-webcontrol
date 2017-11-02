@@ -246,8 +246,10 @@ function DMXWeb() {
 		});
 
 		socket.on('selectedColors', function (color, enabled) {
-			switching.setSelectedColors(color, enabled);
-            io.sockets.emit('selectedColors', color, enabled);
+            var updated = switching.setSelectedColors(color, enabled);
+            if (updated) {
+                io.sockets.emit('selectedColors', color, enabled);
+            }
         });
 
 		socket.on('nextSwitchStep', function () {
