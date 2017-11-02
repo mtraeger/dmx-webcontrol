@@ -9,25 +9,25 @@
  * @constructor
  */
 function Switching(msg, updateDmx) {
-	this.fx_stack = [];
-	this.aborted = false;
-	this.running = false;
-	this.updateDmx = updateDmx;
+    this.fx_stack = [];
+    this.aborted = false;
+    this.running = false;
+    this.updateDmx = updateDmx;
 
-	this.mSecondsPerStep = 2000;
-	this.intervalId = null;
-	this.setupconfig = msg.setup;
-	this.setupdevices = msg.devices;
-	this.presets = msg.setup.presets;
+    this.mSecondsPerStep = 2000;
+    this.intervalId = null;
+    this.setupconfig = msg.setup;
+    this.setupdevices = msg.devices;
+    this.presets = msg.setup.presets;
 
     for (var color in this.setupconfig.colors) { //assign IDs to color
         this.setupconfig.colors[color].id = color;
     }
     this.selectedColors = this.setupconfig.colors.slice();
-	this.currentColorId = 0;
+    this.currentColorId = 0;
 
-	this.colorsStrategy();
-	this.strategy = this.colorsStrategy;
+    this.colorsStrategy();
+    this.strategy = this.colorsStrategy;
 
 }
 
@@ -37,8 +37,8 @@ function Switching(msg, updateDmx) {
  */
 Switching.prototype.addPresetsToAnimations = function () {
 
-	//Strategies see below
-	this.strategy();
+    //Strategies see below
+    this.strategy();
 
 };
 
@@ -50,33 +50,32 @@ Switching.prototype.addPresetsToAnimations = function () {
  * (startRgbChannel in dev settings should mark the first RGB channel (R) from wich GB will be found as next channels)
  */
 Switching.prototype.colorsStrategy = function () {
-	this.setStrategy(function() {
-		//color switching
-		//TODO fix duplication with index.html
-		//TODO generate not new color list all the time - generate once and store it
-		for (var colorNum in this.selectedColors) {
-			var color = this.selectedColors[colorNum];
-			var universesUpdate = {};
-			for (var universeNum in this.setupconfig.universes) {
-				var update = {};
-				for (var deviceNum in this.setupconfig.universes[universeNum].devices) {
-					var device = this.setupconfig.universes[universeNum].devices[deviceNum];
-					if (this.setupdevices[device.type].hasOwnProperty("startRgbChannel")) {
-						var startRgb = this.setupdevices[device.type].startRgbChannel;
-						var firstRgbChannelForDevice = device.address + startRgb;
-						for (var colorChannel in color.values) {
-							var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-							update[updateChannel] = color.values[colorChannel];
-						}
+    this.setStrategy(function () {
+        //color switching
+        //TODO generate not new color list all the time - generate once and store it
+        for (var colorNum in this.selectedColors) {
+            var color = this.selectedColors[colorNum];
+            var universesUpdate = {};
+            for (var universeNum in this.setupconfig.universes) {
+                var update = {};
+                for (var deviceNum in this.setupconfig.universes[universeNum].devices) {
+                    var device = this.setupconfig.universes[universeNum].devices[deviceNum];
+                    if (this.setupdevices[device.type].hasOwnProperty("startRgbChannel")) {
+                        var startRgb = this.setupdevices[device.type].startRgbChannel;
+                        var firstRgbChannelForDevice = device.address + startRgb;
+                        for (var colorChannel in color.values) {
+                            var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
+                            update[updateChannel] = color.values[colorChannel];
+                        }
 
-						// Maybe override colors here if special device colors
-					}
-				}
-				universesUpdate[universeNum] = update;
-			}
-			this.fx_stack.push({'to': universesUpdate, 'id': parseInt(color.id)});
-		}
-	});
+                        // Maybe override colors here if special device colors
+                    }
+                }
+                universesUpdate[universeNum] = update;
+            }
+            this.fx_stack.push({'to': universesUpdate, 'id': parseInt(color.id)});
+        }
+    });
 };
 
 /**
@@ -85,33 +84,33 @@ Switching.prototype.colorsStrategy = function () {
  * (generated with startRgbChannel - see general color strategy)
  */
 Switching.prototype.colorsDevByDevStrategy = function () {
-	this.setStrategy(function() {
-//Test device by device update //TODO reduce code duplication?
-		for (var colorNum in this.selectedColors) {
+    this.setStrategy(function () {
+    //device by device update
+        for (var colorNum in this.selectedColors) {
             var color = this.selectedColors[colorNum];
-			for (var universeNum in this.setupconfig.universes) {
-				for (var deviceNum in this.setupconfig.universes[universeNum].devices) {
-					var universesUpdate = {};
-					var update = {};
-					var device = this.setupconfig.universes[universeNum].devices[deviceNum];
-					if (this.setupdevices[device.type].hasOwnProperty("startRgbChannel")) {
-						var startRgb = this.setupdevices[device.type].startRgbChannel;
-						var firstRgbChannelForDevice = device.address + startRgb;
-						for (var colorChannel in color.values) {
-							var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-							update[updateChannel] = color.values[colorChannel];
-						}
+            for (var universeNum in this.setupconfig.universes) {
+                for (var deviceNum in this.setupconfig.universes[universeNum].devices) {
+                    var universesUpdate = {};
+                    var update = {};
+                    var device = this.setupconfig.universes[universeNum].devices[deviceNum];
+                    if (this.setupdevices[device.type].hasOwnProperty("startRgbChannel")) {
+                        var startRgb = this.setupdevices[device.type].startRgbChannel;
+                        var firstRgbChannelForDevice = device.address + startRgb;
+                        for (var colorChannel in color.values) {
+                            var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
+                            update[updateChannel] = color.values[colorChannel];
+                        }
 
 
-						universesUpdate[universeNum] = update;
-						this.fx_stack.push({'to': universesUpdate, 'id': parseInt(color.id)});
-					}
-				}
+                        universesUpdate[universeNum] = update;
+                        this.fx_stack.push({'to': universesUpdate, 'id': parseInt(color.id)});
+                    }
+                }
 
-			}
+            }
 
-		}
-	});
+        }
+    });
 };
 
 /**
@@ -121,9 +120,9 @@ Switching.prototype.colorsDevByDevStrategy = function () {
  * (generated with startRgbChannel - see general color strategy)
  */
 Switching.prototype.colorsSingleDevByDev = function () {
-	this.setStrategy(function() {
-//Test device by device update //TODO reduce code duplication?
-		for (var colorNum in this.selectedColors) {
+    this.setStrategy(function () {
+    //single device by device update
+        for (var colorNum in this.selectedColors) {
             var color = this.selectedColors[colorNum];
             for (var universeNum in this.setupconfig.universes) {
                 for (var deviceNum in this.setupconfig.universes[universeNum].devices) {
@@ -147,32 +146,20 @@ Switching.prototype.colorsSingleDevByDev = function () {
 
                         }
 
-                        //old part
+                        //write channels for current color
                         for (var colorChannel in color.values) {
                             var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
                             update[updateChannel] = color.values[colorChannel];
                         }
-
 
                         universesUpdate[universeNum] = update;
                         this.fx_stack.push({'to': universesUpdate, 'id': parseInt(color.id)});
                     }
                 }
             }
-		}
-	});
+        }
+    });
 };
-
-
-//TODO flashing strategy -> only short flash? (zeit bleibt immer gleich kurz? oder abhängig von wechsel zeit? - soll strobo lang - kurz verhältnis imitieren
-//evtl als option für alle efekte? -> 1x zeit zwischen effekten und 1x dauer des lichts (evtl in prozent zur wechsel zeit? oder absolut? -> prozent zur anderen zeit wäre gut, eher 10 prozent schritte? -> würde mehrmals schwarz noch mit einbauen für den restlichen anteil des steps)
-
-//TODO random strategy -> random device and random color (and combined?)
-//could solve thunderstorm flashes effect
-
-//TODO select devices -> should be in here for later switching order
-//but: devices over multiple universes - identification required?
-//or bettr add do sliders page as ignoreSwitching?
 
 
 
@@ -181,12 +168,12 @@ Switching.prototype.colorsSingleDevByDev = function () {
  * Show one preset after each other
  */
 Switching.prototype.presetsStrategy = function () {
-	this.setStrategy(function () {
-		// presets switching
-		for (var preset in this.presets) {
-			this.fx_stack.push({'to': this.presets[preset].values, 'id': parseInt(preset)})
-		}
-	})
+    this.setStrategy(function () {
+        // presets switching
+        for (var preset in this.presets) {
+            this.fx_stack.push({'to': this.presets[preset].values, 'id': parseInt(preset)})
+        }
+    })
 };
 
 /**
@@ -197,9 +184,9 @@ Switching.prototype.presetsStrategy = function () {
  * @param strategy to set
  */
 Switching.prototype.setStrategy = function (strategy) {
-	this.strategy = strategy;
+    this.strategy = strategy;
     this.clearSwitchingStepsStack();
-	this.addPresetsToAnimations();
+    this.addPresetsToAnimations();
 };
 
 
@@ -207,7 +194,7 @@ Switching.prototype.setStrategy = function (strategy) {
  * Helper for clearing the animation stack
  */
 Switching.prototype.clearSwitchingStepsStack = function () {
-    while(this.fx_stack.length > 0){
+    while (this.fx_stack.length > 0) {
         this.fx_stack.shift();
     }
 };
@@ -216,8 +203,8 @@ Switching.prototype.clearSwitchingStepsStack = function () {
  * Abort this single animation
  */
 Switching.prototype.abort = function () {
-	// console.log("Aborting single animation");
-	this.aborted = true;
+    // console.log("Aborting single animation");
+    this.aborted = true;
 };
 
 /**
@@ -225,12 +212,12 @@ Switching.prototype.abort = function () {
  * @param mSecondsPerStep
  */
 Switching.prototype.setResolution = function (mSecondsPerStep) {
-	// console.log("Update Resolution");
-	this.mSecondsPerStep = mSecondsPerStep;
-	if (this.intervalId != null && this.running == true) {
-		clearInterval(this.intervalId);
-		this.run();
-	}
+    // console.log("Update Resolution");
+    this.mSecondsPerStep = mSecondsPerStep;
+    if (this.intervalId != null && this.running == true) {
+        clearInterval(this.intervalId);
+        this.run();
+    }
 };
 
 /**
@@ -290,24 +277,24 @@ Switching.prototype.getSelectedColors = function () {
  * Updating animation-content possible with different strategy methods (see above)
  *
  */
-Switching.prototype.run = function() {
-	this.running = true;
-	var self = this;
-	self.aborted = false;
+Switching.prototype.run = function () {
+    this.running = true;
+    var self = this;
+    self.aborted = false;
 
-	var singleStep = function () {
+    var singleStep = function () {
 
-		if(self.aborted){
-			self.running = false;
-			clearInterval(self.intervalId);
-			self.aborted = false;
-			return;
-		}
+        if (self.aborted) {
+            self.running = false;
+            clearInterval(self.intervalId);
+            self.aborted = false;
+            return;
+        }
 
-		self.nextStep();
+        self.nextStep();
     };
 
-	self.intervalId = setInterval(singleStep, this.mSecondsPerStep);
+    self.intervalId = setInterval(singleStep, this.mSecondsPerStep);
 };
 
 
@@ -316,9 +303,9 @@ Switching.prototype.run = function() {
  * Can be called while animation is running or while not running
  */
 Switching.prototype.nextStep = function () {
-	if(this.fx_stack.length < 1){
-		this.addPresetsToAnimations();
-	}
+    if (this.fx_stack.length < 1) {
+        this.addPresetsToAnimations();
+    }
 
     if (this.fx_stack.length > 0) { //update dmx only if elements in stack
         var currentStep = this.fx_stack.shift();
