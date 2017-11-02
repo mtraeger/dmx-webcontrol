@@ -5,16 +5,13 @@ function Null(device_id, options) {
 	options = options || {}
 	this.universe = new Buffer(513)
 	this.universe.fill(0)
-	this.blackout = false;
 	self.start()
 }
 
 Null.prototype.start = function() {
 	var self = this
 	self.timeout = setInterval(function() {
-		if (this.blackout == false) { //send "data" only if no blackout
-			console.log(self.universe)
-		}
+		console.log(self.universe)
 	}, 1000)
 }
 
@@ -38,20 +35,6 @@ Null.prototype.updateAll = function(v){
 		this.universe[i] = v
 	}
 }
-
-Null.prototype.toggleBlackout = function () { //TODO not tested
-	if (this.blackout == false) {
-		this.blackout = true;
-		var nulluniverse = new Buffer(512)
-		nulluniverse.fill(0)
-		//send 0 to all channels here
-		console.log(nulluniverse);
-	} else {
-		//this.updateAll(null, true); //send this,universe data complete again
-		this.blackout = false;
-	}
-	return this.blackout.valueOf();
-};
 
 Null.prototype.get = function(c) {
 	return this.universe[c]
