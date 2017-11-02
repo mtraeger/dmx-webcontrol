@@ -20,10 +20,11 @@ function Switching(msg, updateDmx) {
 	this.setupdevices = msg.devices;
 	this.presets = msg.setup.presets;
 
-    // for (var color in self.setupconfig.colors) { //assign IDs to color
-    //     self.setupconfig.colors[color].id = color;
-    // }
+    for (var color in this.setupconfig.colors) { //assign IDs to color
+        this.setupconfig.colors[color].id = color;
+    }
     this.selectedColors = this.setupconfig.colors.slice();
+	this.currentColorId = 0;
 
 	this.colorsStrategy();
 	this.strategy = this.colorsStrategy;
@@ -53,26 +54,27 @@ Switching.prototype.colorsStrategy = function () {
 		//color switching
 		//TODO fix duplication with index.html
 		//TODO generate not new color list all the time - generate once and store it
-		for (var color in this.selectedColors) {
+		for (var colorNum in this.selectedColors) {
+			var color = this.selectedColors[colorNum];
 			var universesUpdate = {};
-			for (var universe in this.setupconfig.universes) {
+			for (var universeNum in this.setupconfig.universes) {
 				var update = {};
-				for (var device in this.setupconfig.universes[universe].devices) {
-					var dev = this.setupconfig.universes[universe].devices[device];
-					if (this.setupdevices[dev.type].hasOwnProperty("startRgbChannel")) {
-						var startRgb = this.setupdevices[dev.type].startRgbChannel;
-						var firstRgbChannelForDevice = dev.address + startRgb;
-						for (var colorChannel in this.selectedColors[color].values) {
+				for (var deviceNum in this.setupconfig.universes[universeNum].devices) {
+					var device = this.setupconfig.universes[universeNum].devices[deviceNum];
+					if (this.setupdevices[device.type].hasOwnProperty("startRgbChannel")) {
+						var startRgb = this.setupdevices[device.type].startRgbChannel;
+						var firstRgbChannelForDevice = device.address + startRgb;
+						for (var colorChannel in color.values) {
 							var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-							update[updateChannel] = this.selectedColors[color].values[colorChannel];
+							update[updateChannel] = color.values[colorChannel];
 						}
 
 						// Maybe override colors here if special device colors
 					}
 				}
-				universesUpdate[universe] = update;
+				universesUpdate[universeNum] = update;
 			}
-			this.fx_stack.push({'to': universesUpdate});
+			this.fx_stack.push({'to': universesUpdate, 'id': parseInt(color.id)});
 		}
 	});
 };
@@ -85,23 +87,24 @@ Switching.prototype.colorsStrategy = function () {
 Switching.prototype.colorsDevByDevStrategy = function () {
 	this.setStrategy(function() {
 //Test device by device update //TODO reduce code duplication?
-		for (var color in this.selectedColors) {
-			for (var universe in this.setupconfig.universes) {
-				for (var device in this.setupconfig.universes[universe].devices) {
+		for (var colorNum in this.selectedColors) {
+            var color = this.selectedColors[colorNum];
+			for (var universeNum in this.setupconfig.universes) {
+				for (var deviceNum in this.setupconfig.universes[universeNum].devices) {
 					var universesUpdate = {};
 					var update = {};
-					var dev = this.setupconfig.universes[universe].devices[device];
-					if (this.setupdevices[dev.type].hasOwnProperty("startRgbChannel")) {
-						var startRgb = this.setupdevices[dev.type].startRgbChannel;
-						var firstRgbChannelForDevice = dev.address + startRgb;
-						for (var colorChannel in this.selectedColors[color].values) {
+					var device = this.setupconfig.universes[universeNum].devices[deviceNum];
+					if (this.setupdevices[device.type].hasOwnProperty("startRgbChannel")) {
+						var startRgb = this.setupdevices[device.type].startRgbChannel;
+						var firstRgbChannelForDevice = device.address + startRgb;
+						for (var colorChannel in color.values) {
 							var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-							update[updateChannel] = this.selectedColors[color].values[colorChannel];
+							update[updateChannel] = color.values[colorChannel];
 						}
 
 
-						universesUpdate[universe] = update;
-						this.fx_stack.push({'to': universesUpdate});
+						universesUpdate[universeNum] = update;
+						this.fx_stack.push({'to': universesUpdate, 'id': parseInt(color.id)});
 					}
 				}
 
@@ -120,23 +123,24 @@ Switching.prototype.colorsDevByDevStrategy = function () {
 Switching.prototype.colorsSingleDevByDev = function () {
 	this.setStrategy(function() {
 //Test device by device update //TODO reduce code duplication?
-		for (var color in this.selectedColors) {
-            for (var universe in this.setupconfig.universes) {
-                for (var device in this.setupconfig.universes[universe].devices) {
+		for (var colorNum in this.selectedColors) {
+            var color = this.selectedColors[colorNum];
+            for (var universeNum in this.setupconfig.universes) {
+                for (var deviceNum in this.setupconfig.universes[universeNum].devices) {
                     var universesUpdate = {};
                     var update = {};
-                    var dev = this.setupconfig.universes[universe].devices[device];
-                    if (this.setupdevices[dev.type].hasOwnProperty("startRgbChannel")) {
-                        var startRgb = this.setupdevices[dev.type].startRgbChannel;
-                        var firstRgbChannelForDevice = dev.address + startRgb;
+                    var device = this.setupconfig.universes[universeNum].devices[deviceNum];
+                    if (this.setupdevices[device.type].hasOwnProperty("startRgbChannel")) {
+                        var startRgb = this.setupdevices[device.type].startRgbChannel;
+                        var firstRgbChannelForDevice = device.address + startRgb;
 
                         //Special of this strategy: make alle the oters black
-                        for (var allDevice in this.setupconfig.universes[universe].devices) {
-                            var dev2 = this.setupconfig.universes[universe].devices[allDevice];
-                            if (this.setupdevices[dev2.type].hasOwnProperty("startRgbChannel")) {
-                                var startRgbCopy = this.setupdevices[dev2.type].startRgbChannel;
-                                var firstRgbChannelForDeviceCopy = dev2.address + startRgbCopy;
-                                for (var colorChannel2 in this.selectedColors[color].values) {
+                        for (var allDeviceNum in this.setupconfig.universes[universeNum].devices) {
+                            var deviceAllForBlack = this.setupconfig.universes[universeNum].devices[allDeviceNum];
+                            if (this.setupdevices[deviceAllForBlack.type].hasOwnProperty("startRgbChannel")) {
+                                var startRgbCopy = this.setupdevices[deviceAllForBlack.type].startRgbChannel;
+                                var firstRgbChannelForDeviceCopy = deviceAllForBlack.address + startRgbCopy;
+                                for (var colorChannel2 in color.values) {
                                     update[parseInt(colorChannel2) + firstRgbChannelForDeviceCopy] = 0;
                                 }
                             }
@@ -144,20 +148,33 @@ Switching.prototype.colorsSingleDevByDev = function () {
                         }
 
                         //old part
-                        for (var colorChannel in this.selectedColors[color].values) {
+                        for (var colorChannel in color.values) {
                             var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-                            update[updateChannel] = this.selectedColors[color].values[colorChannel];
+                            update[updateChannel] = color.values[colorChannel];
                         }
 
 
-                        universesUpdate[universe] = update;
-                        this.fx_stack.push({'to': universesUpdate});
+                        universesUpdate[universeNum] = update;
+                        this.fx_stack.push({'to': universesUpdate, 'id': parseInt(color.id)});
                     }
                 }
             }
 		}
 	});
 };
+
+
+//TODO flashing strategy -> only short flash? (zeit bleibt immer gleich kurz? oder abhängig von wechsel zeit? - soll strobo lang - kurz verhältnis imitieren
+//evtl als option für alle efekte? -> 1x zeit zwischen effekten und 1x dauer des lichts (evtl in prozent zur wechsel zeit? oder absolut? -> prozent zur anderen zeit wäre gut, eher 10 prozent schritte? -> würde mehrmals schwarz noch mit einbauen für den restlichen anteil des steps)
+
+//TODO random strategy -> random device and random color (and combined?)
+//could solve thunderstorm flashes effect
+
+//TODO select devices -> should be in here for later switching order
+//but: devices over multiple universes - identification required?
+//or bettr add do sliders page as ignoreSwitching?
+
+
 
 /**
  * Strategy
@@ -167,7 +184,7 @@ Switching.prototype.presetsStrategy = function () {
 	this.setStrategy(function () {
 		// presets switching
 		for (var preset in this.presets) {
-			this.fx_stack.push({'to': this.presets[preset].values})
+			this.fx_stack.push({'to': this.presets[preset].values, 'id': parseInt(preset)})
 		}
 	})
 };
@@ -230,20 +247,32 @@ Switching.prototype.setSelectedColors = function (selectedColor, enabled) {
     match = match[0];
     var matchPosition = this.selectedColors.indexOf(match);
 
-    var updatedReturn = false;
+    //add or remove color, abort if nothing would change
     if (!enabled && matchPosition > -1) {
         this.selectedColors.splice(matchPosition, 1);
-        updatedReturn = true
     } else if (enabled && matchPosition < 0) {
         this.selectedColors.push(match);
-        updatedReturn = true;
+    } else {
+        return false;
     }
 
-    // this.clearSwitchingStepsStack();
-    // this.addPresetsToAnimations();
-    //TODO restart color cycle from current position
+    //clear steps after current ID
+    var lastOldColorPosition = this.fx_stack.length;
+    while (--lastOldColorPosition >= 0 && this.fx_stack[lastOldColorPosition].id !== this.currentColorId) {
+        this.fx_stack.splice(lastOldColorPosition, 1);
+    }
 
-	return updatedReturn;
+    //add animation steps and remove all until including current color (to continue flawlessly)
+    this.addPresetsToAnimations();
+    var step = lastOldColorPosition + 1;
+    while (this.fx_stack.length > step && this.fx_stack[step].id !== this.currentColorId) {
+        this.fx_stack.splice(step, 1);
+    }
+    while (this.fx_stack.length > step && this.fx_stack[step].id === this.currentColorId) {
+        this.fx_stack.splice(step, 1);
+    }
+
+    return true;
 };
 
 
@@ -263,9 +292,6 @@ Switching.prototype.getSelectedColors = function () {
  */
 Switching.prototype.run = function() {
 	this.running = true;
-	var to;
-
-	var fx_stack = this.fx_stack;
 	var self = this;
 	self.aborted = false;
 
@@ -295,10 +321,11 @@ Switching.prototype.nextStep = function () {
 	}
 
     if (this.fx_stack.length > 0) { //update dmx only if elements in stack
-        var to = this.fx_stack.shift().to;
+        var currentStep = this.fx_stack.shift();
+        this.currentColorId = currentStep.id;
 
-        for (var universe in to) {
-            this.updateDmx(universe, to[universe], false);
+        for (var universe in currentStep.to) {
+            this.updateDmx(universe, currentStep.to[universe], false);
         }
     }
 };
