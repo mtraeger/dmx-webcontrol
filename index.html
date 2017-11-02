@@ -152,6 +152,12 @@
                     socket.emit('selectedColors', switchingColors[color].label, false);
                 }
             });
+            // RandomColorMode button
+            var randomColorMode = $('<button id="randomColorMode" class="span2 btn btn-info">Random Color Mode</button>');
+            randomColorMode.hide().appendTo('#switchingColors').fadeIn();
+            randomColorMode.click(function () {
+                socket.emit('randomColorMode');
+            });
 
 
             // #### Color page ###
@@ -263,6 +269,19 @@
             }
         }
 
+        var blinker = []; //ID of button must be added in css
+        function enableBlinker(htmlId) {
+            $(htmlId).addClass('active');
+            blinker[htmlId] = window.setInterval(function(){
+                $(htmlId).toggleClass('blink');
+            }, 500);
+        }
+        function disableBlinker(htmlId) {
+            window.clearInterval(blinker[htmlId]);
+            $(htmlId).removeClass('active');
+            $(htmlId).removeClass('blink');
+        }
+
         socket.on('update', function (universe, update) {
             for (var k in update) {
                 $('#' + get_html_id(universe, k)).attr('value', update[k]);
@@ -274,17 +293,11 @@
                 $('#' + get_html_id(universe, k)+'_display').attr('value', update[k]);
             }
         });
-        var blackoutBlinker;
         socket.on('blackout', function (blackout) { //TODO use 2nd blackout param for different universes
             if(blackout) {
-                $('#blackout').addClass('active');
-                blackoutBlinker = window.setInterval(function(){
-                    $('#blackout').toggleClass('blink');
-                }, 500);
+                enableBlinker("#blackout");
             }else {
-                window.clearInterval(blackoutBlinker);
-                $('#blackout').removeClass('active');
-                $('#blackout').removeClass('blink');
+                disableBlinker("#blackout");
             }
         });
         socket.on('fade', function (duration, ease, fadingTime) {
@@ -300,21 +313,23 @@
             $('#switchTime').text(time);
         });
         socket.on('selectedColors', function (color, selected) {
-            $('#switchingColors input[name="' + color + '"]').prop('checked', selected);
+            $('#switchingColors').find('input[name="' + color + '"]').prop('checked', selected);
         });
-        var strobeModeBlinker;
         socket.on('strobeMode', function (enabled) {
             if(enabled) {
-                $('#strobeMode').addClass('active');
-                strobeModeBlinker = window.setInterval(function(){
-                    $('#strobeMode').toggleClass('blink');
-                }, 500);
+                enableBlinker("#strobeMode");
             }else {
-                window.clearInterval(strobeModeBlinker);
-                $('#strobeMode').removeClass('active');
-                $('#strobeMode').removeClass('blink');
+                disableBlinker("#strobeMode");
             }
         });
+        socket.on('randomColorMode', function (enabled) {
+            if(enabled) {
+                enableBlinker("#randomColorMode");
+            }else {
+                disableBlinker("#randomColorMode");
+            }
+        });
+
     </script>
 </head>
 <body>

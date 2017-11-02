@@ -29,6 +29,7 @@ function Switching(msg, updateDmx) {
     }
     this.selectedColors = this.setupconfig.colors.slice();
     this.currentColorId = 0;
+    this.randomizeColors = false;
 
     this.colorsStrategy();
     this.strategy = this.colorsStrategy;
@@ -56,9 +57,14 @@ Switching.prototype.addPresetsToAnimations = function () {
 Switching.prototype.colorsStrategy = function () {
     this.setStrategy(function () {
         //color switching
-        //TODO generate not new color list all the time - generate once and store it
-        for (var colorNum in this.selectedColors) {
-            var color = this.selectedColors[colorNum];
+
+        var colors = this.selectedColors;
+        if (this.randomizeColors) {
+            colors = shuffleArray(colors);
+        }
+
+        for (var colorNum in colors) {
+            var color = colors[colorNum];
             var universesUpdate = {};
             for (var universeNum in this.setupconfig.universes) {
                 var update = {};
@@ -90,8 +96,14 @@ Switching.prototype.colorsStrategy = function () {
 Switching.prototype.colorsDevByDevStrategy = function () {
     this.setStrategy(function () {
         //device by device update
-        for (var colorNum in this.selectedColors) {
-            var color = this.selectedColors[colorNum];
+
+        var colors = this.selectedColors;
+        if (this.randomizeColors) {
+            colors = shuffleArray(colors);
+        }
+
+        for (var colorNum in colors) {
+            var color = colors[colorNum];
             for (var universeNum in this.setupconfig.universes) {
                 for (var deviceNum in this.setupconfig.universes[universeNum].devices) {
                     var universesUpdate = {};
@@ -126,8 +138,14 @@ Switching.prototype.colorsDevByDevStrategy = function () {
 Switching.prototype.colorsSingleDevByDev = function () {
     this.setStrategy(function () {
         //single device by device update
-        for (var colorNum in this.selectedColors) {
-            var color = this.selectedColors[colorNum];
+
+        var colors = this.selectedColors;
+        if (this.randomizeColors) {
+            colors = shuffleArray(colors);
+        }
+
+        for (var colorNum in colors) {
+            var color = colors[colorNum];
             for (var universeNum in this.setupconfig.universes) {
                 for (var deviceNum in this.setupconfig.universes[universeNum].devices) {
                     var universesUpdate = {};
@@ -165,6 +183,16 @@ Switching.prototype.colorsSingleDevByDev = function () {
     });
 };
 
+function shuffleArray(array) {
+    var result = array.slice();
+    for (var i = result.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = result[i];
+        result[i] = result[j];
+        result[j] = temp;
+    }
+    return result;
+}
 
 /**
  * Strategy
@@ -203,6 +231,28 @@ Switching.prototype.clearSwitchingStepsStack = function () {
 };
 
 /**
+ * Helper for reloading the animation stack after current step
+ */
+Switching.prototype.reloadSwitchingStepsStack = function () {
+    //clear steps after current ID
+    var lastOldColorPosition = this.fx_stack.length;
+    while (--lastOldColorPosition >= 0 && this.fx_stack[lastOldColorPosition].id !== this.currentColorId) {
+        this.fx_stack.splice(lastOldColorPosition, 1);
+    }
+
+    //add animation steps and remove all until including current color (to continue flawlessly)
+    this.addPresetsToAnimations();
+    var step = lastOldColorPosition + 1;
+    while (this.fx_stack.length > step && this.fx_stack[step].id !== this.currentColorId) {
+        this.fx_stack.splice(step, 1);
+    }
+    while (this.fx_stack.length > step && this.fx_stack[step].id === this.currentColorId) {
+        this.fx_stack.splice(step, 1);
+    }
+};
+
+
+/**
  * Abort this single animation
  */
 Switching.prototype.abort = function () {
@@ -222,6 +272,7 @@ Switching.prototype.setResolution = function (mSecondsPerStep) {
         this.run();
     }
 };
+
 
 /**
  * update used colors for color animations
@@ -247,25 +298,10 @@ Switching.prototype.setSelectedColors = function (selectedColor, enabled) {
         return false;
     }
 
-    //clear steps after current ID
-    var lastOldColorPosition = this.fx_stack.length;
-    while (--lastOldColorPosition >= 0 && this.fx_stack[lastOldColorPosition].id !== this.currentColorId) {
-        this.fx_stack.splice(lastOldColorPosition, 1);
-    }
-
-    //add animation steps and remove all until including current color (to continue flawlessly)
-    this.addPresetsToAnimations();
-    var step = lastOldColorPosition + 1;
-    while (this.fx_stack.length > step && this.fx_stack[step].id !== this.currentColorId) {
-        this.fx_stack.splice(step, 1);
-    }
-    while (this.fx_stack.length > step && this.fx_stack[step].id === this.currentColorId) {
-        this.fx_stack.splice(step, 1);
-    }
+    this.reloadSwitchingStepsStack();
 
     return true;
 };
-
 
 /**
  * @return current selected colors for color animations
@@ -273,6 +309,7 @@ Switching.prototype.setSelectedColors = function (selectedColor, enabled) {
 Switching.prototype.getSelectedColors = function () {
     return this.selectedColors;
 };
+
 
 /**
  * toggle strobe mode
@@ -283,12 +320,29 @@ Switching.prototype.toggleStrobeMode = function () {
     return this.strobeModeEnabled;
 };
 
-
 /**
  * @return strobe mode status
  */
 Switching.prototype.isStrobeMode = function () {
     return this.strobeModeEnabled;
+};
+
+
+/**
+ * toggle random color mode
+ * @return boolean, whether mode is active or not
+ */
+Switching.prototype.toggleRandomColorMode = function () {
+    this.randomizeColors = this.randomizeColors !== true;
+    this.reloadSwitchingStepsStack();
+    return this.randomizeColors;
+};
+
+/**
+ * @return random color mode status
+ */
+Switching.prototype.isRandomColorMode = function () {
+    return this.randomizeColors;
 };
 
 
@@ -318,7 +372,6 @@ Switching.prototype.run = function () {
 
     self.intervalId = setInterval(singleStep, this.mSecondsPerStep);
 };
-
 
 /**
  * Forcing next step of the animation

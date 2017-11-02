@@ -190,6 +190,7 @@ function DMXWeb() {
                 socket.emit('selectedColors', selectedColor.label, true);
             }
             socket.emit('strobeMode', switching.isStrobeMode());
+            socket.emit('randomColorMode', switching.isRandomColorMode());
 		});
 
 		socket.on('update', function (universe, update, effect) {
@@ -256,6 +257,11 @@ function DMXWeb() {
         socket.on('strobeMode', function () {
             var active = switching.toggleStrobeMode();
 			io.sockets.emit('strobeMode', active);
+        });
+
+        socket.on('randomColorMode', function () {
+            var active = switching.toggleRandomColorMode();
+            io.sockets.emit('randomColorMode', active);
         });
 
 		socket.on('nextSwitchStep', function () {
