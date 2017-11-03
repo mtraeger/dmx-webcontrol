@@ -278,7 +278,9 @@ function DMXWeb() {
 				switching.presetsStrategy();
 			}else if (strategy == 'colorsSingleDevByDev'){
 				switching.colorsSingleDevByDev();
-			}
+			}else if (strategy == 'colorByColorSingleDevByDev'){
+                switching.colorByColorSingleDevByDev();
+            }
 		});
 
 		socket.on('fadingEaseChange', function (easeEffect) {
