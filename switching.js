@@ -30,6 +30,7 @@ function Switching(msg, updateDmx) {
     this.selectedColors = this.setupconfig.colors.slice();
     this.currentColorId = 0;
     this.randomizeColors = false;
+    this.shuffleColors = false;
 
     this.colorsStrategy();
     this.strategy = this.colorsStrategy;
@@ -59,7 +60,9 @@ Switching.prototype.colorsStrategy = function () {
         //color switching
 
         var colors = this.selectedColors;
-        if (this.randomizeColors) {
+        if (this.randomizeColors && colors.length > 0) {
+            colors = new Array(colors[Math.floor(Math.random()*colors.length)]);
+        }else if (this.shuffleColors) {
             colors = shuffleArray(colors);
         }
 
@@ -97,14 +100,15 @@ Switching.prototype.colorsDevByDevStrategy = function (options) {
     this.setStrategy(function () {
         //device by device update
 
-
         var singleDevByDev = false;
         if (options) {
             singleDevByDev = options.single || false
         }
 
         var colors = this.selectedColors;
-        if (this.randomizeColors) {
+        if (this.randomizeColors && colors.length > 0) {
+            colors = new Array(colors[Math.floor(Math.random()*colors.length)]);
+        }else if (this.shuffleColors) {
             colors = shuffleArray(colors);
         }
 
@@ -176,7 +180,7 @@ Switching.prototype.colorByColorSingleDevByDev = function () {
         //single device by device update
 
         var colors = this.selectedColors;
-        if (this.randomizeColors) {
+        if (this.shuffleColors) {
             colors = shuffleArray(colors);
         }
 
@@ -199,6 +203,11 @@ Switching.prototype.colorByColorSingleDevByDev = function () {
                         colorCount = 0;
                     }
                     var color = colors[colorCount++];
+
+                    //override for random color mode
+                    if (this.randomizeColors && colors.length > 0) {
+                        color = colors[Math.floor(Math.random()*colors.length)];
+                    }
 
 
                     //Special of this strategy: make alle the others black
@@ -387,6 +396,37 @@ Switching.prototype.toggleRandomColorMode = function () {
  */
 Switching.prototype.isRandomColorMode = function () {
     return this.randomizeColors;
+};
+
+/**
+ * sets random color mode on or off
+ */
+Switching.prototype.setRandomColorMode = function (active) {
+    this.randomizeColors = active;
+};
+
+/**
+ * toggle shuffle color mode
+ * @return boolean, whether mode is active or not
+ */
+Switching.prototype.toggleShuffleColorMode = function () {
+    this.shuffleColors = this.shuffleColors !== true;
+    this.reloadSwitchingStepsStack();
+    return this.shuffleColors;
+};
+
+/**
+ * @return shuffle color mode status
+ */
+Switching.prototype.isShuffleColorMode = function () {
+    return this.shuffleColors;
+};
+
+/**
+ * sets shuffle color mode on or off
+ */
+Switching.prototype.setShuffleColorMode = function (active) {
+    this.shuffleColors = active;
 };
 
 

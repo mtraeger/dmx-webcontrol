@@ -158,6 +158,12 @@
             randomColorMode.click(function () {
                 socket.emit('randomColorMode');
             });
+            // RandomColorMode button
+            var randomColorMode = $('<button id="shuffleColorMode" class="span2 btn btn-info">Shuffle Color Mode</button>');
+            randomColorMode.hide().appendTo('#switchingColors').fadeIn();
+            randomColorMode.click(function () {
+                socket.emit('shuffleColorMode');
+            });
 
 
             // #### Color page ###
@@ -329,7 +335,13 @@
                 disableBlinker("#randomColorMode");
             }
         });
-
+        socket.on('shuffleColorMode', function (enabled) {
+            if(enabled) {
+                enableBlinker("#shuffleColorMode");
+            }else {
+                disableBlinker("#shuffleColorMode");
+            }
+        });
     </script>
 </head>
 <body>

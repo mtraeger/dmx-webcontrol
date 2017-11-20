@@ -191,6 +191,7 @@ function DMXWeb() {
             }
             socket.emit('strobeMode', switching.isStrobeMode());
             socket.emit('randomColorMode', switching.isRandomColorMode());
+            socket.emit('shuffleColorMode', switching.isShuffleColorMode());
 		});
 
 		socket.on('update', function (universe, update, effect) {
@@ -262,6 +263,19 @@ function DMXWeb() {
         socket.on('randomColorMode', function () {
             var active = switching.toggleRandomColorMode();
             io.sockets.emit('randomColorMode', active);
+
+            //deactivate conflicting
+            switching.setShuffleColorMode(false);
+            io.sockets.emit('shuffleColorMode', false);
+        });
+
+        socket.on('shuffleColorMode', function () {
+            var active = switching.toggleShuffleColorMode();
+            io.sockets.emit('shuffleColorMode', active);
+
+            //deactivate conflicting
+            switching.setRandomColorMode(false);
+            io.sockets.emit('randomColorMode', false);
         });
 
 		socket.on('nextSwitchStep', function () {

@@ -60,7 +60,7 @@ input[type=range].displayslider{
     transition: color 200ms ease;
 }
 
-#blackout.blink, #strobeMode.blink, #randomColorMode.blink{
+#blackout.blink, #strobeMode.blink, #randomColorMode.blink, #shuffleColorMode.blink{
     color:transparent;
 }
 
