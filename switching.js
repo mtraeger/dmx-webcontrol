@@ -61,7 +61,7 @@ Switching.prototype.colorsStrategy = function () {
 
         var colors = this.selectedColors;
         if (this.randomizeColors && colors.length > 0) {
-            colors = new Array(colors[Math.floor(Math.random()*colors.length)]);
+            colors = new Array(getRandomElemFromArray(colors));
         }else if (this.shuffleColors) {
             colors = shuffleArray(colors);
         }
@@ -107,7 +107,7 @@ Switching.prototype.colorsDevByDevStrategy = function (options) {
 
         var colors = this.selectedColors;
         if (this.randomizeColors && colors.length > 0) {
-            colors = new Array(colors[Math.floor(Math.random()*colors.length)]);
+            colors = new Array(getRandomElemFromArray(colors));
         }else if (this.shuffleColors) {
             colors = shuffleArray(colors);
         }
@@ -206,7 +206,7 @@ Switching.prototype.colorByColorSingleDevByDev = function () {
 
                     //override for random color mode
                     if (this.randomizeColors && colors.length > 0) {
-                        color = colors[Math.floor(Math.random()*colors.length)];
+                        color = getRandomElemFromArray(colors);
                     }
 
 
@@ -245,6 +245,10 @@ function shuffleArray(array) {
         result[j] = temp;
     }
     return result;
+}
+
+function getRandomElemFromArray(array) {
+    return array[Math.floor(Math.random() * array.length)];
 }
 
 /**
