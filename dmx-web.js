@@ -164,6 +164,7 @@ function DMXWeb() {
 	var blackout = false;
 	var switchingTimeFader = 0;
 	var switchingTime = 0;
+	var switchingStrategy = 'colors';
 
 	var switching = new Switching({'devices': DMX.devices, 'setup': config}, function (universe, update, effect) {
         if(fadingease == 'linear'){
@@ -192,6 +193,7 @@ function DMXWeb() {
             socket.emit('strobeMode', switching.isStrobeMode());
             socket.emit('randomColorMode', switching.isRandomColorMode());
             socket.emit('shuffleColorMode', switching.isShuffleColorMode());
+            socket.emit('switchingStrategy', switchingStrategy);
 		});
 
 		socket.on('update', function (universe, update, effect) {
@@ -292,9 +294,14 @@ function DMXWeb() {
 				switching.presetsStrategy();
 			}else if (strategy == 'colorsSingleDevByDev'){
 				switching.colorsSingleDevByDev();
+			}else if (strategy == 'colorByColorDevByDev'){
+				switching.colorByColorDevByDev();
 			}else if (strategy == 'colorByColorSingleDevByDev'){
-                switching.colorByColorSingleDevByDev();
-            }
+				switching.colorByColorSingleDevByDev();
+			}
+
+			switchingStrategy = strategy;
+			io.sockets.emit('switchingStrategy', switchingStrategy);
 		});
 
 		socket.on('fadingEaseChange', function (easeEffect) {

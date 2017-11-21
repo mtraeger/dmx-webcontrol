@@ -116,10 +116,10 @@
             //TODO add link to /beat for automatic beat detection
 
             //switching strategies
-            var switchingStrategies = ["colors", "colorsDevByDev", "presets", "colorsSingleDevByDev", "colorByColorSingleDevByDev"]; //TODO get effects from source?
+            switchingStrategies = ["colors", "colorsDevByDev", "colorsSingleDevByDev", "colorByColorDevByDev", "colorByColorSingleDevByDev", "presets"]; //TODO get effects from source?
             $("<div id='switchingStrategies' style='clear: both;'><h2>Switching Strategies</h2></div>").hide().appendTo('#switching').fadeIn();
             for (var strategy in switchingStrategies) {
-                var strategyButton = $('<button value="'+switchingStrategies[strategy]+'" class="span2 btn btn-info">'+switchingStrategies[strategy]+' Strategy</button>');
+                var strategyButton = $('<button id="switchingstrategy-'+switchingStrategies[strategy]+'" value="'+switchingStrategies[strategy]+'" class="span2 btn btn-info">'+switchingStrategies[strategy]+' Strategy</button>');
                 strategyButton.hide().appendTo('#switchingStrategies').fadeIn();
                 strategyButton.click(function (e) {
                     socket.emit('switchingStrategy', e.target.value);
@@ -317,6 +317,12 @@
         socket.on('switching', function (duration, time) {
             $('#switch').attr('value', duration);
             $('#switchTime').text(time);
+        });
+        socket.on('switchingStrategy', function (strategy) {
+            for (var singleStrategy in switchingStrategies) {
+                $('#switchingstrategy-' + switchingStrategies[singleStrategy]).removeClass('active');
+            }
+            $('#switchingstrategy-' + strategy).addClass('active');
         });
         socket.on('selectedColors', function (color, selected) {
             $('#switchingColors').find('input[name="' + color + '"]').prop('checked', selected);

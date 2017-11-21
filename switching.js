@@ -165,17 +165,16 @@ Switching.prototype.colorsSingleDevByDev = function () {
 /**
  * Strategy TODO buggy on changing color selection -> press select strategy button to refresh stack
  * Switch through all colors device by device with changing color for each device
- * But only one device is active - all other in this animation affected RGB devices are black
  * (generated with startRgbChannel - see general color strategy)
  */
-Switching.prototype.colorByColorSingleDevByDev = function () {
+Switching.prototype.colorByColorDevByDev = function (options) {
     this.setStrategy(function () {
-        //single device by device update with changing colors
+        //device by device update with changing colors
 
         var singleDevByDev = false;
-        // if (options) {
-        //     singleDevByDev = options.single || false
-        // }
+        if (options) {
+            singleDevByDev = options.single || false
+        }
 
         var colors = this.selectedColors;
         if (this.shuffleColors) {
@@ -222,6 +221,19 @@ Switching.prototype.colorByColorSingleDevByDev = function () {
 
             this.fx_stack.push({'to': universesUpdate, 'id': parseInt(color.id)});
         }
+    });
+};
+
+/**
+ * Strategy TODO buggy on changing color selection -> press select strategy button to refresh stack
+ * Switch through all colors device by device with changing color for each device
+ * But only one device is active - all other in this animation affected RGB devices are black
+ * (generated with startRgbChannel - see general color strategy)
+ */
+Switching.prototype.colorByColorSingleDevByDev = function () {
+    this.setStrategy(function () {
+        //single device by device update with changing colors
+        this.colorByColorDevByDev({single: true});
     });
 };
 
