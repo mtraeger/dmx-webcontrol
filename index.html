@@ -28,6 +28,7 @@
             $('#navbar-content').empty();
             setup = msg.setup;
             devices = msg.devices;
+            switchingAllDevices = msg.switchingAllDevices;
             fadingEffect = 'linear';
 
             //select easing
@@ -158,11 +159,62 @@
             randomColorMode.click(function () {
                 socket.emit('randomColorMode');
             });
-            // RandomColorMode button
-            var randomColorMode = $('<button id="shuffleColorMode" class="span2 btn btn-info">Shuffle Color Mode</button>');
-            randomColorMode.hide().appendTo('#switchingColors').fadeIn();
-            randomColorMode.click(function () {
+            // ShuffleColorMode button
+            var shuffleColorMode = $('<button id="shuffleColorMode" class="span2 btn btn-info">Shuffle Color Mode</button>');
+            shuffleColorMode.hide().appendTo('#switchingColors').fadeIn();
+            shuffleColorMode.click(function () {
                 socket.emit('shuffleColorMode');
+            });
+
+            //switching devices
+            var switchingDevices = switchingAllDevices;
+            $("<div id='switchingDevices' style='clear: both;'><h2>Switching Devices</h2></div>").hide().appendTo('#switching').fadeIn();
+            //switching Devices selection for Devices
+            for (var device in switchingDevices) {
+                var deviceSelect = $('<label><input type="checkbox" name="' + switchingDevices[device].id + '" >' + switchingDevices[device].device.label + ' ('+ switchingDevices[device].universe+')</label>');
+                deviceSelect.hide().appendTo('#switchingDevices').fadeIn();
+                deviceSelect.click(function (e) {
+                    socket.emit('selectedDevices', e.target.name, e.target.checked);
+                });
+            }
+            //All and No Device Buttons
+            var deviceSelectAll = $('<button class="span2 btn btn-info">All Devices</button>');
+            deviceSelectAll.hide().appendTo('#switchingDevices').fadeIn();
+            deviceSelectAll.click(function (e) {
+                for (var device in switchingDevices) {
+                    socket.emit('selectedDevices', switchingDevices[device].id, true);
+                }
+            });
+            var deviceDeselectAll = $('<button class="span2 btn btn-info">No Device</button>');
+            deviceDeselectAll.hide().appendTo('#switchingDevices').fadeIn();
+            deviceDeselectAll.click(function (e) {
+                for (var device in switchingDevices) {
+                    socket.emit('selectedDevices', switchingDevices[device].id, false);
+                }
+            });
+            // RandomDeviceMode button
+            var randomDeviceMode = $('<button id="randomDeviceMode" class="span2 btn btn-info">Random Device Mode</button>');
+            randomDeviceMode.hide().appendTo('#switchingDevices').fadeIn();
+            randomDeviceMode.click(function () {
+                socket.emit('randomDeviceMode');
+            });
+            // ShuffleDeviceMode button
+            var shuffleDeviceMode = $('<button id="shuffleDeviceMode" class="span2 btn btn-info">Shuffle Device Mode</button>');
+            shuffleDeviceMode.hide().appendTo('#switchingDevices').fadeIn();
+            shuffleDeviceMode.click(function () {
+                socket.emit('shuffleDeviceMode');
+            });
+            // all color devices black button
+            var allColorDevicesBlack = $('<button id="devicesBlack" class="span2 btn btn-info">Turn all color devices black</button>');
+            allColorDevicesBlack.hide().appendTo('#switchingDevices').fadeIn();
+            allColorDevicesBlack.click(function () {
+                socket.emit('allColorSwitchingDevicesBlack');
+            });
+            // all color devices not selected black button
+            var allNotSelectedColorDevicesBlack = $('<button id="devicesNotSelectedBlack" class="span2 btn btn-info">Turn all not selected color devices black</button>');
+            allNotSelectedColorDevicesBlack.hide().appendTo('#switchingDevices').fadeIn();
+            allNotSelectedColorDevicesBlack.click(function () {
+                socket.emit('allColorSwitchingDevicesBlack', true);
             });
 
 
@@ -243,6 +295,7 @@
                 for (var device in setup.universes[universe].devices) {
                     var dev = setup.universes[universe].devices[device];
                     html += '<div class="device">'
+                    html += '<h4>' + dev.label + '</h4>'
                     for (var channel in devices[dev.type].channels) {
                         var channel_id = dev.address + Number(channel)
                         var html_id = get_html_id(universe, channel_id);
@@ -299,7 +352,7 @@
                 $('#' + get_html_id(universe, k)+'_display').attr('value', update[k]);
             }
         });
-        socket.on('blackout', function (blackout) { //TODO use 2nd blackout param for different universes
+        socket.on('blackout', function (blackout) {
             if(blackout) {
                 enableBlinker("#blackout");
             }else {
@@ -327,6 +380,9 @@
         socket.on('selectedColors', function (color, selected) {
             $('#switchingColors').find('input[name="' + color + '"]').prop('checked', selected);
         });
+        socket.on('selectedDevices', function (device, selected) {
+            $('#switchingDevices').find('input[name="' + device + '"]').prop('checked', selected);
+        });
         socket.on('strobeMode', function (enabled) {
             if(enabled) {
                 enableBlinker("#strobeMode");
@@ -346,6 +402,20 @@
                 enableBlinker("#shuffleColorMode");
             }else {
                 disableBlinker("#shuffleColorMode");
+            }
+        });
+        socket.on('randomDeviceMode', function (enabled) {
+            if(enabled) {
+                enableBlinker("#randomDeviceMode");
+            }else {
+                disableBlinker("#randomDeviceMode");
+            }
+        });
+        socket.on('shuffleDeviceMode', function (enabled) {
+            if(enabled) {
+                enableBlinker("#shuffleDeviceMode");
+            }else {
+                disableBlinker("#shuffleDeviceMode");
             }
         });
     </script>

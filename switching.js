@@ -28,23 +28,27 @@ function Switching(msg, updateDmx) {
         this.setupconfig.colors[color].id = color;
     }
     this.selectedColors = this.setupconfig.colors.slice();
-    this.currentColorId = 0;
+    this.currentColorId = -1;
     this.randomizeColors = false;
     this.shuffleColors = false;
+    this.randomizeDevices = false;
+    this.shuffleDevices = false;
 
-    this.selectedDevices = [];
-    for (var universeNum in this.setupconfig.universes) {
-        for (var deviceNum in this.setupconfig.universes[universeNum].devices) {
-            var device = this.setupconfig.universes[universeNum].devices[deviceNum];
+    this.allDevices = [];
+    var deviceId = 0; //assign id to all devices
+    for (var universe in this.setupconfig.universes) {
+        for (var deviceNum in this.setupconfig.universes[universe].devices) {
+            var device = this.setupconfig.universes[universe].devices[deviceNum];
             if (this.setupdevices[device.type].hasOwnProperty("startRgbChannel")) {
-                this.selectedDevices.push({universeNum: universeNum, device: device})
+                this.allDevices.push({universe: universe, device: device, id: deviceId});
+                deviceId++;
             }
         }
     }
+    this.selectedDevices = this.allDevices.slice();
 
     this.colorsStrategy();
     this.strategy = this.colorsStrategy;
-
 }
 
 /**
@@ -79,17 +83,18 @@ Switching.prototype.colorsStrategy = function () {
         for (var colorNum in colors) {
             var color = colors[colorNum];
             var universesUpdate = {};
+
             for (var deviceId in this.selectedDevices) {
                 var device = this.selectedDevices[deviceId].device;
-                var universeNum = this.selectedDevices[deviceId].universeNum;
-                if (universesUpdate[universeNum] === undefined) {
-                    universesUpdate[universeNum] = {};
+                var universe = this.selectedDevices[deviceId].universe;
+                if (universesUpdate[universe] === undefined) {
+                    universesUpdate[universe] = {};
                 }
 
                 var firstRgbChannelForDevice = this.getFirstRgbChannelForDevice(device);
                 for (var colorChannel in color.values) {
                     var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-                    universesUpdate[universeNum][updateChannel] = color.values[colorChannel];
+                    universesUpdate[universe][updateChannel] = color.values[colorChannel];
                 }
             }
 
@@ -122,14 +127,21 @@ Switching.prototype.colorsDevByDevStrategy = function (options) {
         for (var colorNum in colors) {
             var color = colors[colorNum];
 
-            for (var deviceId in this.selectedDevices) {
-                var device = this.selectedDevices[deviceId].device;
-                var universeNum = this.selectedDevices[deviceId].universeNum;
+            var devices = this.selectedDevices;
+            if (this.randomizeDevices && devices.length > 0) {
+                devices = new Array(getRandomElemFromArray(devices));
+            }else if (this.shuffleDevices) {
+                devices = shuffleArray(devices);
+            }
+
+            for (var deviceId in devices) {
+                var device = devices[deviceId].device;
+                var universe = devices[deviceId].universe;
 
                 var firstRgbChannelForDevice = this.getFirstRgbChannelForDevice(device);
                 var universesUpdate = {};
-                if (universesUpdate[universeNum] === undefined) {
-                    universesUpdate[universeNum] = {};
+                if (universesUpdate[universe] === undefined) {
+                    universesUpdate[universe] = {};
                 }
 
                 //combine singleDevByDev Strategy into this one
@@ -140,7 +152,7 @@ Switching.prototype.colorsDevByDevStrategy = function (options) {
                 //write channels for current color
                 for (var colorChannel in color.values) {
                     var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-                    universesUpdate[universeNum][updateChannel] = color.values[colorChannel];
+                    universesUpdate[universe][updateChannel] = color.values[colorChannel];
                 }
 
                 this.fx_stack.push({'to': universesUpdate, 'id': parseInt(color.id)});
@@ -184,14 +196,21 @@ Switching.prototype.colorByColorDevByDev = function (options) {
         var colorCount = 0;
 
 
-        for (var deviceId in this.selectedDevices) {
-            var device = this.selectedDevices[deviceId].device;
-            var universeNum = this.selectedDevices[deviceId].universeNum;
+        var devices = this.selectedDevices;
+        if (this.randomizeDevices && devices.length > 0) {
+            devices = new Array(getRandomElemFromArray(devices));
+        }else if (this.shuffleDevices) {
+            devices = shuffleArray(devices);
+        }
+
+        for (var deviceId in devices) {
+            var device = devices[deviceId].device;
+            var universe = devices[deviceId].universe;
 
             var firstRgbChannelForDevice = this.getFirstRgbChannelForDevice(device);
             var universesUpdate = {};
-            if (universesUpdate[universeNum] === undefined) {
-                universesUpdate[universeNum] = {};
+            if (universesUpdate[universe] === undefined) {
+                universesUpdate[universe] = {};
             }
 
 
@@ -216,7 +235,7 @@ Switching.prototype.colorByColorDevByDev = function (options) {
             //write channels for current color
             for (var colorChannel in color.values) {
                 var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-                universesUpdate[universeNum][updateChannel] = color.values[colorChannel];
+                universesUpdate[universe][updateChannel] = color.values[colorChannel];
             }
 
             this.fx_stack.push({'to': universesUpdate, 'id': parseInt(color.id)});
@@ -282,12 +301,14 @@ Switching.prototype.setStrategy = function (strategy) {
  * Helper for turning all RGB channels of selected devices to black
  * @param universesUpdate updateObject where all color values should be 0
  * @param color for getting 1,2 and 3 (rgb color IDs)
+ * @param devices to black (optional)
  */
-Switching.prototype.makeAllSelectedColorDevicesBlackForUpdate = function (universesUpdate, color) {
+Switching.prototype.makeAllSelectedColorDevicesBlackForUpdate = function (universesUpdate, color, devices) {
 //make alle the other selected devices black (previously selected devices will be not modified)
-    for (var allDeviceId in this.selectedDevices) {
-        var deviceAllForBlack = this.selectedDevices[allDeviceId].device;
-        var universeAllForBlack = this.selectedDevices[allDeviceId].universeNum;
+    var devices = devices || this.selectedDevices;
+    for (var allDeviceId in devices) {
+        var deviceAllForBlack = devices[allDeviceId].device;
+        var universeAllForBlack = devices[allDeviceId].universe;
         if (universesUpdate[universeAllForBlack] === undefined) {
             universesUpdate[universeAllForBlack] = {};
         }
@@ -362,6 +383,24 @@ Switching.prototype.setResolution = function (mSecondsPerStep) {
     }
 };
 
+/**
+ * toggle strobe mode
+ * @return boolean, whether mode is active or not
+ */
+Switching.prototype.toggleStrobeMode = function () {
+    this.strobeModeEnabled = this.strobeModeEnabled !== true;
+    return this.strobeModeEnabled;
+};
+
+/**
+ * @return strobe mode status
+ */
+Switching.prototype.isStrobeMode = function () {
+    return this.strobeModeEnabled;
+};
+
+
+/* ##### Colors ###### */
 
 /**
  * update used colors for color animations
@@ -398,24 +437,6 @@ Switching.prototype.setSelectedColors = function (selectedColor, enabled) {
 Switching.prototype.getSelectedColors = function () {
     return this.selectedColors;
 };
-
-
-/**
- * toggle strobe mode
- * @return boolean, whether mode is active or not
- */
-Switching.prototype.toggleStrobeMode = function () {
-    this.strobeModeEnabled = this.strobeModeEnabled !== true;
-    return this.strobeModeEnabled;
-};
-
-/**
- * @return strobe mode status
- */
-Switching.prototype.isStrobeMode = function () {
-    return this.strobeModeEnabled;
-};
-
 
 /**
  * toggle random color mode
@@ -465,6 +486,128 @@ Switching.prototype.setShuffleColorMode = function (active) {
     this.shuffleColors = active;
 };
 
+
+/* ##### Devices ###### */
+
+/**
+ * get list of all rgb switching devices
+ * @return list of objects with fields universe and device (not directly the devices!)
+ */
+Switching.prototype.getAllDevices = function () {
+    return this.allDevices;
+};
+
+/**
+ * update used Devices for Device animations
+ * @param selectedDevice Device id to add or remove
+ * @param enabled boolean whether Device should be active or not
+ * @return boolean, whether the request was fulfilled or not
+ */
+Switching.prototype.setSelectedDevices = function (selectedDevice, enabled) {
+
+    var match = this.allDevices.filter(function (obj) {
+        return obj.id === parseInt(selectedDevice);
+    });
+
+    match = match[0];
+    var matchPosition = this.selectedDevices.indexOf(match);
+
+    //add or remove Device, abort if nothing would change
+    if (!enabled && matchPosition > -1) {
+        this.selectedDevices.splice(matchPosition, 1);
+    } else if (enabled && matchPosition < 0) {
+        this.selectedDevices.push(match);
+    } else {
+        return false;
+    }
+
+    this.reloadSwitchingStepsStack();
+
+    return true;
+};
+
+/**
+ * @return current selected Devices for Device animations
+ */
+Switching.prototype.getSelectedDevices = function () {
+    return this.selectedDevices;
+};
+
+
+/**
+ * toggle random Device mode
+ * @return boolean, whether mode is active or not
+ */
+Switching.prototype.toggleRandomDeviceMode = function () {
+    this.randomizeDevices = this.randomizeDevices !== true;
+    this.reloadSwitchingStepsStack();
+    return this.randomizeDevices;
+};
+
+/**
+ * @return random Device mode status
+ */
+Switching.prototype.isRandomDeviceMode = function () {
+    return this.randomizeDevices;
+};
+
+/**
+ * sets random Device mode on or off
+ */
+Switching.prototype.setRandomDeviceMode = function (active) {
+    this.randomizeDevices = active;
+};
+
+/**
+ * toggle shuffle Device mode
+ * @return boolean, whether mode is active or not
+ */
+Switching.prototype.toggleShuffleDeviceMode = function () {
+    this.shuffleDevices = this.shuffleDevices !== true;
+    this.reloadSwitchingStepsStack();
+    return this.shuffleDevices;
+};
+
+/**
+ * @return shuffle Device mode status
+ */
+Switching.prototype.isShuffleDeviceMode = function () {
+    return this.shuffleDevices;
+};
+
+/**
+ * sets shuffle Device mode on or off
+ */
+Switching.prototype.setShuffleDeviceMode = function (active) {
+    this.shuffleDevices = active;
+};
+
+/**
+ * turns all color switching capable devices black
+ * @param onlySelected boolean, whether all color devices or only not currently selected devices should be black
+ */
+Switching.prototype.allColorDevicesBlack = function (onlyNotSelected) {
+
+    var color = this.setupconfig.colors[0];
+    var devices = this.allDevices;
+    var self = this;
+
+    if (onlyNotSelected) {
+        devices = devices.filter(function (elem) {
+            return self.selectedDevices.indexOf(elem) < 0;
+        });
+    }
+
+    var universesUpdate = {};
+    this.makeAllSelectedColorDevicesBlackForUpdate(universesUpdate, color, devices);
+
+    for (var universe in universesUpdate) {
+        this.updateDmx(universe, universesUpdate[universe], false);
+    }
+};
+
+
+/* ##### Run Animation ###### */
 
 /**
  * Starts animation process with processing the animation stack.

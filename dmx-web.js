@@ -176,7 +176,7 @@ function DMXWeb() {
 	});
 
 	io.sockets.on('connection', function(socket) {
-        socket.emit('init', {'devices': DMX.devices, 'setup': config});
+        socket.emit('init', {'devices': DMX.devices, 'setup': config, 'switchingAllDevices': switching.getAllDevices()});
 
 		socket.on('request_refresh', function() {
 			for(var universe in config.universes) {
@@ -185,15 +185,25 @@ function DMXWeb() {
             socket.emit('fade', fading, fadingease, fadingTime);
             socket.emit('fadingEaseChange', fadingease);
             socket.emit('blackout', blackout);
+
             socket.emit('switching', switchingTimeFader, switchingTime);
+            socket.emit('switchingStrategy', switchingStrategy);
+            socket.emit('strobeMode', switching.isStrobeMode());
+
             for(var color in switching.getSelectedColors()) {
                 var selectedColor = switching.getSelectedColors()[color];
                 socket.emit('selectedColors', selectedColor.label, true);
             }
-            socket.emit('strobeMode', switching.isStrobeMode());
             socket.emit('randomColorMode', switching.isRandomColorMode());
             socket.emit('shuffleColorMode', switching.isShuffleColorMode());
-            socket.emit('switchingStrategy', switchingStrategy);
+
+            for(var device in switching.getSelectedDevices()) {
+                var selectedDevice = switching.getSelectedDevices()[device];
+                socket.emit('selectedDevices', selectedDevice.id, true);
+            }
+            socket.emit('randomDeviceMode', switching.isRandomDeviceMode());
+            socket.emit('shuffleDeviceMode', switching.isShuffleDeviceMode());
+
 		});
 
 		socket.on('update', function (universe, update, effect) {
@@ -304,13 +314,44 @@ function DMXWeb() {
             io.sockets.emit('randomColorMode', false);
         });
 
+        socket.on('selectedDevices', function (device, enabled) {
+            var updated = switching.setSelectedDevices(device, enabled);
+            if (updated) {
+                io.sockets.emit('selectedDevices', device, enabled);
+            }
+        });
+
+        socket.on('randomDeviceMode', function () {
+            var active = switching.toggleRandomDeviceMode();
+            io.sockets.emit('randomDeviceMode', active);
+
+            //deactivate conflicting
+            switching.setShuffleDeviceMode(false);
+            io.sockets.emit('shuffleDeviceMode', false);
+        });
+
+        socket.on('shuffleDeviceMode', function () {
+            var active = switching.toggleShuffleDeviceMode();
+            io.sockets.emit('shuffleDeviceMode', active);
+
+            //deactivate conflicting
+            switching.setRandomDeviceMode(false);
+            io.sockets.emit('randomDeviceMode', false);
+        });
+
+        socket.on('allColorSwitchingDevicesBlack', function (onlyNotSelectedDevices) {
+            switching.allColorDevicesBlack(onlyNotSelectedDevices);
+        });
+
 		socket.on('fadingEaseChange', function (easeEffect) {
 			fadingease = easeEffect;
 			io.sockets.emit('fadingEaseChange', fadingease);
 		});
 
 		dmx.on('blackout', function (bout) {
-			socket.emit('blackout', bout);
+			if(bout !== blackout) {
+				io.sockets.emit('blackout', bout);
+			}
 			blackout = bout;
 		});
 
