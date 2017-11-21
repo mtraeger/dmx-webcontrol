@@ -250,39 +250,14 @@ function DMXWeb() {
 			io.sockets.emit('switching', switchingTimeFader, switchingTime);
 		});
 
-		socket.on('selectedColors', function (color, enabled) {
-            var updated = switching.setSelectedColors(color, enabled);
-            if (updated) {
-                io.sockets.emit('selectedColors', color, enabled);
-            }
-        });
-
-        socket.on('strobeMode', function () {
-            var active = switching.toggleStrobeMode();
-			io.sockets.emit('strobeMode', active);
-        });
-
-        socket.on('randomColorMode', function () {
-            var active = switching.toggleRandomColorMode();
-            io.sockets.emit('randomColorMode', active);
-
-            //deactivate conflicting
-            switching.setShuffleColorMode(false);
-            io.sockets.emit('shuffleColorMode', false);
-        });
-
-        socket.on('shuffleColorMode', function () {
-            var active = switching.toggleShuffleColorMode();
-            io.sockets.emit('shuffleColorMode', active);
-
-            //deactivate conflicting
-            switching.setRandomColorMode(false);
-            io.sockets.emit('randomColorMode', false);
-        });
-
 		socket.on('nextSwitchStep', function () {
 			switching.nextStep();
 		});
+
+        socket.on('strobeMode', function () {
+            var active = switching.toggleStrobeMode();
+            io.sockets.emit('strobeMode', active);
+        });
 
 		socket.on('switchingStrategy', function (strategy) {
 			// console.log(strategy)
@@ -303,6 +278,31 @@ function DMXWeb() {
 			switchingStrategy = strategy;
 			io.sockets.emit('switchingStrategy', switchingStrategy);
 		});
+
+        socket.on('selectedColors', function (color, enabled) {
+            var updated = switching.setSelectedColors(color, enabled);
+            if (updated) {
+                io.sockets.emit('selectedColors', color, enabled);
+            }
+        });
+
+        socket.on('randomColorMode', function () {
+            var active = switching.toggleRandomColorMode();
+            io.sockets.emit('randomColorMode', active);
+
+            //deactivate conflicting
+            switching.setShuffleColorMode(false);
+            io.sockets.emit('shuffleColorMode', false);
+        });
+
+        socket.on('shuffleColorMode', function () {
+            var active = switching.toggleShuffleColorMode();
+            io.sockets.emit('shuffleColorMode', active);
+
+            //deactivate conflicting
+            switching.setRandomColorMode(false);
+            io.sockets.emit('randomColorMode', false);
+        });
 
 		socket.on('fadingEaseChange', function (easeEffect) {
 			fadingease = easeEffect;
