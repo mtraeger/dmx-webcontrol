@@ -32,6 +32,16 @@ function Switching(msg, updateDmx) {
     this.randomizeColors = false;
     this.shuffleColors = false;
 
+    this.selectedDevices = [];
+    for (var universeNum in this.setupconfig.universes) {
+        for (var deviceNum in this.setupconfig.universes[universeNum].devices) {
+            var device = this.setupconfig.universes[universeNum].devices[deviceNum];
+            if (this.setupdevices[device.type].hasOwnProperty("startRgbChannel")) {
+                this.selectedDevices.push({universeNum: universeNum, device: device})
+            }
+        }
+    }
+
     this.colorsStrategy();
     this.strategy = this.colorsStrategy;
 
@@ -69,23 +79,20 @@ Switching.prototype.colorsStrategy = function () {
         for (var colorNum in colors) {
             var color = colors[colorNum];
             var universesUpdate = {};
-            for (var universeNum in this.setupconfig.universes) {
-                var update = {};
-                for (var deviceNum in this.setupconfig.universes[universeNum].devices) {
-                    var device = this.setupconfig.universes[universeNum].devices[deviceNum];
-                    if (this.setupdevices[device.type].hasOwnProperty("startRgbChannel")) {
-                        var startRgb = this.setupdevices[device.type].startRgbChannel;
-                        var firstRgbChannelForDevice = device.address + startRgb;
-                        for (var colorChannel in color.values) {
-                            var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-                            update[updateChannel] = color.values[colorChannel];
-                        }
-
-                        // Maybe override colors here if special device colors
-                    }
+            for (var deviceId in this.selectedDevices) {
+                var device = this.selectedDevices[deviceId].device;
+                var universeNum = this.selectedDevices[deviceId].universeNum;
+                if (universesUpdate[universeNum] === undefined) {
+                    universesUpdate[universeNum] = {};
                 }
-                universesUpdate[universeNum] = update;
+
+                var firstRgbChannelForDevice = this.getFirstRgbChannelForDevice(device);
+                for (var colorChannel in color.values) {
+                    var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
+                    universesUpdate[universeNum][updateChannel] = color.values[colorChannel];
+                }
             }
+
             this.fx_stack.push({'to': universesUpdate, 'id': parseInt(color.id)});
         }
     });
@@ -114,44 +121,30 @@ Switching.prototype.colorsDevByDevStrategy = function (options) {
 
         for (var colorNum in colors) {
             var color = colors[colorNum];
-            for (var universeNum in this.setupconfig.universes) {
-                for (var deviceNum in this.setupconfig.universes[universeNum].devices) {
-                    var universesUpdate = {};
-                    var update = {};
-                    var device = this.setupconfig.universes[universeNum].devices[deviceNum];
-                    if (this.setupdevices[device.type].hasOwnProperty("startRgbChannel")) {
-                        var startRgb = this.setupdevices[device.type].startRgbChannel;
-                        var firstRgbChannelForDevice = device.address + startRgb;
 
-                        //combine singleDevByDev Strategy into this one
-                        if (singleDevByDev) {
-                            //make alle the others black
-                            for (var allDeviceNum in this.setupconfig.universes[universeNum].devices) {
-                                var deviceAllForBlack = this.setupconfig.universes[universeNum].devices[allDeviceNum];
-                                if (this.setupdevices[deviceAllForBlack.type].hasOwnProperty("startRgbChannel")) {
-                                    var startRgbCopy = this.setupdevices[deviceAllForBlack.type].startRgbChannel;
-                                    var firstRgbChannelForDeviceCopy = deviceAllForBlack.address + startRgbCopy;
-                                    for (var colorChannel2 in color.values) {
-                                        update[parseInt(colorChannel2) + firstRgbChannelForDeviceCopy] = 0;
-                                    }
-                                }
-                            }
-                        }
+            for (var deviceId in this.selectedDevices) {
+                var device = this.selectedDevices[deviceId].device;
+                var universeNum = this.selectedDevices[deviceId].universeNum;
 
-                        //write channels for current color
-                        for (var colorChannel in color.values) {
-                            var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-                            update[updateChannel] = color.values[colorChannel];
-                        }
-
-
-                        universesUpdate[universeNum] = update;
-                        this.fx_stack.push({'to': universesUpdate, 'id': parseInt(color.id)});
-                    }
+                var firstRgbChannelForDevice = this.getFirstRgbChannelForDevice(device);
+                var universesUpdate = {};
+                if (universesUpdate[universeNum] === undefined) {
+                    universesUpdate[universeNum] = {};
                 }
 
-            }
+                //combine singleDevByDev Strategy into this one
+                if (singleDevByDev) {
+                    this.makeAllSelectedColorDevicesBlackForUpdate(universesUpdate, color);
+                }
 
+                //write channels for current color
+                for (var colorChannel in color.values) {
+                    var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
+                    universesUpdate[universeNum][updateChannel] = color.values[colorChannel];
+                }
+
+                this.fx_stack.push({'to': universesUpdate, 'id': parseInt(color.id)});
+            }
         }
     });
 };
@@ -170,14 +163,19 @@ Switching.prototype.colorsSingleDevByDev = function () {
 };
 
 /**
- * Strategy TODO buggy on changing color selection
+ * Strategy TODO buggy on changing color selection -> press select strategy button to refresh stack
  * Switch through all colors device by device with changing color for each device
  * But only one device is active - all other in this animation affected RGB devices are black
  * (generated with startRgbChannel - see general color strategy)
  */
 Switching.prototype.colorByColorSingleDevByDev = function () {
     this.setStrategy(function () {
-        //single device by device update
+        //single device by device update with changing colors
+
+        var singleDevByDev = false;
+        // if (options) {
+        //     singleDevByDev = options.single || false
+        // }
 
         var colors = this.selectedColors;
         if (this.shuffleColors) {
@@ -186,52 +184,43 @@ Switching.prototype.colorByColorSingleDevByDev = function () {
 
         var colorCount = 0;
 
-        for (var universeNum in this.setupconfig.universes) {
-            for (var deviceNum in this.setupconfig.universes[universeNum].devices) {
-                var universesUpdate = {};
-                var update = {};
-                var device = this.setupconfig.universes[universeNum].devices[deviceNum];
-                if (this.setupdevices[device.type].hasOwnProperty("startRgbChannel")) {
-                    var startRgb = this.setupdevices[device.type].startRgbChannel;
-                    var firstRgbChannelForDevice = device.address + startRgb;
 
+        for (var deviceId in this.selectedDevices) {
+            var device = this.selectedDevices[deviceId].device;
+            var universeNum = this.selectedDevices[deviceId].universeNum;
 
-                    //change color for every device
-                    if (colors.length === 0) {
-                        return;
-                    } else if (colorCount > colors.length - 1) {
-                        colorCount = 0;
-                    }
-                    var color = colors[colorCount++];
-
-                    //override for random color mode
-                    if (this.randomizeColors && colors.length > 0) {
-                        color = getRandomElemFromArray(colors);
-                    }
-
-
-                    //Special of this strategy: make alle the others black
-                    for (var allDeviceNum in this.setupconfig.universes[universeNum].devices) {
-                        var deviceAllForBlack = this.setupconfig.universes[universeNum].devices[allDeviceNum];
-                        if (this.setupdevices[deviceAllForBlack.type].hasOwnProperty("startRgbChannel")) {
-                            var startRgbCopy = this.setupdevices[deviceAllForBlack.type].startRgbChannel;
-                            var firstRgbChannelForDeviceCopy = deviceAllForBlack.address + startRgbCopy;
-                            for (var colorChannel2 in color.values) {
-                                update[parseInt(colorChannel2) + firstRgbChannelForDeviceCopy] = 0;
-                            }
-                        }
-                    }
-
-                    //write channels for current color
-                    for (var colorChannel in color.values) {
-                        var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-                        update[updateChannel] = color.values[colorChannel];
-                    }
-
-                    universesUpdate[universeNum] = update;
-                    this.fx_stack.push({'to': universesUpdate, 'id': parseInt(color.id)});
-                }
+            var firstRgbChannelForDevice = this.getFirstRgbChannelForDevice(device);
+            var universesUpdate = {};
+            if (universesUpdate[universeNum] === undefined) {
+                universesUpdate[universeNum] = {};
             }
+
+
+            //change color for every device
+            if (colors.length === 0) {
+                return;
+            } else if (colorCount > colors.length - 1) {
+                colorCount = 0;
+            }
+            var color = colors[colorCount++];
+
+            //override for random color mode
+            if (this.randomizeColors && colors.length > 0) {
+                color = getRandomElemFromArray(colors);
+            }
+
+
+            if (singleDevByDev) {
+                this.makeAllSelectedColorDevicesBlackForUpdate(universesUpdate, color);
+            }
+
+            //write channels for current color
+            for (var colorChannel in color.values) {
+                var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
+                universesUpdate[universeNum][updateChannel] = color.values[colorChannel];
+            }
+
+            this.fx_stack.push({'to': universesUpdate, 'id': parseInt(color.id)});
         }
     });
 };
@@ -275,6 +264,37 @@ Switching.prototype.setStrategy = function (strategy) {
     this.strategy = strategy;
     this.clearSwitchingStepsStack();
     this.addPresetsToAnimations();
+};
+
+/**
+ * Helper for turning all RGB channels of selected devices to black
+ * @param universesUpdate updateObject where all color values should be 0
+ * @param color for getting 1,2 and 3 (rgb color IDs)
+ */
+Switching.prototype.makeAllSelectedColorDevicesBlackForUpdate = function (universesUpdate, color) {
+//make alle the other selected devices black (previously selected devices will be not modified)
+    for (var allDeviceId in this.selectedDevices) {
+        var deviceAllForBlack = this.selectedDevices[allDeviceId].device;
+        var universeAllForBlack = this.selectedDevices[allDeviceId].universeNum;
+        if (universesUpdate[universeAllForBlack] === undefined) {
+            universesUpdate[universeAllForBlack] = {};
+        }
+
+        var firstRgbChannelForDevice = this.getFirstRgbChannelForDevice(deviceAllForBlack);
+        for (var colorChannel in color.values) {
+            universesUpdate[universeAllForBlack][parseInt(colorChannel) + firstRgbChannelForDevice] = 0;
+        }
+    }
+};
+
+
+/**
+ * Helper for getting first color channel for RGB
+ * @param device to get channel for
+ */
+Switching.prototype.getFirstRgbChannelForDevice = function (device) {
+    var startRgb = this.setupdevices[device.type].startRgbChannel;
+    return device.address + startRgb;
 };
 
 
