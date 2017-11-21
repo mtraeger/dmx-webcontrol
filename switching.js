@@ -72,13 +72,7 @@ Switching.prototype.addPresetsToAnimations = function () {
 Switching.prototype.colorsStrategy = function () {
     this.setStrategy(function () {
         //color switching
-
-        var colors = this.selectedColors;
-        if (this.randomizeColors && colors.length > 0) {
-            colors = new Array(getRandomElemFromArray(colors));
-        }else if (this.shuffleColors) {
-            colors = shuffleArray(colors);
-        }
+        var colors = this.getColorsForStrategy();
 
         for (var colorNum in colors) {
             var color = colors[colorNum];
@@ -117,23 +111,12 @@ Switching.prototype.colorsDevByDevStrategy = function (options) {
             singleDevByDev = options.single || false
         }
 
-        var colors = this.selectedColors;
-        if (this.randomizeColors && colors.length > 0) {
-            colors = new Array(getRandomElemFromArray(colors));
-        }else if (this.shuffleColors) {
-            colors = shuffleArray(colors);
-        }
+        var colors = this.getColorsForStrategy();
 
         for (var colorNum in colors) {
             var color = colors[colorNum];
 
-            var devices = this.selectedDevices;
-            if (this.randomizeDevices && devices.length > 0) {
-                devices = new Array(getRandomElemFromArray(devices));
-            }else if (this.shuffleDevices) {
-                devices = shuffleArray(devices);
-            }
-
+            var devices = this.getDevicesForStrategy();
             for (var deviceId in devices) {
                 var device = devices[deviceId].device;
                 var universe = devices[deviceId].universe;
@@ -196,13 +179,7 @@ Switching.prototype.colorByColorDevByDev = function (options) {
         var colorCount = 0;
 
 
-        var devices = this.selectedDevices;
-        if (this.randomizeDevices && devices.length > 0) {
-            devices = new Array(getRandomElemFromArray(devices));
-        }else if (this.shuffleDevices) {
-            devices = shuffleArray(devices);
-        }
-
+        var devices = this.getDevicesForStrategy();
         for (var deviceId in devices) {
             var device = devices[deviceId].device;
             var universe = devices[deviceId].universe;
@@ -320,6 +297,33 @@ Switching.prototype.makeAllSelectedColorDevicesBlackForUpdate = function (univer
     }
 };
 
+/**
+ * Helper for getting selected colors - either normal, shuffled or one random color
+ * @return colors array
+ */
+Switching.prototype.getColorsForStrategy = function() {
+    var colors = this.selectedColors;
+    if (this.randomizeColors && colors.length > 0) {
+        colors = new Array(getRandomElemFromArray(colors));
+    } else if (this.shuffleColors) {
+        colors = shuffleArray(colors);
+    }
+    return colors;
+};
+
+/**
+ * Helper for getting selected devices - either normal, shuffled or one random color
+ * @return devices array (with objects)
+ */
+Switching.prototype.getDevicesForStrategy = function() {
+    var devices = this.selectedDevices;
+    if (this.randomizeDevices && devices.length > 0) {
+        devices = new Array(getRandomElemFromArray(devices));
+    } else if (this.shuffleDevices) {
+        devices = shuffleArray(devices);
+    }
+    return devices;
+};
 
 /**
  * Helper for getting first color channel for RGB
