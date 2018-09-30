@@ -112,10 +112,21 @@
             //TODO add link to /beat for automatic beat detection
 
             //switching strategies
-            switchingStrategies = ["colors", "colorsDevByDev", "colorsSingleDevByDev", "colorByColor", "colorByColorDevByDev", "colorByColorDevByDevEndless", "colorByColorSingleDevByDev", "colorByColorSingleDevByDevEndless", "colorByColorSingleDevByDevStatic", "presets"]; //TODO get effects from source?
+            switchingStrategies = [
+                {id: "colors", name: "Single Color <br> All Devices"},
+                {id: "colorsDevByDev", name: "Single Color - <br> Device by Device"},
+                {id: "colorsSingleDevByDev", name: "Single Color - <i>Single</i> Device by Device"},
+                {id: "colorByColor", name: "Colors (multiple) <br> All Devices"},
+                {id: "colorByColorDevByDev", name: "Colors - <br> Device by Device"},
+                {id: "colorByColorDevByDevEndless", name: "Colors - Device by Device <b>Endless</b>"},
+                {id: "colorByColorSingleDevByDev", name: "Colors - <i>Single</i> <br> Device by Device"},
+                {id: "colorByColorSingleDevByDevEndless", name: "Colors - <i>Single</i> Device by Device <b>Endless</b>"},
+                {id: "colorByColorSingleDevByDevStatic", name: "Colors - <i>Single</i> Device by Device Static"},
+                {id: "presets", name: "Presets <br> (handle with care)"}
+                ]; //TODO get effects from source?
             $("<div id='switchingStrategies' style='clear: both;'><h2>Switching Strategies</h2></div>").hide().appendTo('#switching').fadeIn();
             for (var strategy in switchingStrategies) {
-                var strategyButton = $('<button id="switchingstrategy-'+switchingStrategies[strategy]+'" value="'+switchingStrategies[strategy]+'" class="span2 btn btn-info">'+switchingStrategies[strategy]+' Strategy</button>');
+                var strategyButton = $('<button id="switchingstrategy-'+switchingStrategies[strategy].id+'" value="'+switchingStrategies[strategy].id+'" class="span2 btn btn-info">'+switchingStrategies[strategy].name +'</button>');
                 strategyButton.hide().appendTo('#switchingStrategies').fadeIn();
                 strategyButton.click(function (e) {
                     socket.emit('switchingStrategy', e.target.value);
@@ -363,7 +374,7 @@
         });
         socket.on('switchingStrategy', function (strategy) {
             for (var singleStrategy in switchingStrategies) {
-                $('#switchingstrategy-' + switchingStrategies[singleStrategy]).removeClass('active');
+                $('#switchingstrategy-' + switchingStrategies[singleStrategy].id).removeClass('active');
             }
             $('#switchingstrategy-' + strategy).addClass('active');
         });
