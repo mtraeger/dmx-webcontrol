@@ -348,25 +348,29 @@ function DMXWeb() {
 			io.sockets.emit('fadingEaseChange', fadingease);
 		});
 
-		dmx.on('blackout', function (bout) {
-			if(bout !== blackout) {
-				io.sockets.emit('blackout', bout);
-			}
-			blackout = bout;
-		});
+	});
 
-		dmx.on('update', function(universe, update) {
-			socket.emit('update', universe, update)
-		})
+	dmx.on('blackout', function (bout) {
+		if(bout !== blackout) {
+			io.sockets.emit('blackout', bout);
+		}
+		blackout = bout;
+	});
+
+	dmx.on('update', function(universe, update) {
+		io.sockets.emit('update', universe, update);
 	});
 
 	function updateDmx(universe, update, effect) {
-		//console.log("Clicked: " + clicked);
 		if (fading == 0) {
 			//noFading: normal update
 			for (var channel in update) { //abort fading and continue with normal movement
 				if (fadingDelayer[universe][channel] instanceof Fader && !fadingDelayer[universe][channel].finished) {
 					fadingDelayer[universe][channel].abort();
+				}
+
+				if(animations[universe][channel] instanceof A && !animations[universe][channel].aborted){
+					animations[universe][channel].abort(); //abort old still running animation on same channel
 				}
 			}
 			dmx.update(universe, update);

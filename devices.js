@@ -72,7 +72,7 @@ module.exports = {
                 values: {0: 0, 1: 0, 2: 0, 3: 0, 4: 255}
             }
         ],
-        channelPresets: {6: 255} //initialized values at start, e.g. for dimming channels
+        channelPresets: {6: 255, 7: 255} //initialized values at start, e.g. for dimming channels
     },
     'eurolite-led-bar': {
         channels: ['ctrl', 'dimmer', 'strobe', 'red0', 'green0', 'blue0', 'red1', 'green1', 'blue1', 'red2', 'green2', 'blue2'],
