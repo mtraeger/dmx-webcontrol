@@ -228,15 +228,13 @@ function DMXWeb() {
 				}
 			}
 
-            // abort animation and set to final value if no fading
-            if (duration == 0) {
-                for (var universe in animations) {
-                    for (var channel in animations[universe]) {
-                        if (animations[universe][channel] instanceof A && !animations[universe][channel].aborted) {
-                            var vals = animations[universe][channel].getCurrentStepFinalValues();
-                            animations[universe][channel].abort();
-                            updateDmx(universe, vals, false);
-                        }
+            // abort animation and start again for allowing redefining fade value
+            for (var universe in animations) {
+                for (var channel in animations[universe]) {
+                    if (animations[universe][channel] instanceof A && !animations[universe][channel].aborted) {
+                        var vals = animations[universe][channel].getCurrentStepFinalValues();
+                        animations[universe][channel].abort();
+                        updateDmx(universe, vals, true);
                     }
                 }
             }
