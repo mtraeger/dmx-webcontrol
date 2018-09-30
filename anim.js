@@ -77,6 +77,11 @@ Anim.prototype.addMultipleDevs = function (to, duration, startingchanels, option
 	return this
 }
 
+/**
+ * Add delay between animation steps
+ * @param duration
+ * @return {Anim}
+ */
 Anim.prototype.delay = function(duration) {
 	return this.add({}, duration)
 }
