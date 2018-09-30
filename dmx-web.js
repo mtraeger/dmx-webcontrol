@@ -177,7 +177,7 @@ function DMXWeb() {
 			for(var universe in config.universes) {
 				socket.emit('update', universe, dmx.universeToObject(universe));
 			}
-            socket.emit('fade', fading, fadingease, fadingTime);
+            socket.emit('fade', fading, fadingTime);
             socket.emit('fadingEaseChange', fadingease);
             socket.emit('blackout', blackout);
 
@@ -206,9 +206,8 @@ function DMXWeb() {
 		});
 
 
-		socket.on('fading', function(duration, ease) {
+		socket.on('fading', function(duration) {
 			fading = duration || 0;
-			fadingease = ease || fadingease || 'linear-flexible';
 
 			if(duration != 0) {
                 //see also fader.js in getModifiedSpeed
@@ -218,7 +217,7 @@ function DMXWeb() {
 				fadingTime = 0;
 			}
 
-			io.sockets.emit('fade', duration, fadingease, fadingTime);
+			io.sockets.emit('fade', fading, fadingTime);
 
 			for (var universe in fadingDelayer) {
 				for (var channel in fadingDelayer[universe]) {

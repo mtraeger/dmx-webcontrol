@@ -349,7 +349,7 @@
                 disableBlinker("#blackout");
             }
         });
-        socket.on('fade', function (duration, ease, fadingTime) {
+        socket.on('fade', function (duration, fadingTime) {
             $('#fade').attr('value', duration);
             $('#fadingTime').text(fadingTime);
         });
