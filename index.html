@@ -117,7 +117,7 @@
             //TODO add link to /beat for automatic beat detection
 
             //switching strategies
-            switchingStrategies = ["colors", "colorsDevByDev", "colorsSingleDevByDev", "colorByColorDevByDev", "colorByColorSingleDevByDev", "presets"]; //TODO get effects from source?
+            switchingStrategies = ["colors", "colorsDevByDev", "colorsSingleDevByDev", "colorByColor", "colorByColorDevByDev", "colorByColorDevByDevEndless", "colorByColorSingleDevByDev", "colorByColorSingleDevByDevEndless", "colorByColorSingleDevByDevStatic", "presets"]; //TODO get effects from source?
             $("<div id='switchingStrategies' style='clear: both;'><h2>Switching Strategies</h2></div>").hide().appendTo('#switching').fadeIn();
             for (var strategy in switchingStrategies) {
                 var strategyButton = $('<button id="switchingstrategy-'+switchingStrategies[strategy]+'" value="'+switchingStrategies[strategy]+'" class="span2 btn btn-info">'+switchingStrategies[strategy]+' Strategy</button>');
@@ -129,7 +129,7 @@
 
             //switching colors
             var switchingColors = setup.colors;
-            $("<div id='switchingColors' style='clear: both;'><h2>Switching Colors</h2></div>").hide().appendTo('#switching').fadeIn();
+            $("<div id='switchingColors' style='clear: both;'><h2>Switching Colors</h2><h6>Sorted by order of clicks</h6></div>").hide().appendTo('#switching').fadeIn();
             //switching colors selection for colors
             for (var color in switchingColors) {
                 var colorSelect = $('<label><input type="checkbox" name="' + switchingColors[color].label + '" > ' + switchingColors[color].label + '</label>');
@@ -168,7 +168,7 @@
 
             //switching devices
             var switchingDevices = switchingAllDevices;
-            $("<div id='switchingDevices' style='clear: both;'><h2>Switching Devices</h2></div>").hide().appendTo('#switching').fadeIn();
+            $("<div id='switchingDevices' style='clear: both;'><h2>Switching Devices</h2><h6>Sorted by order of clicks</h6></div>").hide().appendTo('#switching').fadeIn();
             //switching Devices selection for Devices
             for (var device in switchingDevices) {
                 var deviceSelect = $('<label><input type="checkbox" name="' + switchingDevices[device].id + '" >' + switchingDevices[device].device.label + ' ('+ switchingDevices[device].universe+')</label>');

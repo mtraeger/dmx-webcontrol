@@ -159,6 +159,72 @@ Switching.prototype.colorsSingleDevByDev = function () {
 
 /**
  * Strategy TODO buggy on changing color selection -> press select strategy button to refresh stack
+ * Colorful :)
+ * Next color for next device - all at same time
+ * The next color in order will start on first device
+ * (generated with startRgbChannel - see general color strategy)
+ */
+Switching.prototype.colorByColor = function (options) {
+    this.setStrategy(function () {
+        //all device update with different colors
+
+        var colorCount = 0;
+
+        var colors = this.selectedColors;
+        if (this.shuffleColors) {
+            colors = shuffleArray(colors);
+
+        } else if (this.currentColorId >= 0 && colors.indexOf(this.setupconfig.colors[this.currentColorId]) >= 0) { // prevent same start color
+            colorCount = colors.indexOf(this.setupconfig.colors[this.currentColorId]) + 1;
+        }
+
+        var firstColor;
+        var universesUpdate = {};
+
+        var devices = this.getDevicesForStrategy();
+        for (var deviceId in devices) {
+            var device = devices[deviceId].device;
+
+            var universe = devices[deviceId].universe;
+            var firstRgbChannelForDevice = this.getFirstRgbChannelForDevice(device);
+            if (universesUpdate[universe] === undefined) {
+                universesUpdate[universe] = {};
+            }
+
+            //change color for every device
+            if (colors.length === 0) {
+                return;
+            } else if (colorCount > colors.length - 1) {
+                colorCount = 0;
+            }
+            var color = colors[colorCount++];
+
+            //store first color for determining next color
+            if (!firstColor) {
+                firstColor = color;
+            }
+
+            //override for random color mode
+            if (this.randomizeColors && colors.length > 0) {
+                color = getRandomElemFromArray(colors);
+            }
+
+            //write channels for current color
+            for (var colorChannel in color.values) {
+                var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
+                universesUpdate[universe][updateChannel] = color.values[colorChannel];
+            }
+
+        }
+
+        if (firstColor !== undefined) {
+            this.fx_stack.push({'to': universesUpdate, 'id': parseInt(firstColor.id)});
+        }
+    });
+};
+
+/**
+ * Strategy TODO buggy on changing color selection -> press select strategy button to refresh stack
  * Switch through all colors device by device with changing color for each device
  * (generated with startRgbChannel - see general color strategy)
  */
@@ -167,17 +233,25 @@ Switching.prototype.colorByColorDevByDev = function (options) {
         //device by device update with changing colors
 
         var singleDevByDev = false;
+        var staticColors = false;
+        var endlessColorLoop = false;
         if (options) {
-            singleDevByDev = options.single || false
-        }
-
-        var colors = this.selectedColors;
-        if (this.shuffleColors) {
-            colors = shuffleArray(colors);
+            singleDevByDev = options.single || false;
+            staticColors = options.static || false;
+            endlessColorLoop = options.endless || false;
         }
 
         var colorCount = 0;
 
+        var colors = this.selectedColors;
+        if (this.shuffleColors) {
+            colors = shuffleArray(colors);
+
+        } else if (this.currentColorId >= 0 && colors.indexOf(this.setupconfig.colors[this.currentColorId]) >= 0 && !staticColors) {// prevent same start color
+            colorCount = colors.indexOf(this.setupconfig.colors[this.currentColorId]) + 1;
+        }
+
+        var firstColor;
 
         var devices = this.getDevicesForStrategy();
         for (var deviceId in devices) {
@@ -199,6 +273,11 @@ Switching.prototype.colorByColorDevByDev = function (options) {
             }
             var color = colors[colorCount++];
 
+            //store first color for determining next color (or last for endless)
+            if (!firstColor || endlessColorLoop) {
+                firstColor = color;
+            }
+
             //override for random color mode
             if (this.randomizeColors && colors.length > 0) {
                 color = getRandomElemFromArray(colors);
@@ -215,7 +294,7 @@ Switching.prototype.colorByColorDevByDev = function (options) {
                 universesUpdate[universe][updateChannel] = color.values[colorChannel];
             }
 
-            this.fx_stack.push({'to': universesUpdate, 'id': parseInt(color.id)});
+            this.fx_stack.push({'to': universesUpdate, 'id': parseInt(firstColor.id)});
         }
     });
 };
@@ -223,6 +302,20 @@ Switching.prototype.colorByColorDevByDev = function (options) {
 /**
  * Strategy TODO buggy on changing color selection -> press select strategy button to refresh stack
  * Switch through all colors device by device with changing color for each device
+ * Will continue with the color that should come after the last device on the first device - colors could stick on same device if devices.length % colors.length === 0
+ * (generated with startRgbChannel - see general color strategy)
+ */
+Switching.prototype.colorByColorDevByDevEndless = function () {
+    this.setStrategy(function () {
+        //single device by device update with changing colors
+        this.colorByColorDevByDev({endless:true});
+    });
+};
+
+/**
+ * Strategy TODO buggy on changing color selection -> press select strategy button to refresh stack
+ * Switch through all colors device by device with changing color for each device
+ * The next color in order will start on first device and the color order will distribute to the others
  * But only one device is active - all other in this animation affected RGB devices are black
  * (generated with startRgbChannel - see general color strategy)
  */
@@ -232,6 +325,35 @@ Switching.prototype.colorByColorSingleDevByDev = function () {
         this.colorByColorDevByDev({single: true});
     });
 };
+
+/**
+ * Strategy TODO buggy on changing color selection -> press select strategy button to refresh stack
+ * Switch through all colors device by device with changing color for each device
+ * Will continue with the color that should come after the last device on the first device - colors could stick on same device if devices.length % colors.length === 0
+ * But only one device is active - all other in this animation affected RGB devices are black
+ * (generated with startRgbChannel - see general color strategy)
+ */
+Switching.prototype.colorByColorSingleDevByDevEndless = function () {
+    this.setStrategy(function () {
+        //single device by device update with changing colors - but static color positions
+        this.colorByColorDevByDev({single: true, endless:true});
+    });
+};
+
+/**
+ * Strategy TODO buggy on changing color selection -> press select strategy button to refresh stack
+ * Switch through all colors device by device with changing color for each device
+ * The Color will stick on the devices
+ * But only one device is active - all other in this animation affected RGB devices are black
+ * (generated with startRgbChannel - see general color strategy)
+ */
+Switching.prototype.colorByColorSingleDevByDevStatic = function () {
+    this.setStrategy(function () {
+        //single device by device update with changing colors - but static color positions
+        this.colorByColorDevByDev({single: true, static:true});
+    });
+};
+
 
 function shuffleArray(array) {
     var result = array.slice();

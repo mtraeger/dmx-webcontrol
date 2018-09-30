@@ -279,10 +279,18 @@ function DMXWeb() {
 				switching.presetsStrategy();
 			}else if (strategy == 'colorsSingleDevByDev'){
 				switching.colorsSingleDevByDev();
+			}else if (strategy == 'colorByColor'){
+				switching.colorByColor();
 			}else if (strategy == 'colorByColorDevByDev'){
 				switching.colorByColorDevByDev();
+			}else if (strategy == 'colorByColorDevByDevEndless'){
+				switching.colorByColorDevByDevEndless();
 			}else if (strategy == 'colorByColorSingleDevByDev'){
 				switching.colorByColorSingleDevByDev();
+			}else if (strategy == 'colorByColorSingleDevByDevEndless'){
+				switching.colorByColorSingleDevByDevEndless();
+			}else if (strategy == 'colorByColorSingleDevByDevStatic'){
+				switching.colorByColorSingleDevByDevStatic();
 			}
 
 			switchingStrategy = strategy;
