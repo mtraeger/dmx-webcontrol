@@ -15,7 +15,9 @@ function Anim(dmx) {
 	this.dmx = dmx;
 	this.fx_stack = [];
 	this.aborted = false;
-    this.currentStepFinalValues = {};
+	this.finished = false;
+	this.currentStepFinalValues = {};
+	this.animationTimePercent = 0;
 }
 
 /**
@@ -94,6 +96,15 @@ Anim.prototype.getCurrentStepFinalValues = function() {
     return this.currentStepFinalValues;
 };
 
+
+/**
+ * @return animation percent - between 0 and 1
+ */
+Anim.prototype.getAnimationPercent = function() {
+    return this.animationTimePercent;
+};
+
+
 /** starts animation
  *
  * @param universe
@@ -112,10 +123,10 @@ Anim.prototype.run = function(universe, onFinish, onUpdate) {
     var fx_stack = this.fx_stack;
 	var self = this;
 	var ani_setup = function() {
-		a = fx_stack.shift()
-		t = 0
-		d = a.duration
-		config = {}
+		a = fx_stack.shift();
+		t = 0;
+		d = a.duration;
+		config = {};
 		for(var k in a.to) {
 			config[k] = {
 				'start': self.dmx.get(universe, k),
@@ -132,12 +143,14 @@ Anim.prototype.run = function(universe, onFinish, onUpdate) {
 			return;
 		}
 
-		var new_vals = {}
+		self.animationTimePercent = t / d;
+
+		var new_vals = {};
 		for(var k in config) {
-			new_vals[k] = Math.round(config[k].start + ease[a.options['easing']](t, 0, 1, d) * (config[k].end - config[k].start))
+			new_vals[k] = Math.round(config[k].start + ease[a.options['easing']](t, 0, 1, d) * (config[k].end - config[k].start));
 		}
-		t = t + resolution
-		self.dmx.update(universe, new_vals, false) //only value updates of dmx
+		t = t + resolution;
+		self.dmx.update(universe, new_vals, false); //only value updates of dmx
 
         if(onUpdate) onUpdate(new_vals);
         // comment line above and uncomment lines below for better performance on display-slider update in browser
@@ -146,19 +159,19 @@ Anim.prototype.run = function(universe, onFinish, onUpdate) {
         //     lastUpdate = new Date().getTime();
         // };
 
-
 		if(t > d) {
 			if(fx_stack.length > 0) {
-				ani_setup()
+				ani_setup();
 			} else {
-				clearInterval(iid)
+				clearInterval(iid);
+				self.finished = true;
 				if(onFinish) onFinish(a.to);
 			}
 		}
-	}
+	};
 
-	ani_setup()
-	var iid = setInterval(ani_step, resolution)
-}
+	ani_setup();
+	var iid = setInterval(ani_step, resolution);
+};
 
-module.exports = Anim
+module.exports = Anim;

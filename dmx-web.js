@@ -230,10 +230,23 @@ function DMXWeb() {
             // abort animation and start again for allowing redefining fade value
             for (var universe in animations) {
                 for (var channel in animations[universe]) {
-                    if (animations[universe][channel] instanceof A && !animations[universe][channel].aborted) {
-                        var vals = animations[universe][channel].getCurrentStepFinalValues();
+                    if (animations[universe][channel] instanceof A && !animations[universe][channel].aborted && !animations[universe][channel].finished) {
+                        var values = animations[universe][channel].getCurrentStepFinalValues();
+                        var remainingPercent = 1 - animations[universe][channel].getAnimationPercent();
+                        var newFadingTime = fadingTime * 1000 * remainingPercent;
+
                         animations[universe][channel].abort();
-                        updateDmx(universe, vals, true);
+
+                        animations[universe][channel] = new A(dmx);
+                        animations[universe][channel]
+                            .add(values, newFadingTime, {easing: fadingease})
+                            .run(universe, function (finalvals) {
+                                //onFinish
+                                io.sockets.emit('update', universe, finalvals);
+                            }, function (newvals) {
+                                //onUpdate
+                                io.sockets.emit('displayslider', universe, newvals)
+                            });
                     }
                 }
             }
@@ -405,7 +418,7 @@ function DMXWeb() {
 
 				animations[universe][channel] = new A(dmx);
 				animations[universe][channel]
-					.add(singleUpdate, fadingTime*1000, {easing: fadingease})
+					.add(singleUpdate, fadingTime * 1000, {easing: fadingease})
 					.run(universe, function (finalvals) {
 						//onFinish
 						io.sockets.emit('update', universe, finalvals);
@@ -445,4 +458,4 @@ function DMXWeb() {
 
 }
 
-DMXWeb()
+DMXWeb();
