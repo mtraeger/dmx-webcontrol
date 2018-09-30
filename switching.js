@@ -728,7 +728,7 @@ Switching.prototype.allColorDevicesBlack = function (onlyNotSelected) {
     this.makeAllSelectedColorDevicesBlackForUpdate(universesUpdate, color, devices);
 
     for (var universe in universesUpdate) {
-        this.updateDmx(universe, universesUpdate[universe], false);
+        this.updateDmx(universe, universesUpdate[universe], true);
     }
 };
 
@@ -778,7 +778,7 @@ Switching.prototype.nextStep = function () {
         this.currentColorId = currentStep.id;
 
         for (var universe in currentStep.to) {
-            this.updateDmx(universe, currentStep.to[universe], false);
+            this.updateDmx(universe, currentStep.to[universe], true);
         }
 
 
@@ -790,7 +790,7 @@ Switching.prototype.nextStep = function () {
                     for (var channel in currentStep.to[universe]) {
                         update[channel] = 0;
                     }
-                    self.updateDmx(universe, update, false);
+                    self.updateDmx(universe, update, true);
                 }
             };
             self.timeoutDurationId = setTimeout(makeBlack, this.mSecondsStrobeDuration);

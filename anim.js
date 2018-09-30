@@ -15,6 +15,7 @@ function Anim(dmx) {
 	this.dmx = dmx;
 	this.fx_stack = [];
 	this.aborted = false;
+    this.currentStepFinalValues = {};
 }
 
 /**
@@ -80,6 +81,14 @@ Anim.prototype.delay = function(duration) {
 	return this.add({}, duration)
 }
 
+
+/**
+ * @return final channel value for current animation step
+ */
+Anim.prototype.getCurrentStepFinalValues = function() {
+    return this.currentStepFinalValues;
+};
+
 /** starts animation
  *
  * @param universe
@@ -108,6 +117,8 @@ Anim.prototype.run = function(universe, onFinish, onUpdate) {
 				'end':   a.to[k]
 			}
 		}
+
+		self.currentStepFinalValues = a.to;
 	}
 	var ani_step = function() {
 		if(Anim.abort || self.aborted){

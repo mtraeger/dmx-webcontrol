@@ -156,10 +156,10 @@ function DMXWeb() {
     app.get('/switchNextStep', function(req, res) {
         switching.nextStep();
         res.status(200).json({"success": true});
-    })
+    });
 
 	var fading = 0;
-	var fadingease = 'linear';
+	var fadingease = 'linear-flexible';
 	var fadingTime = 0;
 	var blackout = false;
 	var switchingTimeFader = 0;
@@ -167,12 +167,7 @@ function DMXWeb() {
 	var switchingStrategy = 'colors';
 
 	var switching = new Switching({'devices': DMX.devices, 'setup': config}, function (universe, update, effect) {
-        if(fadingease == 'linear'){
-            updateDmx(universe, update, false);
-        }else{
-            updateDmx(universe, update, true);
-        }
-		// updateDmx(universe, update, effect);
+		updateDmx(universe, update, effect);
 	});
 
 	io.sockets.on('connection', function(socket) {
@@ -213,8 +208,7 @@ function DMXWeb() {
 
 		socket.on('fading', function(duration, ease) {
 			fading = duration || 0;
-			fadingease = ease || fadingease || 'linear';
-			//console.log(fading);
+			fadingease = ease || fadingease || 'linear-flexible';
 
 			if(duration != 0) {
                 //see also fader.js in getModifiedSpeed
@@ -225,6 +219,7 @@ function DMXWeb() {
 			}
 
 			io.sockets.emit('fade', duration, fadingease, fadingTime);
+
 			for (var universe in fadingDelayer) {
 				for (var channel in fadingDelayer[universe]) {
 					if (fadingDelayer[universe][channel] instanceof Fader && !fadingDelayer[universe][channel].finished) {
@@ -232,6 +227,20 @@ function DMXWeb() {
 					}
 				}
 			}
+
+            // abort animation and set to final value if no fading
+            if (duration == 0) {
+                for (var universe in animations) {
+                    for (var channel in animations[universe]) {
+                        if (animations[universe][channel] instanceof A && !animations[universe][channel].aborted) {
+                            var vals = animations[universe][channel].getCurrentStepFinalValues();
+                            animations[universe][channel].abort();
+                            updateDmx(universe, vals, false);
+                        }
+                    }
+                }
+            }
+
 		});
 
 		socket.on('blackout', function(universe) {
@@ -382,7 +391,7 @@ function DMXWeb() {
 				}
 			}
 			dmx.update(universe, update);
-		}else if (effect) {
+		}else if (effect && fadingease != 'linear-flexible') {
 			for (var channel in update) { //effect animation for each channel
 
 				var singleUpdate = {}; //creating new object with one single channel target value

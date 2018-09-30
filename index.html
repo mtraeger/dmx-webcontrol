@@ -29,10 +29,10 @@
             setup = msg.setup;
             devices = msg.devices;
             switchingAllDevices = msg.switchingAllDevices;
-            fadingEffect = 'linear';
+            fadingEffect = 'linear-flexible';
 
             //select easing
-            var easingEffects = ["linear", "inBounce", "outBounce", "inOutBounce", "inSine", "outSine", "inOutSine", "inCubic", "outCubic", "inOutCubic", "inQuint", "outQuint", "inOutQuint", "inCirc", "outCirc", "inOutCirc"]; //TODO get (more) effects from easing.js (be careful with overfilling values!)
+            var easingEffects = ["linear-flexible", "linear", "inBounce", "outBounce", "inOutBounce", "inSine", "outSine", "inOutSine", "inCubic", "outCubic", "inOutCubic", "inQuint", "outQuint", "inOutQuint", "inCirc", "outCirc", "inOutCirc"]; //TODO get (more) effects from easing.js (be careful with overfilling values!)
             var easingSelect = "<select id='easingSelect'>";
             for (var easingEffect in easingEffects) {
                 easingSelect += "<option value='"+easingEffects[easingEffect]+"'>Ease "+easingEffects[easingEffect]+"</option>";
@@ -70,20 +70,15 @@
             /* preset buttons */
             for (var preset in setup.presets) {
                 var html = '<button class="span2 btn btn-info">' + setup.presets[preset].label + '</button>';
-                var e = $(html)
+                var e = $(html);
                 e.hide().appendTo('#presets').fadeIn();
                 e.click(function (values) {
                     return function () {
                         for (var universe in values) {
-                            if(fadingEffect == 'linear'){
-                                socket.emit('update', universe, values[universe]);
-                            }else{
-                                socket.emit('update', universe, values[universe], true);
-                            }
+                            socket.emit('update', universe, values[universe], true);
                         }
                     };
                 }(setup.presets[preset].values));
-//                console.log(html);
             }
 
 
@@ -226,7 +221,7 @@
                 e.hide().appendTo('#colors').fadeIn();
                 e.click(function (color) {
                     return function () {
-                        //TODO code duplication (see below and switching) -> maybe put this to dmx-web.js
+                        //TODO code duplication (see below) -> maybe put this to dmx-web.js
                         for (var universe in setup.universes) {
                             var update = {};
                             for (var device in setup.universes[universe].devices) {
@@ -241,12 +236,7 @@
 
                                 }
                             }
-                            //socket.emit('update', universe, update);
-                            if(fadingEffect == 'linear'){
-                                socket.emit('update', universe, update);
-                            }else{
-                                socket.emit('update', universe, update, true);
-                            }
+                            socket.emit('update', universe, update, true);
                         }
                     };
                 }(setup.colors[color]));
