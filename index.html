@@ -84,9 +84,9 @@
 
             // ### Switching ###
             //Switching Time
-            var html3 = "<div style='display: block' id='switchpresets'><h2>Switch</h2>";
+            var html3 = "<div style='display: block' id='switchpresets'><h2>Switching</h2>";
             html3 += '<label for="switch">Switching Speed (0 = Off)</label>';
-            html3 += '<div>Current Step: <span id="switchTime">0</span> seconds</div>';
+            html3 += '<div>Current Step: <span id="switchTime">0</span> seconds</div><br>';
             html3 += "</div>";
             $(html3).hide().appendTo('#switching').fadeIn();
             var switchfader = $('<input id="switch" type="range" orient="vertical" min="0" value="0" max="100">');
@@ -96,7 +96,7 @@
             });
 
             //Next step button
-            var nextSwitchStep = $('<button class="span2 btn btn-info">Next Step</button>');
+            var nextSwitchStep = $('<button class="span2 btn btn-info btn-large">Next Step</button>');
             nextSwitchStep.hide().appendTo('#switchpresets').fadeIn();
             nextSwitchStep.click(function () {
                 socket.emit('nextSwitchStep');
