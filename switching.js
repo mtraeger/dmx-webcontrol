@@ -86,9 +86,11 @@ Switching.prototype.colorsStrategy = function () {
                 }
 
                 var firstRgbChannelForDevice = this.getFirstRgbChannelForDevice(device);
-                for (var colorChannel in color.values) {
+                var colorValues = this.getOverrideColorIfConfigured(device, color);
+
+                for (var colorChannel in colorValues) {
                     var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-                    universesUpdate[universe][updateChannel] = color.values[colorChannel];
+                    universesUpdate[universe][updateChannel] = colorValues[colorChannel];
                 }
             }
 
@@ -122,6 +124,8 @@ Switching.prototype.colorsDevByDevStrategy = function (options) {
                 var universe = devices[deviceId].universe;
 
                 var firstRgbChannelForDevice = this.getFirstRgbChannelForDevice(device);
+                var colorValues = this.getOverrideColorIfConfigured(device, color);
+
                 var universesUpdate = {};
                 if (universesUpdate[universe] === undefined) {
                     universesUpdate[universe] = {};
@@ -133,9 +137,9 @@ Switching.prototype.colorsDevByDevStrategy = function (options) {
                 }
 
                 //write channels for current color
-                for (var colorChannel in color.values) {
+                for (var colorChannel in colorValues) {
                     var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-                    universesUpdate[universe][updateChannel] = color.values[colorChannel];
+                    universesUpdate[universe][updateChannel] = colorValues[colorChannel];
                 }
 
                 this.fx_stack.push({'to': universesUpdate, 'id': parseInt(color.id)});
@@ -158,7 +162,7 @@ Switching.prototype.colorsSingleDevByDev = function () {
 };
 
 /**
- * Strategy TODO buggy on changing color selection -> press select strategy button to refresh stack
+ * Strategy
  * Colorful :)
  * Next color for next device - all at same time
  * The next color in order will start on first device
@@ -209,10 +213,12 @@ Switching.prototype.colorByColor = function (options) {
                 color = getRandomElemFromArray(colors);
             }
 
+            var colorValues = this.getOverrideColorIfConfigured(device, color);
+
             //write channels for current color
-            for (var colorChannel in color.values) {
+            for (var colorChannel in colorValues) {
                 var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-                universesUpdate[universe][updateChannel] = color.values[colorChannel];
+                universesUpdate[universe][updateChannel] = colorValues[colorChannel];
             }
 
         }
@@ -224,7 +230,7 @@ Switching.prototype.colorByColor = function (options) {
 };
 
 /**
- * Strategy TODO buggy on changing color selection -> press select strategy button to refresh stack
+ * Strategy
  * Switch through all colors device by device with changing color for each device
  * (generated with startRgbChannel - see general color strategy)
  */
@@ -283,15 +289,16 @@ Switching.prototype.colorByColorDevByDev = function (options) {
                 color = getRandomElemFromArray(colors);
             }
 
-
             if (singleDevByDev) {
                 this.makeAllSelectedColorDevicesBlackForUpdate(universesUpdate, color);
             }
 
+            var colorValues = this.getOverrideColorIfConfigured(device, color);
+
             //write channels for current color
-            for (var colorChannel in color.values) {
+            for (var colorChannel in colorValues) {
                 var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-                universesUpdate[universe][updateChannel] = color.values[colorChannel];
+                universesUpdate[universe][updateChannel] = colorValues[colorChannel];
             }
 
             this.fx_stack.push({'to': universesUpdate, 'id': parseInt(firstColor.id)});
@@ -300,7 +307,7 @@ Switching.prototype.colorByColorDevByDev = function (options) {
 };
 
 /**
- * Strategy TODO buggy on changing color selection -> press select strategy button to refresh stack
+ * Strategy
  * Switch through all colors device by device with changing color for each device
  * Will continue with the color that should come after the last device on the first device - colors could stick on same device if devices.length % colors.length === 0
  * (generated with startRgbChannel - see general color strategy)
@@ -313,7 +320,7 @@ Switching.prototype.colorByColorDevByDevEndless = function () {
 };
 
 /**
- * Strategy TODO buggy on changing color selection -> press select strategy button to refresh stack
+ * Strategy
  * Switch through all colors device by device with changing color for each device
  * The next color in order will start on first device and the color order will distribute to the others
  * But only one device is active - all other in this animation affected RGB devices are black
@@ -327,7 +334,7 @@ Switching.prototype.colorByColorSingleDevByDev = function () {
 };
 
 /**
- * Strategy TODO buggy on changing color selection -> press select strategy button to refresh stack
+ * Strategy
  * Switch through all colors device by device with changing color for each device
  * Will continue with the color that should come after the last device on the first device - colors could stick on same device if devices.length % colors.length === 0
  * But only one device is active - all other in this animation affected RGB devices are black
@@ -341,7 +348,7 @@ Switching.prototype.colorByColorSingleDevByDevEndless = function () {
 };
 
 /**
- * Strategy TODO buggy on changing color selection -> press select strategy button to refresh stack
+ * Strategy
  * Switch through all colors device by device with changing color for each device
  * The Color will stick on the devices
  * But only one device is active - all other in this animation affected RGB devices are black
@@ -397,7 +404,8 @@ Switching.prototype.setStrategy = function (strategy) {
 };
 
 /**
- * Helper for turning all RGB channels of selected devices to black
+ * Helper for turning all RGB channels of selected devices to black.
+ * If enabled, also turns override channels black.
  * @param universesUpdate updateObject where all color values should be 0
  * @param color for getting 1,2 and 3 (rgb color IDs)
  * @param devices to black (optional)
@@ -413,8 +421,23 @@ Switching.prototype.makeAllSelectedColorDevicesBlackForUpdate = function (univer
         }
 
         var firstRgbChannelForDevice = this.getFirstRgbChannelForDevice(deviceAllForBlack);
-        for (var colorChannel in color.values) {
-            universesUpdate[universeAllForBlack][parseInt(colorChannel) + firstRgbChannelForDevice] = 0;
+
+        var colorValues = color.values;
+        // turn black override colors out of rgb range
+        if (this.setupdevices[deviceAllForBlack.type].hasOwnProperty("overrideColors") && this.setupconfig.allowColorOverride === true) {
+            var resetOverrideColor = this.setupdevices[deviceAllForBlack.type].overrideColors
+                .filter(function (colorItem) {
+                    return colorItem.label === 'OVERRIDE_ZERO';
+                });
+            if (resetOverrideColor[0]) {
+                colorValues = Object.assign({}, resetOverrideColor[0].values, color.values)
+            }
+        }
+
+
+        for (var colorChannel in colorValues) {
+            var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
+            universesUpdate[universeAllForBlack][updateChannel] = 0;
         }
     }
 };
@@ -456,6 +479,36 @@ Switching.prototype.getFirstRgbChannelForDevice = function (device) {
     return device.address + startRgb;
 };
 
+/**
+ * Helper for getting Override color channels for given device if configured
+ * @param device to get override config for
+ * @param color to override if available
+ * @return color.values of device if configured or via args passed colors otherwise
+ */
+Switching.prototype.getOverrideColorIfConfigured = function (device, color) {
+    var self = this;
+    function findOverrideColor(findColor){
+        return self.setupdevices[device.type].overrideColors
+            .filter(function (colorItem) {
+                return colorItem.label === findColor;
+            });
+    }
+
+    if (this.setupdevices[device.type].hasOwnProperty("overrideColors") && this.setupconfig.allowColorOverride === true) {
+        var matchingOverrideColor = findOverrideColor(color.label);
+        if (matchingOverrideColor.length === 1) { // if override for passed color is configured
+            return matchingOverrideColor[0].values;
+
+        } else { //if no override for passed color configured search for reset configuration
+            var resetOverrideColor = findOverrideColor('OVERRIDE_ZERO');
+            if (resetOverrideColor[0]) {
+                return Object.assign({}, resetOverrideColor[0].values, color.values)
+            }
+        }
+    }
+
+    return color.values;
+};
 
 /**
  * Helper for clearing the animation stack
@@ -708,8 +761,8 @@ Switching.prototype.setShuffleDeviceMode = function (active) {
 };
 
 /**
- * turns all color switching capable devices black
- * @param onlySelected boolean, whether all color devices or only not currently selected devices should be black
+ * Turns all color switching capable devices black.
+ * @param onlyNotSelected boolean, whether all color devices or only not currently selected devices should be black
  */
 Switching.prototype.allColorDevicesBlack = function (onlyNotSelected) {
 

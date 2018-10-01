@@ -60,19 +60,26 @@ module.exports = {
                 ]
             }
         },
-        startRgbChannel: 0, //start value for rgb color effects (first channel is 0)
-        colors: [ //presets differing from default rgb - e.g. if additional color available, values starting at first rgb channel (see above)
-            //TODO not implemented yet
+        startRgbChannel: 0, // start value for rgb color effects (first channel is 0)
+        overrideColors: [ // presets differing from default rgb - e.g. if additional color available, values starting with 0 at first rgb channel (startRgbChannel)
             {
-                label: 'White', //naming convention with existing colors
+                label: 'White', // naming convention with existing colors
                 values: {0: 0, 1: 0, 2: 0, 3: 255, 4: 0}
             },
             {
                 label: 'Orange',
-                values: {0: 0, 1: 0, 2: 0, 3: 0, 4: 255}
+                values: {0: 255, 1: 0, 2: 0, 3: 0, 4: 175}
+            },
+            {
+                label: 'Yellow',
+                values: {0: 0, 1: 15, 2: 0, 3: 0, 4: 255}
+            },
+            {
+                label: 'OVERRIDE_ZERO', // required for reseting other than rgb channels
+                values: {0: 0, 1: 0, 2: 0, 3: 0, 4: 0}
             }
         ],
-        channelPresets: {6: 255, 7: 255} //initialized values at start, e.g. for dimming channels
+        channelPresets: {6: 255, 7: 255} // initialized values at start, e.g. for dimming channels
     },
     'eurolite-led-bar': {
         channels: ['ctrl', 'dimmer', 'strobe', 'red0', 'green0', 'blue0', 'red1', 'green1', 'blue1', 'red2', 'green2', 'blue2'],

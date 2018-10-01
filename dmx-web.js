@@ -30,6 +30,7 @@ function DMXWeb() {
 
 	var animations = [];
 	var fadingDelayer = [];
+	config.allowColorOverride = config.allowColorOverride === true;
 
 	for(var universe in config.universes) {
 		dmx.addUniverse(

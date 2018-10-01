@@ -240,9 +240,30 @@
                                 if(devices[dev.type].hasOwnProperty("startRgbChannel")){
                                     var startRgb = devices[dev.type].startRgbChannel;
                                     var firstRgbChannelForDevice = dev.address + startRgb;
-                                    for (var colorChannel in color.values){
+                                    var colorValues = color.values;
+
+                                    if (devices[dev.type].hasOwnProperty("overrideColors") && setup.allowColorOverride === true) {
+                                        var matchingOverrideColor = devices[dev.type].overrideColors
+                                            .filter(function (colorItem) {
+                                                return colorItem.label === color.label;
+                                            });
+                                        if (matchingOverrideColor.length === 1) { // if override for passed color is configured
+                                            colorValues = matchingOverrideColor[0].values;
+
+                                        } else { //if no override for passed color configured, search for reset configuration
+                                            var resetOverrideColor = devices[dev.type].overrideColors
+                                                .filter(function (colorItem) {
+                                                    return colorItem.label === 'OVERRIDE_ZERO';
+                                                });
+                                            if (resetOverrideColor[0]) {
+                                                colorValues = Object.assign({}, resetOverrideColor[0].values, color.values)
+                                            }
+                                        }
+                                    }
+
+                                    for (var colorChannel in colorValues){
                                         var updateChannel = parseInt(colorChannel) + firstRgbChannelForDevice;
-                                        update[updateChannel] = color.values[colorChannel];
+                                        update[updateChannel] = colorValues[colorChannel];
                                     }
 
                                 }
