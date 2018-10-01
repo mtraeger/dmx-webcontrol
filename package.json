@@ -1,16 +1,16 @@
 {
-		"name":		   "dmx",
+		"name":		   "dmx-webcontrol",
 		"version":	   "0.0.5",
-		"author":	   "Sebastian Wiedenroth <wiedi@frubar.net>",
-		"description": "DMX library and webservice",
-		"url":		   "https://github.com/wiedi/node-dmx",
+		"author":	   "Michael Träger",
+		"description": "Collaborative DMX-Controller Webservice",
+		"url":		   "https://github.com/mtraeger/dmx-webcontrol",
 		"main":		   "dmx.js",
 		"bin": {
 						"dmx-web":	 "./dmx-web.js"
 		},
 		"repository": {
 				"type": "git",
-				"url": "https://github.com/wiedi/node-dmx.git"
+				"url": "https://github.com/mtraeger/dmx-webcontrol.git"
 		},
 		"keywords": [
 				"DMX",
