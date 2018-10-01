@@ -17,7 +17,7 @@ function Switching(msg, updateDmx) {
     this.mSecondsPerStep = 2000;
     this.intervalId = null;
     this.mSecondsStrobeDuration = 100;
-    this.mSecondsStrobeLimit = 200; //shorter steps have no strobe mode
+    this.mSecondsStrobeLimit = 150; //shorter steps have no strobe mode
     this.strobeModeEnabled = false;
     this.timeoutDurationId = null;
     this.setupconfig = msg.setup;
@@ -501,7 +501,6 @@ Switching.prototype.abort = function () {
  * @param mSecondsPerStep
  */
 Switching.prototype.setResolution = function (mSecondsPerStep) {
-    // console.log("Update Resolution");
     this.mSecondsPerStep = mSecondsPerStep;
     if (this.intervalId != null && this.running == true) {
         clearInterval(this.intervalId);

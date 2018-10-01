@@ -138,7 +138,7 @@
             $("<div id='switchingColors' style='clear: both;'><h2>Switching Colors</h2><h6>Sorted by order of clicks</h6></div>").hide().appendTo('#switching').fadeIn();
             //switching colors selection for colors
             for (var color in switchingColors) {
-                var colorSelect = $('<label><input type="checkbox" name="' + switchingColors[color].label + '" > ' + switchingColors[color].label + '</label>');
+                var colorSelect = $('<label class="cb-max-w"><input type="checkbox" name="' + switchingColors[color].label + '" > ' + switchingColors[color].label + '</label>');
                 colorSelect.hide().appendTo('#switchingColors').fadeIn();
                 colorSelect.click(function (e) {
                     socket.emit('selectedColors', e.target.name, e.target.checked);
@@ -177,7 +177,7 @@
             $("<div id='switchingDevices' style='clear: both;'><h2>Switching Devices</h2><h6>Sorted by order of clicks</h6></div>").hide().appendTo('#switching').fadeIn();
             //switching Devices selection for Devices
             for (var device in switchingDevices) {
-                var deviceSelect = $('<label><input type="checkbox" name="' + switchingDevices[device].id + '" >' + switchingDevices[device].device.label + ' ('+ switchingDevices[device].universe+')</label>');
+                var deviceSelect = $('<label class="cb-max-w"><input type="checkbox" name="' + switchingDevices[device].id + '" > ' + switchingDevices[device].device.label + ' (' + switchingDevices[device].universe + ')</label>');
                 deviceSelect.hide().appendTo('#switchingDevices').fadeIn();
                 deviceSelect.click(function (e) {
                     socket.emit('selectedDevices', e.target.name, e.target.checked);
@@ -252,6 +252,7 @@
                     };
                 }(setup.colors[color]));
             }
+
             //color slider //TODO update moved sliders on all clients, update sliders on color button update
             $('<div id="colorSliders" class="device" style="display: block;">').appendTo('#colors')
             var rgbColor = {0:"red", 1:"green", 2:"blue"};

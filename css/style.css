@@ -56,6 +56,10 @@ input[type=range].displayslider{
     margin-bottom: 1em;
 }
 
+.cb-max-w {
+    max-width: 400px;
+}
+
 #blackout, #strobeMode, #randomColorMode, #shuffleColorMode, #randomDeviceMode, #shuffleDeviceMode{
     transition: color 200ms ease;
 }
