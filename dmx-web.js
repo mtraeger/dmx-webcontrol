@@ -185,6 +185,7 @@ function DMXWeb() {
             socket.emit('switching', switchingTimeFader, switchingTime);
             socket.emit('switchingStrategy', switchingStrategy);
             socket.emit('strobeMode', switching.isStrobeMode());
+            socket.emit('fadeBlackMode', switching.isFadeBlackMode());
 
             for(var color in switching.getSelectedColors()) {
                 var selectedColor = switching.getSelectedColors()[color];
@@ -219,6 +220,8 @@ function DMXWeb() {
 			}
 
 			io.sockets.emit('fade', fading, fadingTime);
+
+            switching.updateFadeBlackTime(fadingTime * 1000);
 
 			for (var universe in fadingDelayer) {
 				for (var channel in fadingDelayer[universe]) {
@@ -287,6 +290,19 @@ function DMXWeb() {
         socket.on('strobeMode', function () {
             var active = switching.toggleStrobeMode();
             io.sockets.emit('strobeMode', active);
+
+            //deactivate conflicting
+            switching.toggleFadeBlackMode(false);
+            io.sockets.emit('fadeBlackMode', false);
+        });
+
+        socket.on('fadeBlackMode', function () {
+            var active = switching.toggleFadeBlackMode();
+            io.sockets.emit('fadeBlackMode', active);
+
+            //deactivate conflicting
+            switching.toggleStrobeMode(false);
+            io.sockets.emit('strobeMode', false);
         });
 
 		socket.on('switchingStrategy', function (strategy) {

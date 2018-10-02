@@ -110,6 +110,13 @@
                 socket.emit('strobeMode');
             });
 
+            // FadeBlackMode button
+            var fadeBlackMode = $('<button id="fadeBlackMode" class="span2 btn btn-info">Fade Black Mode (beta)</button>');
+            fadeBlackMode.hide().appendTo('#switchpresets').fadeIn();
+            fadeBlackMode.click(function () {
+                socket.emit('fadeBlackMode');
+            });
+
             //TODO add link to /beat for automatic beat detection
 
             //switching strategies
@@ -455,6 +462,13 @@
                 enableBlinker("#strobeMode");
             }else {
                 disableBlinker("#strobeMode");
+            }
+        });
+        socket.on('fadeBlackMode', function (enabled) {
+            if(enabled) {
+                enableBlinker("#fadeBlackMode");
+            }else {
+                disableBlinker("#fadeBlackMode");
             }
         });
         socket.on('randomColorMode', function (enabled) {

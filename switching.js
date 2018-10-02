@@ -19,6 +19,8 @@ function Switching(msg, updateDmx) {
     this.mSecondsStrobeDuration = 100;
     this.mSecondsStrobeLimit = 150; //shorter steps have no strobe mode
     this.strobeModeEnabled = false;
+    this.fadeBlackModeEnabled = false;
+    this.fadeBlackDuration = 0;
     this.timeoutDurationId = null;
     this.setupconfig = msg.setup;
     this.setupdevices = msg.devices;
@@ -563,11 +565,18 @@ Switching.prototype.setResolution = function (mSecondsPerStep) {
 
 /**
  * toggle strobe mode
+ * conflicts with fadeBlack mode
+ * @param setStatus do not toggle but override status
  * @return boolean, whether mode is active or not
  */
-Switching.prototype.toggleStrobeMode = function () {
-    this.strobeModeEnabled = this.strobeModeEnabled !== true;
-    return this.strobeModeEnabled;
+Switching.prototype.toggleStrobeMode = function (setStatus) {
+    if (setStatus === undefined) {
+        this.strobeModeEnabled = this.strobeModeEnabled !== true;
+        return this.strobeModeEnabled;
+    } else {
+        this.strobeModeEnabled = setStatus;
+        return this.strobeModeEnabled;
+    }
 };
 
 /**
@@ -575,6 +584,38 @@ Switching.prototype.toggleStrobeMode = function () {
  */
 Switching.prototype.isStrobeMode = function () {
     return this.strobeModeEnabled;
+};
+
+/**
+ * toggle fade black mode
+ * conflicts with strobeMode
+ * @param setStatus do not toggle but override status
+ * @return boolean, whether mode is active or not
+ */
+Switching.prototype.toggleFadeBlackMode = function (setStatus) {
+    if (setStatus === undefined) {
+        this.fadeBlackModeEnabled = this.fadeBlackModeEnabled !== true;
+        return this.fadeBlackModeEnabled;
+    } else {
+        this.fadeBlackModeEnabled = setStatus;
+        return this.fadeBlackModeEnabled;
+    }
+};
+
+/**
+ * @return fade black mode status
+ */
+Switching.prototype.isFadeBlackMode = function () {
+    return this.fadeBlackModeEnabled;
+};
+
+/**
+ * Set fade duration for fade to black duration from fading time mseconds
+ * time before fade to black will be calculated each time fro mSecondsPerStep - fadeBlackDuration
+ * @param fadeDuration
+ */
+Switching.prototype.updateFadeBlackTime = function (fadeDuration) {
+    this.fadeBlackDuration = fadeDuration;
 };
 
 
@@ -835,7 +876,7 @@ Switching.prototype.nextStep = function () {
 
 
         //Flashing - strobeMode
-        if (this.strobeModeEnabled && (this.mSecondsPerStep > this.mSecondsStrobeLimit || !this.running )) {
+        if (this.fadeBlackModeEnabled || (this.strobeModeEnabled) && (this.mSecondsPerStep > this.mSecondsStrobeLimit || !this.running)) {
             var makeBlack = function () {
                 for (var universe in currentStep.to) {
                     var update = {};
@@ -845,7 +886,14 @@ Switching.prototype.nextStep = function () {
                     self.updateDmx(universe, update, true);
                 }
             };
-            self.timeoutDurationId = setTimeout(makeBlack, this.mSecondsStrobeDuration);
+            if (this.strobeModeEnabled) {
+                self.timeoutDurationId = setTimeout(makeBlack, this.mSecondsStrobeDuration);
+            } else if (this.fadeBlackModeEnabled) {
+                var lightDurationBeforeBlack = (this.mSecondsPerStep - this.fadeBlackDuration * 1.4); //TODO calculate scaling factor
+                if (lightDurationBeforeBlack > 0){
+                    self.timeoutDurationId = setTimeout(makeBlack, lightDurationBeforeBlack);
+                }
+            }
         }
 
     }

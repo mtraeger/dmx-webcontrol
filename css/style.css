@@ -60,11 +60,11 @@ input[type=range].displayslider{
     max-width: 400px;
 }
 
-#blackout, #strobeMode, #randomColorMode, #shuffleColorMode, #randomDeviceMode, #shuffleDeviceMode{
+#blackout, #strobeMode, #fadeBlackMode, #randomColorMode, #shuffleColorMode, #randomDeviceMode, #shuffleDeviceMode{
     transition: color 200ms ease;
 }
 
-#blackout.blink, #strobeMode.blink, #randomColorMode.blink, #shuffleColorMode.blink, #randomDeviceMode.blink, #shuffleDeviceMode.blink{
+#blackout.blink, #strobeMode.blink, #fadeBlackMode.blink, #randomColorMode.blink, #shuffleColorMode.blink, #randomDeviceMode.blink, #shuffleDeviceMode.blink{
     color:transparent;
 }
 
