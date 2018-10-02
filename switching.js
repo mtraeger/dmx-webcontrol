@@ -315,7 +315,7 @@ Switching.prototype.colorByColorDevByDev = function (options) {
 Switching.prototype.colorByColorDevByDevEndless = function () {
     this.setStrategy(function () {
         //single device by device update with changing colors
-        this.colorByColorDevByDev({endless:true});
+        this.colorByColorDevByDev({endless: true});
     });
 };
 
@@ -343,7 +343,7 @@ Switching.prototype.colorByColorSingleDevByDev = function () {
 Switching.prototype.colorByColorSingleDevByDevEndless = function () {
     this.setStrategy(function () {
         //single device by device update with changing colors - but static color positions
-        this.colorByColorDevByDev({single: true, endless:true});
+        this.colorByColorDevByDev({single: true, endless: true});
     });
 };
 
@@ -357,7 +357,7 @@ Switching.prototype.colorByColorSingleDevByDevEndless = function () {
 Switching.prototype.colorByColorSingleDevByDevStatic = function () {
     this.setStrategy(function () {
         //single device by device update with changing colors - but static color positions
-        this.colorByColorDevByDev({single: true, static:true});
+        this.colorByColorDevByDev({single: true, static: true});
     });
 };
 
@@ -446,7 +446,7 @@ Switching.prototype.makeAllSelectedColorDevicesBlackForUpdate = function (univer
  * Helper for getting selected colors - either normal, shuffled or one random color
  * @return colors array
  */
-Switching.prototype.getColorsForStrategy = function() {
+Switching.prototype.getColorsForStrategy = function () {
     var colors = this.selectedColors;
     if (this.randomizeColors && colors.length > 0) {
         colors = new Array(getRandomElemFromArray(colors));
@@ -460,7 +460,7 @@ Switching.prototype.getColorsForStrategy = function() {
  * Helper for getting selected devices - either normal, shuffled or one random color
  * @return devices array (with objects)
  */
-Switching.prototype.getDevicesForStrategy = function() {
+Switching.prototype.getDevicesForStrategy = function () {
     var devices = this.selectedDevices;
     if (this.randomizeDevices && devices.length > 0) {
         devices = new Array(getRandomElemFromArray(devices));
@@ -487,7 +487,8 @@ Switching.prototype.getFirstRgbChannelForDevice = function (device) {
  */
 Switching.prototype.getOverrideColorIfConfigured = function (device, color) {
     var self = this;
-    function findOverrideColor(findColor){
+
+    function findOverrideColor(findColor) {
         return self.setupdevices[device.type].overrideColors
             .filter(function (colorItem) {
                 return colorItem.label === findColor;
@@ -618,6 +619,7 @@ Switching.prototype.getSelectedColors = function () {
 
 /**
  * toggle random color mode
+ * conflicts with shuffle color mode
  * @return boolean, whether mode is active or not
  */
 Switching.prototype.toggleRandomColorMode = function () {
@@ -635,6 +637,7 @@ Switching.prototype.isRandomColorMode = function () {
 
 /**
  * sets random color mode on or off
+ * conflicts with shuffle color mode
  */
 Switching.prototype.setRandomColorMode = function (active) {
     this.randomizeColors = active;
@@ -642,6 +645,7 @@ Switching.prototype.setRandomColorMode = function (active) {
 
 /**
  * toggle shuffle color mode
+ * conflicts with random color mode
  * @return boolean, whether mode is active or not
  */
 Switching.prototype.toggleShuffleColorMode = function () {
@@ -659,6 +663,7 @@ Switching.prototype.isShuffleColorMode = function () {
 
 /**
  * sets shuffle color mode on or off
+ * conflicts with random color mode
  */
 Switching.prototype.setShuffleColorMode = function (active) {
     this.shuffleColors = active;
@@ -714,6 +719,7 @@ Switching.prototype.getSelectedDevices = function () {
 
 /**
  * toggle random Device mode
+ * conflicts with shuffle devices
  * @return boolean, whether mode is active or not
  */
 Switching.prototype.toggleRandomDeviceMode = function () {
@@ -731,6 +737,7 @@ Switching.prototype.isRandomDeviceMode = function () {
 
 /**
  * sets random Device mode on or off
+ * conflicts with shuffle devices
  */
 Switching.prototype.setRandomDeviceMode = function (active) {
     this.randomizeDevices = active;
@@ -738,6 +745,7 @@ Switching.prototype.setRandomDeviceMode = function (active) {
 
 /**
  * toggle shuffle Device mode
+ * conflicts with randomDeviceMode
  * @return boolean, whether mode is active or not
  */
 Switching.prototype.toggleShuffleDeviceMode = function () {
@@ -755,6 +763,7 @@ Switching.prototype.isShuffleDeviceMode = function () {
 
 /**
  * sets shuffle Device mode on or off
+ * conflicts with randomDeviceMode
  */
 Switching.prototype.setShuffleDeviceMode = function (active) {
     this.shuffleDevices = active;
