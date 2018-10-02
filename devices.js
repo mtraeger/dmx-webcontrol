@@ -81,6 +81,29 @@ module.exports = {
         ],
         channelPresets: {6: 255, 7: 255} // initialized values at start, e.g. for dimming channels
     },
+    'artnet-weblight': {
+        channels: ['dimmer', 'red', 'green', 'blue', 'border', 'blur', 'image'],
+        ranges: {
+            'image': {
+                'type': 'option',
+                'options': [
+                    {'value': 0, 'label': 'none'},
+                    {'value': 10, 'label': 'Image 1'},
+                    {'value': 20, 'label': 'Image 2'},
+                    {'value': 30, 'label': 'Image 3'},
+                    //complete me...
+                ]
+            }
+        },
+        startRgbChannel: 1,
+        overrideColors: [
+            {
+                label: 'Yellow',
+                values: {0: 255, 1: 160, 2: 0}
+            },
+        ],
+        channelPresets: {0: 255}
+    },
     'eurolite-led-bar': {
         channels: ['ctrl', 'dimmer', 'strobe', 'red0', 'green0', 'blue0', 'red1', 'green1', 'blue1', 'red2', 'green2', 'blue2'],
         ranges: {

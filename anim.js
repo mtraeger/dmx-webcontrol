@@ -148,6 +148,8 @@ Anim.prototype.run = function(universe, onFinish, onUpdate) {
 		var new_vals = {};
 		for(var k in config) {
 			new_vals[k] = Math.round(config[k].start + ease[a.options['easing']](t, 0, 1, d) * (config[k].end - config[k].start));
+			if(new_vals[k] < 0) new_vals[k] = 0;
+			if(new_vals[k] > 255) new_vals[k] = 255;
 		}
 		t = t + resolution;
 		self.dmx.update(universe, new_vals, false); //only value updates of dmx

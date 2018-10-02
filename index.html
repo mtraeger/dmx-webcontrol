@@ -32,7 +32,8 @@
             fadingEffect = 'linear-flexible';
 
             //select easing
-            var easingEffects = ["linear-flexible", "linear", "inBounce", "outBounce", "inOutBounce", "inSine", "outSine", "inOutSine", "inCubic", "outCubic", "inOutCubic", "inQuint", "outQuint", "inOutQuint", "inCirc", "outCirc", "inOutCirc"]; //TODO get (more) effects from easing.js (be careful with overfilling values!)
+            var easingEffects = ["linear-flexible", "linear", "inSine", "outSine", "inOutSine", "inCubic", "outCubic", "inOutCubic", "inQuint", "outQuint", "inOutQuint",
+                "inCirc", "outCirc", "inOutCirc", "inBack", "outBack", "inOutBack", "inElastic", "outElastic", "inOutElastic", "inBounce", "outBounce", "inOutBounce"]; //TODO get (more) effects from easing.js (be careful with overfilling values!)
             var easingSelect = "<select id='easingSelect'>";
             for (var easingEffect in easingEffects) {
                 easingSelect += "<option value='"+easingEffects[easingEffect]+"'>Ease "+easingEffects[easingEffect]+"</option>";
