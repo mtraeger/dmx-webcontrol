@@ -43,6 +43,11 @@ module.exports = {
         startRgbChannel: 1,
         channelPresets: {0: 255}
     },
+    'showtec-spectral-m800': {
+        channels: ['dimmer', 'red', 'green', 'blue', 'strobe'],
+        startRgbChannel: 1,
+        channelPresets: {0: 255}
+    },
     'adj-5p-hex': {
         channels: ['red', 'green', 'blue', 'white', 'amber', 'uv', 'dimmer', 'strobe'],
         ranges: {
