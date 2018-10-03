@@ -3,7 +3,7 @@
 
 var fs       = require('fs')
 var http     = require('http')
-var connect  = require('connect')
+var body     = require('body-parser')
 var express  = require('express')
 var socketio = require('socket.io')
 var program  = require('commander')
@@ -70,34 +70,31 @@ function DMXWeb() {
 			}
 		}
 	})
-	io.set('log level', 1)
 
-	app.configure(function() {
-		app.use(connect.json())
-	})
+	app.use(body.json())
 
 	app.get('/', function(req, res) {
-		res.sendfile(__dirname + '/index.html')
+		res.sendFile(__dirname + '/index.html')
 	})
 
     //css and js offline
     app.get('/css/bootstrap-combined.min.css', function(req, res) {
-        res.sendfile(__dirname + '/css/bootstrap-combined.min.css')
+        res.sendFile(__dirname + '/css/bootstrap-combined.min.css')
     })
     app.get('/js/jquery.min.js', function(req, res) {
-        res.sendfile(__dirname + '/js/jquery.min.js')
+        res.sendFile(__dirname + '/js/jquery.min.js')
     })
     app.get('/js/jquery-ui.min.js', function(req, res) {
-        res.sendfile(__dirname + '/js/jquery-ui.min.js')
+        res.sendFile(__dirname + '/js/jquery-ui.min.js')
     })
     app.get('/js/bootstrap.min.js', function(req, res) {
-        res.sendfile(__dirname + '/js/bootstrap.min.js')
+        res.sendFile(__dirname + '/js/bootstrap.min.js')
     })
     app.get('/css/slider.css', function(req, res) {
-        res.sendfile(__dirname + '/css/slider.css')
+        res.sendFile(__dirname + '/css/slider.css')
     })
     app.get('/css/style.css', function(req, res) {
-        res.sendfile(__dirname + '/css/style.css')
+        res.sendFile(__dirname + '/css/style.css')
     })
 
     app.use('/beat', express.static('beatDetect'));
@@ -119,7 +116,7 @@ function DMXWeb() {
 
 		res.json({"state": dmx.universeToObject(req.params.universe)})
 	})
-	
+
 	app.post('/state/:universe', function(req, res) {
 		if(!(req.params.universe in dmx.universes)) {
 			res.status(404).json({"error": "universe not found"})
