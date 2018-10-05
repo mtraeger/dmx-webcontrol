@@ -17,10 +17,13 @@ function EnttecODE(device_id, options) {
 	self.sleepTime = 2 //TODO maybe 2 mseconds for fluent fading on short times?, default 24
 
 	options = options || {}
-	self.universe_id.writeInt16BE(options.universe || 0, 0)
+	self.universe_id.writeInt16LE(options.universe || 0, 0)
 	self.host = device_id || '127.0.0.1'
 	self.port = options.port || 6454
 	self.dev = dgram.createSocket('udp4')
+	self.dev.bind(function() {
+		self.dev.setBroadcast(true)
+	})
 	self.start()
 }
 

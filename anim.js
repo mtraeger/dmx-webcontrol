@@ -14,6 +14,7 @@ Anim.abort = false;
 function Anim(dmx) {
 	this.dmx = dmx;
 	this.fx_stack = [];
+	this.interval = null;
 	this.aborted = false;
 	this.finished = false;
 	this.currentStepFinalValues = {};
@@ -89,6 +90,13 @@ Anim.prototype.delay = function(duration) {
 }
 
 
+Anim.prototype.stop = function () {
+	if(this.interval) {
+		clearInterval(this.interval)
+	}
+	this.fx_stack = []
+}
+
 /**
  * @return final channel value for current animation step
  */
@@ -139,7 +147,7 @@ Anim.prototype.run = function(universe, onFinish, onUpdate) {
 	var ani_step = function() {
 		if(Anim.abort || self.aborted){
 			clearInterval(iid);
-            Anim.abort = false;
+			Anim.abort = false;
 			return;
 		}
 
@@ -173,7 +181,7 @@ Anim.prototype.run = function(universe, onFinish, onUpdate) {
 	};
 
 	ani_setup();
-	var iid = setInterval(ani_step, resolution);
+	var iid = this.interval = setInterval(ani_step, resolution);
 };
 
 module.exports = Anim;

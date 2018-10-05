@@ -2,6 +2,9 @@ module.exports = {
 	'generic': {
 		channels: ['dimmer']
 	},
+	'generic-rgb': {
+		channels: ['red', 'green', 'blue']
+	},
 	'showtec-multidim2': {
 		channels: ['1', '2', '3', '4']
 	},
@@ -57,6 +60,10 @@ module.exports = {
 	},
 	'ultra-pro-24ch-rdm': {
 		channels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24' ]
+	},
+	'ultra-pro-6rgbch-rdm': {
+		channels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24' ],
+		channelgroups: ['1', '2', '3', '4', '5', '6']
 	},
 	'oppsk-cob-uv-par': {
 		channels: ['dimmer', 'strobe', 'program-speed', 'sound-activity']
@@ -214,4 +221,7 @@ module.exports = {
 	'briteq-bt-theatre-60FC': {
 		channels: ['dimmer', 'strobe', 'effect', 'red', 'green', 'blue', 'white']
 	},
+	'lalucenatz-led-4ch': {
+		channels: ['master', 'red', 'green', 'blue']
+        },
 }
