@@ -35,6 +35,15 @@ input[type=range].displayslider{
     pointer-events:none;
 }
 
+input[type=color]{
+    width: 40px;
+    height: 40px;
+    padding: 0px;
+    margin: 5px;
+    background-color: transparent;
+    border: none;
+}
+
 #fade{
     -webkit-appearance: slider-horizontal;
     height: 60px;

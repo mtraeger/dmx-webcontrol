@@ -304,42 +304,36 @@
                 }(setup.colors[color]));
             }
 
-            //color slider //TODO update moved sliders on all clients, update sliders on color button update
+            // color picker for all
             $('<div id="colorSliders" class="device" style="display: block;">').appendTo('#colors')
-            var rgbColor = {0:"red", 1:"green", 2:"blue"};
-            for (var color in rgbColor) {
-                var rgbGroup = $("<div class='channel'>").appendTo('#colorSliders');
-                var html2 = "";
-                html2 += '<label for="rgb'+rgbColor[color]+'">'+rgbColor[color]+'</label>';
-                html2 += "";
-                $(html2).hide().appendTo(rgbGroup).fadeIn();
-                var fader = $('<input id="rgb'+rgbColor[color]+'" type="range" orient="vertical" min="0" value="0" max="255">');
-                fader.hide().appendTo(rgbGroup).fadeIn();
-                fader.on("input", function (e) {
-                        //TODO reduce code duplication (see buttons above)
-                        for (var universe in setup.universes) {
-                            var update = {};
-                            for (var device in setup.universes[universe].devices) {
-                                var dev = setup.universes[universe].devices[device];
-                                if (devices[dev.type].hasOwnProperty("startRgbChannel")) {
-                                    var startRgb = devices[dev.type].startRgbChannel;
-                                    var firstRgbChannelForDevice = dev.address + startRgb;
+            var colorPickerAllDiv = $('<div>Pick override color for all devices:<br>(Only on update of picker value)<br></div>').hide().appendTo('#colorSliders').fadeIn();
+            var colorPickerAll = $('<input type="color" style="width: 60px; height: 60px"/>').hide().appendTo(colorPickerAllDiv).fadeIn();
+            colorPickerAll.on("input", function (e) {
+                //TODO reduce code duplication (see buttons above)
+                for (var universe in setup.universes) {
+                    var update = {};
+                    for (var device in setup.universes[universe].devices) {
+                        var dev = setup.universes[universe].devices[device];
+                        if (devices[dev.type].hasOwnProperty("startRgbChannel")) {
+                            var startRgb = devices[dev.type].startRgbChannel;
+                            var firstRgbChannelForDevice = dev.address + startRgb;
 
-                                    var colorAdd = 0;
-                                    if ($(e.target)[0].id == "rgbgreen") {
-                                        colorAdd = 1;
-                                    } else if ($(e.target)[0].id == "rgbblue") {
-                                        colorAdd = 2;
-                                    }
+                            var target = $(e.target);
+                            var value = rgb_to_array(target.val());
 
-                                    var updateChannel = parseInt(colorAdd) + firstRgbChannelForDevice;
-                                    update[updateChannel] = e.target.value;
-                                }
-                            }
-                            socket.emit('update', universe, update);
+                            var red = value[0];
+                            var green = value[1];
+                            var blue = value[2];
+
+                            update[firstRgbChannelForDevice + 0] = red;
+                            update[firstRgbChannelForDevice + 1] = green;
+                            update[firstRgbChannelForDevice + 2] = blue;
                         }
-                });
-            }
+                    }
+                    socket.emit('update', universe, update);
+                }
+            });
+
 
             // Get Unique Channel Names for device slider
             var concatChannels = [];
@@ -357,7 +351,7 @@
             }
 
             //device slider by name //TODO update moved sliders on all clients, update sliders on color button update
-            $('<div id="allDevicesSliders" class="device" style="display: block;"><h3>Control all devices</h3><h6>Aggregated Channels by Name</h6></div>').appendTo('#colors')
+            $('<div id="allDevicesSliders" class="device" style="display: block;"><h3>Control all devices</h3><h6>Aggregated Channels by Name - Override for all devices - Only on slider change</h6></div>').appendTo('#colors')
             for (var devChannelSelect in concatChannels) {
                 var deviceChannelName = concatChannels[devChannelSelect];
                 var devChannelGroup = $("<div class='channel'>").appendTo('#allDevicesSliders');
