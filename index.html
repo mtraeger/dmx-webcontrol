@@ -56,6 +56,10 @@
             switchingAllDevices = msg.switchingAllDevices;
             fadingEffect = 'linear-flexible';
 
+            // remove old listeners on service refresh
+            $(document).off("change", "input");
+            $(document).off("input", "input");
+
             if(setup.title !== undefined) {
                 document.title = setup.title;
             }
@@ -255,7 +259,7 @@
 
 
             // #### Color page ###
-            // color buttons and color sliders for rgb (additional color sliders?)
+            // color buttons and color sliders for rgb
             for (var color in setup.colors) {
                 var htmlColorButtons = '<button class="span2 btn btn-info">' + setup.colors[color].label + '</button>';
                 var e = $(htmlColorButtons)
@@ -436,12 +440,14 @@
                 html += "</div>";
                 $(html).hide().appendTo('#sliders').fadeIn();
             }
-            $("input").live("change", function (e) {
+
+            // old listeners are removed on top
+            $(document).on("change", "input", function (e) {
                 updateDmx(e, onChangeClickAnimation);
-            });
-            $("input").live("input", function (e) {
+            }).on("input", "input", function (e) {
                 updateDmx(e, false);
             });
+
             socket.emit('request_refresh');
         });
 

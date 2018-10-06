@@ -1,9 +1,7 @@
 "use strict"
 
-var ease = require('./easing.js').ease
-var resolution = 10 //for faster fading, default 25
-
-Anim.abort = false;
+var ease = require('./easing.js').ease;
+var resolution = 10; //for faster fading, default 25
 
 /**
  * Animations with fix start and end. But can be aborted.
@@ -22,19 +20,10 @@ function Anim(dmx) {
 }
 
 /**
- * Abort all animations (while 500ms in update)
- */
-Anim.abortAnimations = function(){
-	// console.log("Aborting all animations");
-	Anim.abort = true;
-}
-
-/**
  * Abort this single animation
  */
 Anim.prototype.abort = function () {
-	// console.log("Aborting single animation");
-	this.aborted = true;
+    this.stop();
 }
 
 /**
@@ -89,6 +78,7 @@ Anim.prototype.delay = function(duration) {
 
 
 Anim.prototype.stop = function () {
+	this.aborted = true;
 	if(this.interval) {
 		clearInterval(this.interval)
 	}
@@ -143,11 +133,6 @@ Anim.prototype.run = function(universe, onFinish, onUpdate) {
 		self.currentStepFinalValues = a.to;
 	}
 	var ani_step = function() {
-		if(Anim.abort || self.aborted){
-			clearInterval(iid);
-			Anim.abort = false;
-			return;
-		}
 
 		self.animationTimePercent = t / d;
 

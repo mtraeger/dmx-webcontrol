@@ -154,7 +154,10 @@ function DMXWeb() {
 				}
 			}
 			animation.add(old, 0)
-			animation.run(universe)
+			animation.run(universe, null, function (newvals) {
+				//onUpdate
+				io.sockets.emit('displayslider', universe, newvals)
+			})
 			res.json({"success": true})
 		} catch(e) {
 			console.log(e)
@@ -249,13 +252,17 @@ function DMXWeb() {
                         animations[universe][channel] = new A(dmx);
                         animations[universe][channel]
                             .add(values, newFadingTime, {easing: fadingease})
-                            .run(universe, function (finalvals) {
+                            .run(universe, function (universe) {
                                 //onFinish
-                                io.sockets.emit('update', universe, finalvals);
-                            }, function (newvals) {
+                                return function (finalvals) {
+                                    io.sockets.emit('update', universe, finalvals);
+                                }
+                            }(universe), function (universe) {
                                 //onUpdate
-                                io.sockets.emit('displayslider', universe, newvals)
-                            });
+                                return function (newvals) {
+                                    io.sockets.emit('displayslider', universe, newvals)
+                                }
+                            }(universe));
                     }
                 }
             }
