@@ -44,6 +44,13 @@ input[type=color]{
     border: none;
 }
 
+input[type=color].allPicker{
+    width: 170px;
+    height: 50px;
+    padding: 5px;
+    margin: 10px;
+}
+
 #fade{
     -webkit-appearance: slider-horizontal;
     height: 60px;

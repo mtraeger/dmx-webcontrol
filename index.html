@@ -307,7 +307,7 @@
             // color picker for all
             $('<div id="colorSliders" class="device" style="display: block;">').appendTo('#colors')
             var colorPickerAllDiv = $('<div>Pick override color for all devices:<br>(Only on update of picker value)<br></div>').hide().appendTo('#colorSliders').fadeIn();
-            var colorPickerAll = $('<input type="color" style="width: 60px; height: 60px"/>').hide().appendTo(colorPickerAllDiv).fadeIn();
+            var colorPickerAll = $('<input class="btn btn-info allPicker" type="color"/>').hide().appendTo(colorPickerAllDiv).fadeIn();
             colorPickerAll.on("input", function (e) {
                 //TODO reduce code duplication (see buttons above)
                 for (var universe in setup.universes) {
