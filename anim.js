@@ -56,24 +56,22 @@ Anim.prototype.add = function(to, duration, options) {
 
 
 /**
- * add relative chanels for multiple devices
+ * Add relative chanels for multiple devices
  * e.g. .addMultipleDevs({1: 255, 2:200}, 2000, [1,9]) -> channels 1,2,9,10 updated
  *
- * @param to channels to update e.g. {1: 255, 2:200} starting at 0!
- * @param duration of step e.g. 2000 for 2 sec
- * @param startingchanels array with initial channels for starting e.g. [1,9]
+ * @param to channels to update e.g. {1: 255, 2:200}
+ * @param duration of step in ms e.g. 2000 for 2 sec
+ * @param startingchannels array with initial channels for starting e.g. [1,9]
  *            second value -1 is added to channels in to and also executed
  * @param options object with e.g. easing key (e.g. linear (default) or inOutCubic or outBounce from easings.js)
  * @returns {Anim}
  */
-Anim.prototype.addMultipleDevs = function (to, duration, startingchanels, options) {
+Anim.prototype.addMultipleDevs = function (to, duration, startingchannels, options) {
 	var tonew = {}; //new to field value
-	for (var i in startingchanels) {
+	for (var i in startingchannels) {
 		for (var k in to) {
-			var newchannel = parseInt(k) + startingchanels[i] - 1; //new channel to manipulate
+			var newchannel = parseInt(k) + startingchannels[i] - 1; //new channel to manipulate
 			tonew[newchannel] = to[k]; //assign value to new channel
-			//console.log(k + " " + to[k] + " " + startingchanels[i] + " " + newchannel)
-			//console.log(tonew)
 		}
 	}
 	this.add(tonew, duration, options)

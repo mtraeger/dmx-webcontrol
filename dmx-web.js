@@ -136,11 +136,22 @@ function DMXWeb() {
 
 			var animation = new A(dmx)
 			for(var step in req.body) {
-				animation.add(
-					req.body[step].to,
-					req.body[step].duration || 0,
-					req.body[step].options  || {}
-				)
+				if(req.body[step].delay){
+					animation.delay(req.body[step].delay);
+				} else if (req.body[step].startingchannels) {
+					animation.addMultipleDevs(
+						req.body[step].to,
+						req.body[step].duration || 0,
+						req.body[step].startingchannels,
+						req.body[step].options || {}
+					)
+				} else {
+					animation.add(
+						req.body[step].to,
+						req.body[step].duration || 0,
+						req.body[step].options || {}
+					)
+				}
 			}
 			animation.add(old, 0)
 			animation.run(universe)
