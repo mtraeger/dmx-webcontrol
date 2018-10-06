@@ -158,7 +158,7 @@ Anim.prototype.run = function(universe, onFinish, onUpdate) {
 			if(new_vals[k] > 255) new_vals[k] = 255;
 		}
 		t = t + resolution;
-		self.dmx.update(universe, new_vals, false); //only value updates of dmx
+		self.dmx.update(universe, new_vals, !onUpdate); // update values if from animation scripts - and no display update configured
 
         if(onUpdate) onUpdate(new_vals);
         // comment line above and uncomment lines below for better performance on display-slider update in browser
