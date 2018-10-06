@@ -399,6 +399,13 @@
 
 
             // ##### Sliders Page ####
+            var onChangeClickAnimation = false;
+            $("<label><input type='checkbox'> Animation on fader click instead of just flexible-fading (only affects current browser)</label>")
+                .click(function (e) {
+                    onChangeClickAnimation = e.target.checked;
+                })
+                .hide().appendTo('#sliders').fadeIn()
+
             /* sliders */
             for (var universe in setup.universes) {
                 var html = "<div><h1>" + universe + "</h1>";
@@ -430,7 +437,7 @@
                 $(html).hide().appendTo('#sliders').fadeIn();
             }
             $("input").live("change", function (e) {
-                updateDmx(e, false);
+                updateDmx(e, onChangeClickAnimation);
             });
             $("input").live("input", function (e) {
                 updateDmx(e, false);
