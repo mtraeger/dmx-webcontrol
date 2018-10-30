@@ -845,10 +845,10 @@ Switching.prototype.allColorDevicesBlack = function (onlyNotSelected) {
  */
 Switching.prototype.run = function () {
     this.running = true;
-    var self = this;
+    const self = this;
     self.aborted = false;
 
-    var singleStep = function () {
+    const singleStep = function () {
 
         if (self.aborted) {
             self.running = false;
@@ -864,45 +864,56 @@ Switching.prototype.run = function () {
     self.intervalId = setInterval(singleStep, this.mSecondsPerStep);
 };
 
+function generateMakeBlack(currentStep, self) {
+    return function () {
+        for (const universe in currentStep.to) {
+            const update = {};
+            for (const channel in currentStep.to[universe]) {
+                update[channel] = 0;
+            }
+            self.updateDmx(universe, update, true);
+        }
+    };
+}
+
 /**
  * Forcing next step of the animation
  * Can be called while animation is running or while not running
  */
 Switching.prototype.nextStep = function () {
-    var self = this;
+    const self = this;
 
     if (this.fx_stack.length < 1) {
         this.addPresetsToAnimations();
     }
 
     if (this.fx_stack.length > 0) { //update dmx only if elements in stack
-        var currentStep = this.fx_stack.shift();
+        const currentStep = this.fx_stack.shift();
         this.currentColorId = currentStep.id;
 
-        for (var universe in currentStep.to) {
-            this.updateDmx(universe, currentStep.to[universe], true);
+        const makeUpdate = function () {
+            for (const universe in currentStep.to) {
+                self.updateDmx(universe, currentStep.to[universe], true);
+            }
+        };
+
+        clearInterval(self.timeoutDurationId);
+
+        if (this.fadeBlackModeEnabled && this.fadeBlackDuration > 0) {
+            const blackDuration = (this.fadeBlackDuration * 1.1); //scaling factor
+            generateMakeBlack(currentStep, self)(); // and execute
+
+            // delay update
+            self.timeoutDurationId = setTimeout(makeUpdate, blackDuration);
+        } else {
+            // normal value update
+            makeUpdate();
         }
 
-
         //Flashing - strobeMode
-        if (this.fadeBlackModeEnabled || (this.strobeModeEnabled) && (this.mSecondsPerStep > this.mSecondsStrobeLimit || !this.running)) {
-            var makeBlack = function () {
-                for (var universe in currentStep.to) {
-                    var update = {};
-                    for (var channel in currentStep.to[universe]) {
-                        update[channel] = 0;
-                    }
-                    self.updateDmx(universe, update, true);
-                }
-            };
-            if (this.strobeModeEnabled) {
-                self.timeoutDurationId = setTimeout(makeBlack, this.mSecondsStrobeDuration);
-            } else if (this.fadeBlackModeEnabled) {
-                var lightDurationBeforeBlack = (this.mSecondsPerStep - this.fadeBlackDuration * 1.4); //TODO calculate scaling factor
-                if (lightDurationBeforeBlack > 0){
-                    self.timeoutDurationId = setTimeout(makeBlack, lightDurationBeforeBlack);
-                }
-            }
+        if (this.strobeModeEnabled && (this.mSecondsPerStep > this.mSecondsStrobeLimit || !this.running)) {
+            const makeBlack = generateMakeBlack(currentStep, self);
+            self.timeoutDurationId = setTimeout(makeBlack, this.mSecondsStrobeDuration);
         }
 
     }
