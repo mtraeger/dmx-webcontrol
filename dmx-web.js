@@ -190,12 +190,10 @@ function DMXWeb() {
 	});
 
 	io.sockets.on('connection', function(socket) {
-        socket.emit('init', {'devices': DMX.devices, 'setup': config, 'switchingAllDevices': switching.getAllDevices()});
-
-		socket.on('request_refresh', function() {
-			for(var universe in config.universes) {
-				socket.emit('update', universe, dmx.universeToObject(universe));
-			}
+        socket.on('request_refresh', function() {
+            for(var universe in config.universes) {
+                socket.emit('update', universe, dmx.universeToObject(universe));
+            }
             socket.emit('fade', fading, fadingTime);
             socket.emit('fadingEaseChange', fadingease);
             socket.emit('blackout', blackout);
@@ -203,6 +201,7 @@ function DMXWeb() {
             socket.emit('switching', switchingTimeFader, switchingTime);
             socket.emit('switchingStrategy', switchingStrategy);
             socket.emit('strobeMode', switching.isStrobeMode());
+            socket.emit('fadeBlackMode', switching.isFadeBlackMode());
             socket.emit('switchExternalEnabled', switchExternalDisabled);
 
             for(var color in switching.getSelectedColors()) {
@@ -219,7 +218,9 @@ function DMXWeb() {
             socket.emit('randomDeviceMode', switching.isRandomDeviceMode());
             socket.emit('shuffleDeviceMode', switching.isShuffleDeviceMode());
 
-		});
+        });
+
+        socket.emit('init', {'devices': DMX.devices, 'setup': config, 'switchingAllDevices': switching.getAllDevices()});
 
 		socket.on('update', function (universe, update, effect) {
 			updateDmx(universe, update, effect);
@@ -238,6 +239,8 @@ function DMXWeb() {
 			}
 
 			io.sockets.emit('fade', fading, fadingTime);
+
+            switching.updateFadeBlackTime(fadingTime * 1000);
 
 			for (var universe in fadingDelayer) {
 				for (var channel in fadingDelayer[universe]) {
@@ -308,14 +311,27 @@ function DMXWeb() {
 		});
 
 		socket.on('switchExternalEnabled', function () {
-            switchExternalDisabled = switchExternalDisabled !== true;
-            io.sockets.emit('switchExternalEnabled', switchExternalDisabled);
+			switchExternalDisabled = switchExternalDisabled !== true;
+			io.sockets.emit('switchExternalEnabled', switchExternalDisabled);
 		});
 
-        socket.on('strobeMode', function () {
-            var active = switching.toggleStrobeMode();
-            io.sockets.emit('strobeMode', active);
-        });
+		socket.on('strobeMode', function () {
+			var active = switching.toggleStrobeMode();
+			io.sockets.emit('strobeMode', active);
+
+			//deactivate conflicting
+			switching.toggleFadeBlackMode(false);
+			io.sockets.emit('fadeBlackMode', false);
+		});
+
+		socket.on('fadeBlackMode', function () {
+			var active = switching.toggleFadeBlackMode();
+			io.sockets.emit('fadeBlackMode', active);
+
+			//deactivate conflicting
+			switching.toggleStrobeMode(false);
+			io.sockets.emit('strobeMode', false);
+		});
 
 		socket.on('switchingStrategy', function (strategy) {
 			// console.log(strategy)
