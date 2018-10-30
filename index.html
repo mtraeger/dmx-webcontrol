@@ -145,6 +145,13 @@
 
             //TODO add link to /beat for automatic beat detection
 
+            // ExternalSwitchDisabled button
+            var externalSwitch = $('<button id="externalSwitch" class="span2 btn btn-info">Deactivate External Trigger</button>');
+            externalSwitch.hide().appendTo('#switchpresets').fadeIn();
+            externalSwitch.click(function () {
+                socket.emit('switchExternalEnabled');
+            });
+
             //switching strategies
             switchingStrategies = [
                 {id: "colors", name: "Single Color <br> All Devices"},
@@ -561,6 +568,13 @@
                 enableBlinker("#strobeMode");
             }else {
                 disableBlinker("#strobeMode");
+            }
+        });
+        socket.on('switchExternalEnabled', function (enabled) {
+            if(enabled) {
+                enableBlinker("#externalSwitch");
+            }else {
+                disableBlinker("#externalSwitch");
             }
         });
         socket.on('randomColorMode', function (enabled) {

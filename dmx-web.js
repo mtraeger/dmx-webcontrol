@@ -165,9 +165,16 @@ function DMXWeb() {
 		}
 	})
 
+
+	var switchExternalDisabled = false;
+
     app.get('/switchNextStep', function(req, res) {
-        switching.nextStep();
-        res.status(200).json({"success": true});
+        if (switchExternalDisabled) {
+            res.status(403).json({"success": false});
+        } else {
+            switching.nextStep();
+            res.status(200).json({"success": true});
+        }
     });
 
 	var fading = 0;
@@ -196,6 +203,7 @@ function DMXWeb() {
             socket.emit('switching', switchingTimeFader, switchingTime);
             socket.emit('switchingStrategy', switchingStrategy);
             socket.emit('strobeMode', switching.isStrobeMode());
+            socket.emit('switchExternalEnabled', switchExternalDisabled);
 
             for(var color in switching.getSelectedColors()) {
                 var selectedColor = switching.getSelectedColors()[color];
@@ -297,6 +305,11 @@ function DMXWeb() {
 
 		socket.on('nextSwitchStep', function () {
 			switching.nextStep();
+		});
+
+		socket.on('switchExternalEnabled', function () {
+            switchExternalDisabled = switchExternalDisabled !== true;
+            io.sockets.emit('switchExternalEnabled', switchExternalDisabled);
 		});
 
         socket.on('strobeMode', function () {

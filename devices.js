@@ -3,7 +3,8 @@ module.exports = {
 		channels: ['dimmer']
 	},
 	'generic-rgb': {
-		channels: ['red', 'green', 'blue']
+		channels: ['red', 'green', 'blue'],
+		startRgbChannel: 0
 	},
 	'showtec-multidim2': {
 		channels: ['1', '2', '3', '4']
