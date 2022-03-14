@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>DMX Lichtschalter</title>
+    <title>DMX Webcontrol</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <link href="./css/bootstrap-combined.min.css" rel="stylesheet">
@@ -45,6 +45,7 @@
         var socket = io();
         socket.on('init', function (msg) {
             $('#presets').empty();
+            $('#switchingPresets').empty();
             $('#sliders').empty();
             $('#switching').empty();
             $('#colors').empty();
@@ -76,7 +77,7 @@
             dropDown.hide().appendTo('#navbar-content').fadeIn();
             dropDown.change(function (effect) {
                 return function () {
-                    socket.emit("fadingEaseChange", effect.val());
+                    socket.emit("fadingEase", effect.val());
                 };
             }(dropDown));
 
@@ -113,6 +114,21 @@
                         }
                     };
                 }(setup.presets[preset].values));
+            }
+
+
+            /* switching preset buttons */
+            for (var preset in setup.switchingPresets) {
+                var html = '<button class="span2 btn btn-info">' + setup.switchingPresets[preset].label + '</button>';
+                var e = $(html);
+                e.hide().appendTo('#switchingPresets').fadeIn();
+                e.click(function (values) {
+                    return function () {
+                        for (var configParam in values) {
+                            socket.emit(configParam, values[configParam]);
+                        }
+                    };
+                }(setup.switchingPresets[preset].values));
             }
 
 
@@ -189,7 +205,7 @@
                 var colorSelect = $('<label class="cb-max-w"><input type="checkbox" name="' + switchingColors[color].label + '" > ' + switchingColors[color].label + '</label>');
                 colorSelect.hide().appendTo('#switchingColors').fadeIn();
                 colorSelect.click(function (e) {
-                    socket.emit('selectedColors', e.target.name, e.target.checked);
+                    socket.emit('selectedColor', e.target.name, e.target.checked);
                 });
             }
             //All and No Color Buttons
@@ -197,14 +213,14 @@
             colorSelectAll.hide().appendTo('#switchingColors').fadeIn();
             colorSelectAll.click(function (e) {
                 for (var color in switchingColors) {
-                    socket.emit('selectedColors', switchingColors[color].label, true);
+                    socket.emit('selectedColor', switchingColors[color].label, true);
                 }
             });
             var colorDeselectAll = $('<button class="span2 btn btn-info">No Color</button>');
             colorDeselectAll.hide().appendTo('#switchingColors').fadeIn();
             colorDeselectAll.click(function (e) {
                 for (var color in switchingColors) {
-                    socket.emit('selectedColors', switchingColors[color].label, false);
+                    socket.emit('selectedColor', switchingColors[color].label, false);
                 }
             });
             // RandomColorMode button
@@ -550,7 +566,7 @@
             $('#fade').attr('value', duration);
             $('#fadingTime').text(fadingTime);
         });
-        socket.on('fadingEaseChange', function (effect) {
+        socket.on('fadingEase', function (effect) {
             $('#easingSelect').val(effect);
             fadingEffect = effect;
         });
@@ -564,7 +580,7 @@
             }
             $('#switchingstrategy-' + strategy).addClass('active');
         });
-        socket.on('selectedColors', function (color, selected) {
+        socket.on('selectedColor', function (color, selected) {
             $('#switchingColors').find('input[name="' + color + '"]').prop('checked', selected);
         });
         socket.on('selectedDevices', function (device, selected) {
@@ -641,7 +657,11 @@
 <div class="container-fluid">
     <div class="tab-content">
         <div id="home" class="tab-pane active">
+            <h3>Channel Presets</h3>
             <div class="row-fluid" id="presets">
+            </div>
+            <h3>Switching Presets</h3>
+            <div class="row-fluid" id="switchingPresets">
             </div>
         </div>
         <div id="sliders" class="tab-pane">

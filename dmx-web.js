@@ -195,7 +195,7 @@ function DMXWeb() {
                 socket.emit('update', universe, dmx.universeToObject(universe));
             }
             socket.emit('fade', fading, fadingTime);
-            socket.emit('fadingEaseChange', fadingease);
+            socket.emit('fadingEase', fadingease);
             socket.emit('blackout', blackout);
 
             socket.emit('switching', switchingTimeFader, switchingTime);
@@ -206,7 +206,7 @@ function DMXWeb() {
 
             for(var color in switching.getSelectedColors()) {
                 var selectedColor = switching.getSelectedColors()[color];
-                socket.emit('selectedColors', selectedColor.label, true);
+                socket.emit('selectedColor', selectedColor.label, true);
             }
             socket.emit('randomColorMode', switching.isRandomColorMode());
             socket.emit('shuffleColorMode', switching.isShuffleColorMode());
@@ -261,8 +261,9 @@ function DMXWeb() {
                         animations[universe][channel].abort();
 
                         animations[universe][channel] = new A(dmx);
+						// TODO hotfix: use linear if linear-flexible to prevent race condition
                         animations[universe][channel]
-                            .add(values, newFadingTime, {easing: fadingease})
+                            .add(values, newFadingTime, {easing: fadingease === 'linear-flexible' ? 'linear' : fadingease})
                             .run(universe, function (universe) {
                                 //onFinish
                                 return function (finalvals) {
@@ -315,22 +316,37 @@ function DMXWeb() {
 			io.sockets.emit('switchExternalEnabled', switchExternalDisabled);
 		});
 
-		socket.on('strobeMode', function () {
-			var active = switching.toggleStrobeMode();
+		socket.on('strobeMode', function (target_value) {
+			let active;
+			if (target_value === true || target_value === false) {
+				active = switching.toggleStrobeMode(target_value);
+			} else {
+				active = switching.toggleStrobeMode();
+			}
+
 			io.sockets.emit('strobeMode', active);
 
-			//deactivate conflicting
-			switching.toggleFadeBlackMode(false);
-			io.sockets.emit('fadeBlackMode', false);
+			if (active) {
+				//deactivate conflicting
+				switching.toggleFadeBlackMode(false);
+				io.sockets.emit('fadeBlackMode', false);
+			}
 		});
 
-		socket.on('fadeBlackMode', function () {
-			var active = switching.toggleFadeBlackMode();
+		socket.on('fadeBlackMode', function (target_value) {
+			let active;
+			if (target_value === true || target_value === false) {
+				active = switching.toggleFadeBlackMode(target_value);
+			} else {
+				active = switching.toggleFadeBlackMode();
+			}
 			io.sockets.emit('fadeBlackMode', active);
 
-			//deactivate conflicting
-			switching.toggleStrobeMode(false);
-			io.sockets.emit('strobeMode', false);
+			if (active) {
+				//deactivate conflicting
+				switching.toggleStrobeMode(false);
+				io.sockets.emit('strobeMode', false);
+			}
 		});
 
 		socket.on('switchingStrategy', function (strategy) {
@@ -361,29 +377,69 @@ function DMXWeb() {
 			io.sockets.emit('switchingStrategy', switchingStrategy);
 		});
 
-        socket.on('selectedColors', function (color, enabled) {
-            var updated = switching.setSelectedColors(color, enabled);
+        socket.on('selectedColor', function (color, enabled) {
+            const updated = switching.setSelectedColors(color, enabled);
             if (updated) {
-                io.sockets.emit('selectedColors', color, enabled);
+                io.sockets.emit('selectedColor', color, enabled);
             }
         });
 
-        socket.on('randomColorMode', function () {
-            var active = switching.toggleRandomColorMode();
-            io.sockets.emit('randomColorMode', active);
+		socket.on('selectedColors', function (colors) {
+			const allColors = config.colors.map(color => color.label)
+			let updateColors = colors;
+			if (updateColors.length === 0){
+				updateColors = allColors;
+			}
 
-            //deactivate conflicting
-            switching.setShuffleColorMode(false);
-            io.sockets.emit('shuffleColorMode', false);
+			updateColors.forEach(color => {
+				const updated = switching.setSelectedColors(color, true);
+				if (updated) {
+					io.sockets.emit('selectedColor', color, true);
+				}
+			});
+
+			const disableColors = allColors.filter(color => updateColors.indexOf(color) < 0);
+			disableColors.forEach(color => {
+				const updated = switching.setSelectedColors(color, false);
+				if (updated) {
+				   io.sockets.emit('selectedColor', color, false);
+				}
+			});
+
         });
 
-        socket.on('shuffleColorMode', function () {
-            var active = switching.toggleShuffleColorMode();
-            io.sockets.emit('shuffleColorMode', active);
+        socket.on('randomColorMode', function (target_value) {
+			let active;
+			if (target_value === true || target_value === false) {
+				switching.setRandomColorMode(target_value);
+				active = target_value
+			} else {
+				active = switching.toggleRandomColorMode();
+			}
+			io.sockets.emit('randomColorMode', active);
 
-            //deactivate conflicting
-            switching.setRandomColorMode(false);
-            io.sockets.emit('randomColorMode', false);
+			if (active) {
+				//deactivate conflicting
+				switching.setShuffleColorMode(false);
+				io.sockets.emit('shuffleColorMode', false);
+			}
+        });
+
+        socket.on('shuffleColorMode', function (target_value) {
+			let active;
+			if (target_value === true || target_value === false) {
+				switching.setShuffleColorMode(target_value);
+				active = target_value
+			} else {
+				active = switching.toggleShuffleColorMode();
+			}
+			io.sockets.emit('shuffleColorMode', active);
+
+			if (active) {
+				//deactivate conflicting
+				switching.setRandomColorMode(false);
+				io.sockets.emit('randomColorMode', false);
+			}
         });
 
         socket.on('selectedDevices', function (device, enabled) {
@@ -393,31 +449,47 @@ function DMXWeb() {
             }
         });
 
-        socket.on('randomDeviceMode', function () {
-            var active = switching.toggleRandomDeviceMode();
-            io.sockets.emit('randomDeviceMode', active);
+        socket.on('randomDeviceMode', function (target_value) {
+			let active;
+			if (target_value === true || target_value === false) {
+				switching.setRandomDeviceMode(target_value);
+				active = target_value
+			} else {
+				active = switching.toggleRandomDeviceMode();
+			}
+			io.sockets.emit('randomDeviceMode', active);
 
-            //deactivate conflicting
-            switching.setShuffleDeviceMode(false);
-            io.sockets.emit('shuffleDeviceMode', false);
+			if (active) {
+				//deactivate conflicting
+				switching.setShuffleDeviceMode(false);
+				io.sockets.emit('shuffleDeviceMode', false);
+			}
         });
 
-        socket.on('shuffleDeviceMode', function () {
-            var active = switching.toggleShuffleDeviceMode();
-            io.sockets.emit('shuffleDeviceMode', active);
+        socket.on('shuffleDeviceMode', function (target_value) {
+			let active;
+			if (target_value === true || target_value === false) {
+				switching.setShuffleDeviceMode(target_value);
+				active = target_value
+			} else {
+				active = switching.toggleShuffleDeviceMode();
+			}
+			io.sockets.emit('shuffleDeviceMode', active);
 
-            //deactivate conflicting
-            switching.setRandomDeviceMode(false);
-            io.sockets.emit('randomDeviceMode', false);
+			if (active) {
+				//deactivate conflicting
+				switching.setRandomDeviceMode(false);
+				io.sockets.emit('randomDeviceMode', false);
+			}
         });
 
         socket.on('allColorSwitchingDevicesBlack', function (onlyNotSelectedDevices) {
             switching.allColorDevicesBlack(onlyNotSelectedDevices);
         });
 
-		socket.on('fadingEaseChange', function (easeEffect) {
+		socket.on('fadingEase', function (easeEffect) {
 			fadingease = easeEffect;
-			io.sockets.emit('fadingEaseChange', fadingease);
+			io.sockets.emit('fadingEase', fadingease);
 		});
 
 	});
