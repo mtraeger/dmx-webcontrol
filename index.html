@@ -244,7 +244,7 @@
                 var deviceSelect = $('<label class="cb-max-w"><input type="checkbox" name="' + switchingDevices[device].id + '" > ' + switchingDevices[device].device.label + ' (' + switchingDevices[device].universe + ')</label>');
                 deviceSelect.hide().appendTo('#switchingDevices').fadeIn();
                 deviceSelect.click(function (e) {
-                    socket.emit('selectedDevices', e.target.name, e.target.checked);
+                    socket.emit('selectedDevice', e.target.name, e.target.checked);
                 });
             }
             //All and No Device Buttons
@@ -252,14 +252,14 @@
             deviceSelectAll.hide().appendTo('#switchingDevices').fadeIn();
             deviceSelectAll.click(function (e) {
                 for (var device in switchingDevices) {
-                    socket.emit('selectedDevices', switchingDevices[device].id, true);
+                    socket.emit('selectedDevice', switchingDevices[device].id, true);
                 }
             });
             var deviceDeselectAll = $('<button class="span2 btn btn-info">No Device</button>');
             deviceDeselectAll.hide().appendTo('#switchingDevices').fadeIn();
             deviceDeselectAll.click(function (e) {
                 for (var device in switchingDevices) {
-                    socket.emit('selectedDevices', switchingDevices[device].id, false);
+                    socket.emit('selectedDevice', switchingDevices[device].id, false);
                 }
             });
             // RandomDeviceMode button
@@ -583,7 +583,7 @@
         socket.on('selectedColor', function (color, selected) {
             $('#switchingColors').find('input[name="' + color + '"]').prop('checked', selected);
         });
-        socket.on('selectedDevices', function (device, selected) {
+        socket.on('selectedDevice', function (device, selected) {
             $('#switchingDevices').find('input[name="' + device + '"]').prop('checked', selected);
         });
         socket.on('strobeMode', function (enabled) {

@@ -213,7 +213,7 @@ function DMXWeb() {
 
             for(var device in switching.getSelectedDevices()) {
                 var selectedDevice = switching.getSelectedDevices()[device];
-                socket.emit('selectedDevices', selectedDevice.id, true);
+                socket.emit('selectedDevice', selectedDevice.id, true);
             }
             socket.emit('randomDeviceMode', switching.isRandomDeviceMode());
             socket.emit('shuffleDeviceMode', switching.isShuffleDeviceMode());
@@ -442,11 +442,40 @@ function DMXWeb() {
 			}
         });
 
-        socket.on('selectedDevices', function (device, enabled) {
+        socket.on('selectedDevice', function (device, enabled) {
             var updated = switching.setSelectedDevices(device, enabled);
             if (updated) {
-                io.sockets.emit('selectedDevices', device, enabled);
+                io.sockets.emit('selectedDevice', device, enabled);
             }
+        });
+
+		socket.on('selectedDevices', function (devices) {
+			const allDevices = switching.getAllDevices().map(device => device.id)
+
+			let updateDevices = devices;
+			if (updateDevices.length === 0){
+				updateDevices = allDevices;
+			}else{
+				updateDevices = updateDevices.flatMap(
+					device => switching.getAllDevices().filter(switchingDevice => switchingDevice.device.label == device)
+				).map(device => device.id)
+			}
+
+			updateDevices.forEach(device => {
+				const updated = switching.setSelectedDevices(device, true);
+				if (updated) {
+					io.sockets.emit('selectedDevice', device, true);
+				}
+			});
+
+			const disabledDevices = allDevices.filter(device => updateDevices.indexOf(device) < 0);
+			disabledDevices.forEach(device => {
+				const updated = switching.setSelectedDevices(device, false);
+				if (updated) {
+				   io.sockets.emit('selectedDevice', device, false);
+				}
+			});
+
         });
 
         socket.on('randomDeviceMode', function (target_value) {
