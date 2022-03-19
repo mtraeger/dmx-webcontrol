@@ -92,6 +92,14 @@
                 socket.emit('fading', e.target.value);
             });
 
+            // PauseSwitching button
+            var switchingPause = $('<button id="switchingPause" class="span2 btn btn-info">Pause Switching</button>');
+            switchingPause.hide().appendTo('#navbar-content').fadeIn();
+            switchingPause.click(function () {
+                socket.emit('switchingPause');
+            });
+
+
             /* blackout button */
             var blackout = $('<button id="blackout" class="span2 btn btn-danger" style="float: right">Black Out</button>');
             blackout.hide().appendTo('#navbar-content').fadeIn();
@@ -553,6 +561,13 @@
         socket.on('displayslider', function (universe, update) {
             for (var k in update) {
                 $('#' + get_html_id(universe, k)+'_display').attr('value', update[k]);
+            }
+        });
+        socket.on('switchingPause', function (switchingPause) {
+            if(switchingPause) {
+                enableBlinker("#switchingPause");
+            }else {
+                disableBlinker("#switchingPause");
             }
         });
         socket.on('blackout', function (blackout) {

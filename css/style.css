@@ -76,11 +76,11 @@ input[type=color].allPicker{
     max-width: 400px;
 }
 
-#blackout, #strobeMode, #fadeBlackMode, #randomColorMode, #shuffleColorMode, #randomDeviceMode, #shuffleDeviceMode, #externalSwitch{
+#blackout, #strobeMode, #fadeBlackMode, #randomColorMode, #shuffleColorMode, #randomDeviceMode, #shuffleDeviceMode, #externalSwitch, #switchingPause{
     transition: color 200ms ease;
 }
 
-#blackout.blink, #strobeMode.blink, #fadeBlackMode.blink, #randomColorMode.blink, #shuffleColorMode.blink, #randomDeviceMode.blink, #shuffleDeviceMode.blink, #externalSwitch.blink{
+#blackout.blink, #strobeMode.blink, #fadeBlackMode.blink, #randomColorMode.blink, #shuffleColorMode.blink, #randomDeviceMode.blink, #shuffleDeviceMode.blink, #externalSwitch.blink, #switchingPause.blink{
     color:transparent;
 }
 

@@ -285,7 +285,18 @@ function DMXWeb() {
 			dmx.toggleBlackout(universe);
 		});
 
+		socket.on('switchingPause', function() {
+			if(switching.running) {
+				switching.abort();
+				io.sockets.emit('switchingPause', true);
+			}else if(switchingTimeFader != 0) {
+				switching.run();
+				io.sockets.emit('switchingPause', false);
+			}
+		});
+
 		socket.on('switching', function(value) {
+			io.sockets.emit('switchingPause', false); //do also disable switching to zero
 			switchingTimeFader = value;
 
 			if(switchingTimeFader == 0){
