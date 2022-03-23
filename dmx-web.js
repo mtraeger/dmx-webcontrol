@@ -184,6 +184,7 @@ function DMXWeb() {
 	var switchingTimeFader = 0;
 	var switchingTime = 0;
 	var switchingStrategy = 'colors';
+	var switchingPause = false;
 
 	var switching = new Switching({'devices': DMX.devices, 'setup': config}, function (universe, update, effect) {
 		updateDmx(universe, update, effect);
@@ -203,6 +204,7 @@ function DMXWeb() {
             socket.emit('strobeMode', switching.isStrobeMode());
             socket.emit('fadeBlackMode', switching.isFadeBlackMode());
             socket.emit('switchExternalEnabled', switchExternalDisabled);
+            socket.emit('switchingPause', switchingPause);
 
             for(var color in switching.getSelectedColors()) {
                 var selectedColor = switching.getSelectedColors()[color];
@@ -288,15 +290,18 @@ function DMXWeb() {
 		socket.on('switchingPause', function() {
 			if(switching.running) {
 				switching.abort();
+				switchingPause = true;
 				io.sockets.emit('switchingPause', true);
 			}else if(switchingTimeFader != 0) {
 				switching.run();
+				switchingPause = false;
 				io.sockets.emit('switchingPause', false);
 			}
 		});
 
 		socket.on('switching', function(value) {
 			io.sockets.emit('switchingPause', false); //do also disable switching to zero
+			switchingPause = false;
 			switchingTimeFader = value;
 
 			if(switchingTimeFader == 0){
